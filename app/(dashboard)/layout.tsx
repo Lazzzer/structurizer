@@ -1,5 +1,5 @@
 import { BottomSection } from "@/components/bottom-section";
-import { NavSection, NavSectionItems } from "@/components/nav-section";
+import { NavItem, NavSection, NavSectionItems } from "@/components/nav-section";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -51,6 +51,19 @@ const structuredData: NavSectionItems = {
   ],
 };
 
+const bottomItems: NavItem[] = [
+  {
+    label: "Help",
+    href: "/help",
+    icon: "help",
+  },
+  {
+    label: "Settings",
+    href: "/settings",
+    icon: "settings",
+  },
+];
+
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen">
@@ -73,7 +86,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <NavSection className="mt-20" section={pipelines} />
             <NavSection className="mt-10" section={structuredData} />
             <div className="flex flex-1 flex-col gap-y-7">
-              <BottomSection className="mt-auto" username="Lazzzer" />
+              <BottomSection
+                className="mt-auto"
+                username="Lazzzer"
+                items={bottomItems}
+              />
             </div>
           </nav>
         </div>
