@@ -1,14 +1,21 @@
 // These styles apply to every route in the application
 import "@/styles/globals.css";
 import { Metadata } from "next";
+import localFont from "next/font/local";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import AuthStatus from "@/components/auth-status";
 import { Suspense } from "react";
+import { cn } from "@/lib/utils";
 
-const inter = Inter({
-  variable: "--font-inter",
+const fontSans = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
+});
+
+const calSans = localFont({
+  src: "../assets/fonts/CalSans-SemiBold.woff2",
+  variable: "--font-cal-sans",
 });
 
 const title = "Next.js Prisma Postgres Auth Starter";
@@ -34,10 +41,15 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.variable}>
+      <body
+        className={cn(
+          "font-sans antialiased",
+          fontSans.variable,
+          calSans.variable
+        )}
+      >
         <Toaster />
         <Suspense fallback="Loading...">
-          {/* @ts-expect-error Async Server Component */}
           <AuthStatus />
         </Suspense>
         {children}

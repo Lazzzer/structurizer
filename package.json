@@ -15,11 +15,16 @@
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.2.6",
     "bcrypt": "^5.1.0",
+    "class-variance-authority": "^0.6.0",
+    "clsx": "^1.2.1",
+    "lucide-react": "^0.246.0",
     "next": "^13.4.2",
     "next-auth": "^4.22.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hot-toast": "^2.4.1"
+    "react-hot-toast": "^2.4.1",
+    "tailwind-merge": "^1.13.2",
+    "tailwindcss-animate": "^1.0.6"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
