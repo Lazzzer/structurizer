@@ -1,3 +1,4 @@
+import { BottomSection } from "@/components/bottom-section";
 import { NavSection, NavSectionItems } from "@/components/nav-section";
 import Image from "next/image";
 import Link from "next/link";
@@ -71,6 +72,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <nav className="flex flex-1 flex-col">
             <NavSection className="mt-20" section={pipelines} />
             <NavSection className="mt-10" section={structuredData} />
+            <div className="flex flex-1 flex-col gap-y-7">
+              <BottomSection className="mt-auto" username="Lazzzer" />
+            </div>
           </nav>
         </div>
       </div>

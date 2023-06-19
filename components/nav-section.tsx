@@ -52,7 +52,7 @@ export function NavSection({
               >
                 <span
                   className={cn(
-                    path === item.href ? "bg-slate-800" : "bg-slate-300",
+                    path.includes(item.href) ? "bg-slate-800" : "bg-slate-300",
                     "absolute rounded-full  h-2 w-2"
                   )}
                   style={{ marginLeft: "-21px" }}
@@ -65,7 +65,7 @@ export function NavSection({
                 />
                 <span
                   className={cn(
-                    path === item.href ? "font-bold" : "font-medium",
+                    path.includes(item.href) ? "font-bold" : "font-medium",
                     "ml-2 text-slate-800"
                   )}
                 >

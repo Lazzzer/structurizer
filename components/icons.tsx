@@ -6,6 +6,7 @@ import {
   LucideProps,
   TextSelect,
   CheckCircle,
+  LogOut,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -18,6 +19,7 @@ export const Icons = {
   textSelect: TextSelect,
   braces: Braces,
   checkCircle: CheckCircle,
+  logOut: LogOut,
   receipt: ({ ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
