@@ -1,7 +1,12 @@
+import { TopMainContent } from "@/components/top-main-content";
+
 export default function InvoicesPage() {
   return (
-    <div>
-      <h1>Invoices Statements</h1>
-    </div>
+    <>
+      <TopMainContent title="Invoices" displayUploadButton />
+      <div className="m-4">
+        <h1>Content</h1>
+      </div>
+    </>
   );
 }

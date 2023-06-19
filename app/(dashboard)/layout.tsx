@@ -66,7 +66,7 @@ const bottomItems: NavItem[] = [
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex">
       {/* Sidenav */}
       <div className="fixed inset-y-0 z-50 flex w-72 flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r-2 border-slate-200 bg-white pl-8 pr-6 pb-4">
@@ -95,7 +95,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </nav>
         </div>
       </div>
-      {children}
+      {/* Main */}
+      <main className="pl-72 w-full">{children}</main>
     </div>
   );
 }

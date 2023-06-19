@@ -8,6 +8,7 @@ import {
   CheckCircle,
   LogOut,
   HelpCircle,
+  UploadCloud,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -22,6 +23,7 @@ export const Icons = {
   checkCircle: CheckCircle,
   logOut: LogOut,
   help: HelpCircle,
+  upload: UploadCloud,
   receipt: ({ ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

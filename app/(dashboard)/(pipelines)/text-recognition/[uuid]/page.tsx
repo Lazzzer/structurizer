@@ -1,7 +1,12 @@
+import { TopMainContent } from "@/components/top-main-content";
+
 export default function TextRecognitionUUIDPage() {
   return (
-    <div>
-      <h1>Text Recognition UUID</h1>
-    </div>
+    <>
+      <TopMainContent title="Text Recognition" displayUploadButton />
+      <div className="m-4">
+        <h1>Content</h1>
+      </div>
+    </>
   );
 }

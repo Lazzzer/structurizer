@@ -1,7 +1,12 @@
+import { TopMainContent } from "@/components/top-main-content";
+
 export default function DashboardPage() {
   return (
-    <div>
-      <h1>Dashboard</h1>
-    </div>
+    <>
+      <TopMainContent title="Dashboard" displayUploadButton />
+      <div className="m-4">
+        <h1>Content</h1>
+      </div>
+    </>
   );
 }
