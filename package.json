@@ -24,6 +24,7 @@
     "bcrypt": "^5.1.0",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
+    "framer-motion": "^10.12.16",
     "lucide-react": "^0.246.0",
     "next": "^13.4.2",
     "next-auth": "^4.22.1",
