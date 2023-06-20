@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { Icons } from "@/components/icons";
+import { useRouter } from "next/navigation";
 
 interface AuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -27,19 +28,22 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
     resolver: zodResolver(authSchema),
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const router = useRouter();
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
 
-    const signInResult = await signIn("email", {
-      email: data.username.toLowerCase(),
-      password: data.password,
-      redirect: false,
-    });
+    const [settledResult] = await Promise.allSettled([
+      signIn("credentials", {
+        username: data.username.toLowerCase(),
+        password: data.password,
+        redirect: false,
+      }),
+      new Promise((resolve) => setTimeout(resolve, 700)),
+    ]);
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    const signInResult =
+      settledResult.status === "fulfilled" ? settledResult.value : null;
 
     if (!signInResult?.ok) {
       return toast({
@@ -49,10 +53,10 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
       });
     }
 
-    return toast({
-      title: "Login Ok",
-      description: "TODO: To be implemented",
-    });
+    setIsLoading(false);
+
+    router.refresh();
+    router.push("/dashboard");
   }
 
   return (
@@ -63,7 +67,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
-              placeholder="lazzzer"
+              placeholder="johndoe"
               type="text"
               autoCapitalize="none"
               autoComplete="text"
