@@ -18,14 +18,16 @@ export function Step({ step, current, status }: StepProps) {
     status = "complete";
   } else if (current < step.number) status = "inactive";
 
-  console.log("status", status);
-  console.log("current", current);
-  console.log("step.number", step.number);
+  let initialAnimation: boolean | string = false;
+
+  if (step.number === current - 1 && step.number !== 1) {
+    initialAnimation = status ?? false;
+  }
 
   return (
     <motion.div
       animate={status}
-      initial={status}
+      initial={initialAnimation}
       className="relative flex flex-col items-center"
     >
       <motion.div
