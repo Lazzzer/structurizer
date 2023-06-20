@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { Icons } from "@/components/icons";
+import { useRouter } from "next/navigation";
 
 interface AuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -27,19 +28,16 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
     resolver: zodResolver(authSchema),
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const router = useRouter();
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
 
-    const signInResult = await signIn("email", {
-      email: data.username.toLowerCase(),
+    const signInResult = await signIn("credentials", {
+      username: data.username.toLowerCase(),
       password: data.password,
       redirect: false,
     });
-
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
 
     if (!signInResult?.ok) {
       return toast({
@@ -49,10 +47,8 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
       });
     }
 
-    return toast({
-      title: "Login Ok",
-      description: "TODO: To be implemented",
-    });
+    router.refresh();
+    router.push("/dashboard");
   }
 
   return (
