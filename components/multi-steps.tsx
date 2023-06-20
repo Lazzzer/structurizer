@@ -15,6 +15,7 @@ export default function MultiSteps({ parentStep }: { parentStep: number }) {
   }, [parentStep]);
 
   const [currentStep, setCurrentStep] = React.useState(parentStep);
+
   return (
     <div className="flex justify-center space-x-10">
       <div

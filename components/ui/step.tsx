@@ -51,14 +51,23 @@ export function Step({ step, current }: StepProps) {
           </AnimatePresence>
         </div>
       </motion.div>
-      <div
+      <motion.div
+        variants={backgroundVariants}
+        transition={{ duration: 0.2 }}
         className={cn(
-          step.number === current ? "font-bold" : "font-medium",
+          step.number === current ? "font-bold" : "font-semibold",
           "text-xs leading-tight mt-2 w-16 h-6 flex items-center text-center justify-center"
         )}
       >
-        {step.title}
-      </div>
+        <motion.span
+          key="step"
+          animate={{ opacity: 1 }}
+          exit={{ scale: 0.5, opacity: 0 }}
+          className="absolute"
+        >
+          {step.title}
+        </motion.span>
+      </motion.div>
     </motion.div>
   );
 }
