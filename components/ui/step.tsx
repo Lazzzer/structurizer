@@ -10,18 +10,17 @@ export type StepType = {
 type StepProps = {
   step: StepType;
   current: number;
+  status?: string;
 };
 
-export function Step({ step, current }: StepProps) {
-  let status: "active" | "inactive" | "complete";
-
-  if (current === step.number) {
-    status = "active";
-  } else if (current < step.number) {
-    status = "inactive";
-  } else {
+export function Step({ step, current, status }: StepProps) {
+  if (current > step.number) {
     status = "complete";
-  }
+  } else if (current < step.number) status = "inactive";
+
+  console.log("status", status);
+  console.log("current", current);
+  console.log("step.number", step.number);
 
   return (
     <motion.div

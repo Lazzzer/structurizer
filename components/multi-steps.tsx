@@ -2,7 +2,13 @@
 import * as React from "react";
 import { Step, StepType } from "./ui/step";
 
-export default function MultiSteps({ parentStep }: { parentStep: number }) {
+export default function MultiSteps({
+  parentStep,
+  parentStatus = "active",
+}: {
+  parentStep: number;
+  parentStatus?: string;
+}) {
   const steps: StepType[] = [
     { number: 1, title: "Upload" },
     { number: 2, title: "Text Recognition" },
@@ -12,9 +18,11 @@ export default function MultiSteps({ parentStep }: { parentStep: number }) {
 
   React.useEffect(() => {
     setCurrentStep(parentStep);
-  }, [parentStep]);
+    setStatus(parentStatus);
+  }, [parentStep, parentStatus]);
 
   const [currentStep, setCurrentStep] = React.useState(parentStep);
+  const [status, setStatus] = React.useState(parentStatus);
 
   return (
     <div className="flex justify-center space-x-10">
@@ -23,7 +31,12 @@ export default function MultiSteps({ parentStep }: { parentStep: number }) {
         className="bg-slate-200 h-1 absolute ml-10 mt-5 -z-10"
       ></div>
       {steps.map((step) => (
-        <Step key={step.number} step={step} current={currentStep} />
+        <Step
+          key={step.number}
+          step={step}
+          current={currentStep}
+          status={status}
+        />
       ))}
     </div>
   );
