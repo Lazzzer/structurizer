@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
-export async function BottomSection({
+export function BottomSection({
   className,
   username,
   items,
