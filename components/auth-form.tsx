@@ -33,11 +33,17 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
   async function onSubmit(data: FormData) {
     setIsLoading(true);
 
-    const signInResult = await signIn("credentials", {
-      username: data.username.toLowerCase(),
-      password: data.password,
-      redirect: false,
-    });
+    const [settledResult] = await Promise.allSettled([
+      signIn("credentials", {
+        username: data.username.toLowerCase(),
+        password: data.password,
+        redirect: false,
+      }),
+      new Promise((resolve) => setTimeout(resolve, 700)),
+    ]);
+
+    const signInResult =
+      settledResult.status === "fulfilled" ? settledResult.value : null;
 
     if (!signInResult?.ok) {
       return toast({
@@ -46,6 +52,8 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
         variant: "destructive",
       });
     }
+
+    setIsLoading(false);
 
     router.refresh();
     router.push("/dashboard");
@@ -59,7 +67,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
-              placeholder="lazzzer"
+              placeholder="johndoe"
               type="text"
               autoCapitalize="none"
               autoComplete="text"
