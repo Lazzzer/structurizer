@@ -30,6 +30,11 @@ export function Dropzone({
     });
 
     const data = await res.json();
+
+    if (res.status !== 201) {
+      throw new Error(data.message);
+    }
+
     return data;
   }
 
