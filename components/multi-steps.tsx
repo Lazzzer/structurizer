@@ -25,7 +25,7 @@ export default function MultiSteps({
   const [status, setStatus] = React.useState(parentStatus);
 
   return (
-    <div className="flex justify-center gap-10">
+    <div className="flex justify-center gap-10 py-8">
       <div
         style={{ width: "355px" }}
         className="bg-slate-200 h-1 absolute  mt-5 -z-10"
