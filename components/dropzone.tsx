@@ -90,7 +90,7 @@ export function Dropzone({
         <Label htmlFor="bulk-processing">Bulk Processing</Label>
         <HelpTooltip
           classNameTrigger="h-6 w-6 p-1"
-          classNameContent="w-72 px-6 py-4 text-slate-600 text-center"
+          classNameContent="w-72 px-2 py-3 text-slate-600 text-center"
         >
           <Balancer>
             <p className="mb-4">
@@ -98,7 +98,7 @@ export function Dropzone({
             </p>
             <p>
               It will automatically process the files and stop at its current
-              pipeline when it encounters an error.
+              pipeline if it encounters an error.
             </p>
           </Balancer>
         </HelpTooltip>

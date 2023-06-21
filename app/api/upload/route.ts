@@ -4,6 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "crypto";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -69,7 +70,26 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-    return NextResponse.json({ message: "File uploaded" }, { status: 201 });
+
+    const extraction = await prisma.extraction.create({
+      data: {
+        filename: blob.name,
+        objectPath: s3Params.Key,
+        user: {
+          connect: { id: userUUID },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: {
+          id: extraction.id,
+          filename: blob.name,
+        },
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json(
