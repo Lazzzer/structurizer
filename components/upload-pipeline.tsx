@@ -12,35 +12,13 @@ import Balancer from "react-wrap-balancer";
 
 export default function UploadPipeline() {
   const [status, setStatus] = React.useState("active");
-  const [isBulkProcessing, setBulkProcessing] = React.useState(false);
 
   return (
-    <div className="mx-4 h-4/5 border border-red-200 flex flex-col">
+    <div className="mx-4 h-2/5 flex flex-col">
       <MultiSteps parentStep={1} parentStatus={status} />
-      <div className="flex flex-col flex-1 border border-red-100 items-center justify-center">
-        <div className="flex items-center gap-2">
-          <Switch
-            id="bulk-processing"
-            disabled
-            onCheckedChange={() =>
-              setBulkProcessing((previousState) => !previousState)
-            }
-            checked={isBulkProcessing}
-          />
-          <Label htmlFor="bulk-processing">Bulk Processing</Label>
-          <HelpTooltip>
-            <Balancer>
-              <p className="mb-4">
-                Bulk processing allows you to upload multiple files at once.
-              </p>
-              <p>
-                It will automatically process the files and stop at its current
-                pipeline when it encounters an error.
-              </p>
-            </Balancer>
-          </HelpTooltip>
-        </div>
-        <Dropzone />
+
+      <div className="flex flex-col flex-1 items-center justify-center">
+        <Dropzone className="mt-4 mb-8" />
       </div>
 
       {/* <Button onClick={() => setStatus("complete")}>Process End</Button>

@@ -6,18 +6,30 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Icons } from "../icons";
+import { cn } from "@/lib/utils";
 
-export function HelpTooltip({ children }: { children: React.ReactNode }) {
+export function HelpTooltip({
+  children,
+  classNameTrigger,
+  classNameContent,
+}: {
+  children: React.ReactNode;
+  classNameTrigger?: string;
+  classNameContent?: string;
+}) {
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 rounded-full p-2">
-            <Icons.help className="h-8 w-8" />
+          <Button
+            variant="ghost"
+            className={cn(classNameTrigger, "rounded-full")}
+          >
+            <Icons.help />
             <span className="sr-only">Help</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent className="w-72 px-6 py-4 text-slate-600 text-center">
+        <TooltipContent className={cn(classNameContent)}>
           {children}
         </TooltipContent>
       </Tooltip>

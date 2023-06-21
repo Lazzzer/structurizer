@@ -12,7 +12,7 @@ export function TopMainContent({
 }) {
   return (
     <div className="h-1/5 border-slate-200 border-b-2 flex items-end justify-between">
-      <h1 className="mb-4 ml-10 font-cal text-4xl xl:text-5xl">{title}</h1>
+      <h1 className="mb-4 ml-10 font-cal text-4xl">{title}</h1>
       {displayUploadButton && (
         <Link className={cn(buttonVariants(), "mb-4 mr-4")} href={"/upload"}>
           <Icons.upload
