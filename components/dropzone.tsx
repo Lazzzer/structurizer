@@ -8,10 +8,48 @@ import { cn, formatBytes } from "@/lib/utils";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
 
-export function Dropzone({ className }: { className?: string }) {
+export function Dropzone({
+  className,
+  updateStatus,
+}: {
+  className?: string;
+  updateStatus: (status: string) => void;
+}) {
   const [files, setFiles] = useState<File[]>([]);
   const [rejected, setRejected] = useState<FileRejection[]>([]);
-  const [isBulkProcessing, setBulkProcessing] = React.useState(false);
+  const [isBulkProcessing, setBulkProcessing] = useState(false);
+  const [isUploading, setUploading] = useState(false);
+  const [hasUploadFailed, setUploadFailed] = useState(false);
+
+  async function uploadFile(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    return data;
+  }
+
+  async function uploadFiles(files: File[]) {
+    setUploadFailed(false);
+    setUploading(true);
+    const results = await Promise.allSettled([
+      ...files.map(uploadFile),
+      new Promise((resolve) => setTimeout(resolve, 700)),
+    ]);
+
+    const failed = results.filter((result) => result.status === "rejected");
+    setUploading(false);
+
+    if (failed.length) {
+      setUploadFailed(true);
+    } else {
+      updateStatus("complete");
+    }
+  }
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -19,8 +57,6 @@ export function Dropzone({ className }: { className?: string }) {
         setFiles(acceptedFiles);
       }
       setRejected(rejectedFiles);
-
-      console.log(rejectedFiles);
     },
     []
   );
@@ -36,13 +72,11 @@ export function Dropzone({ className }: { className?: string }) {
   });
 
   return (
-    <form
-      className={cn(className, "flex flex-col items-center justify-center")}
-    >
+    <div className={cn(className, "flex flex-col items-center justify-center")}>
       <div className="flex items-center gap-2 mb-4">
         <Switch
           id="bulk-processing"
-          disabled
+          // disabled
           onCheckedChange={() =>
             setBulkProcessing((previousState) => !previousState)
           }
@@ -99,11 +133,13 @@ export function Dropzone({ className }: { className?: string }) {
           {rejected.map(({ file, errors }) => (
             <div
               key={file.name}
-              className="flex items-center gap-1 text-red-400 text-xs"
+              className="flex items-center gap-1 text-red-400 text-xs w-72"
             >
               <Icons.file width={12} height={12} />
-              <span className="font-medium">{file.name}</span>
-              <span>({formatBytes(file.size)})</span>
+              <span className="font-medium text-ellipsis overflow-hidden">
+                {file.name}
+              </span>
+              <span className="flex-none">({formatBytes(file.size)})</span>
               <HelpTooltip
                 classNameTrigger="h-5 w-5 p-1"
                 classNameContent="px-2 py-1 text-slate-600"
@@ -128,11 +164,13 @@ export function Dropzone({ className }: { className?: string }) {
           {files.map((file, index) => (
             <div
               key={file.name}
-              className="flex items-center gap-1 text-slate-700 text-xs mb-1"
+              className="flex items-center gap-1 text-slate-700 text-xs mb-1 w-72"
             >
               <Icons.file width={12} height={12} />
-              <span className="font-medium">{file.name}</span>
-              <span>({formatBytes(file.size)})</span>
+              <span className="font-medium text-ellipsis overflow-hidden">
+                {file.name}
+              </span>
+              <span className="flex-none">({formatBytes(file.size)})</span>
               <Icons.close
                 onClick={() => {
                   setFiles((previousState) => {
@@ -147,9 +185,23 @@ export function Dropzone({ className }: { className?: string }) {
               />
             </div>
           ))}
-          <Button className="mt-3 w-full">Upload</Button>
+          <Button
+            disabled={isUploading}
+            className="mt-3 w-full"
+            onClick={() => uploadFiles(files)}
+          >
+            {isUploading && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Upload
+          </Button>
+          {hasUploadFailed && (
+            <p className="mt-2 text-red-500 text-xs">
+              Some upload failed. Please try again.
+            </p>
+          )}
         </section>
       )}
-    </form>
+    </div>
   );
 }
