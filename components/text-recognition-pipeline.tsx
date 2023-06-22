@@ -5,6 +5,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 
 import dynamic from "next/dynamic";
+import { Textarea } from "./ui/textarea";
 
 const PdfViewer = dynamic(() => import("./pdf-viewer"), {
   ssr: false,
@@ -16,7 +17,7 @@ async function getS3ObjectUrl(uuid: string) {
     {
       method: "GET",
       headers: {
-        Cookie: headers().get("cookie") || "",
+        Cookie: headers().get("cookie") ?? "",
       },
     }
   );
@@ -32,7 +33,7 @@ async function getText(url: string) {
   const res = await fetch(`${process.env.APP_URL}/api/text-recognition`, {
     method: "POST",
     headers: {
-      Cookie: headers().get("cookie") || "",
+      Cookie: headers().get("cookie") ?? "",
     },
     body: JSON.stringify({ url }),
   });
@@ -50,17 +51,18 @@ export default async function TextRecognitionPipeline({
   uuid: string;
 }) {
   const { url, filename } = await getS3ObjectUrl(uuid);
-
-  console.log("server component", url);
   const { text } = await getText(url);
-  console.log("server component", text);
 
   return (
     <div className="mx-4 mb-10 flex flex-col">
       <MultiSteps parentStep={2} />
       <div className="flex items-center justify-center gap-x-10">
         <PdfViewer url={url} scaleValue={1} />
-        <div className="w-96 h-96 overflow-hidden">{text}</div>
+        <Textarea
+          value={text}
+          className="w-96"
+          placeholder="Type your message here."
+        />
       </div>
       {/* <Link
         className={cn(buttonVariants(), "mb-4 mx-4")}
