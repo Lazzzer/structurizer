@@ -7,13 +7,27 @@ import Balancer from "react-wrap-balancer";
 import { cn, formatBytes } from "@/lib/utils";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
+import { UploadInfo } from "./upload-pipeline";
+
+type SettledResult = {
+  status: "fulfilled" | "rejected";
+  value?: {
+    message: {
+      filename: string;
+      id: string;
+    };
+    reason?: any;
+  };
+};
 
 export function Dropzone({
   className,
   updateStatus,
+  updateUploadInfos,
 }: {
   className?: string;
   updateStatus: (status: string) => void;
+  updateUploadInfos: (uploadInfos: UploadInfo) => void;
 }) {
   const [files, setFiles] = useState<File[]>([]);
   const [rejected, setRejected] = useState<FileRejection[]>([]);
@@ -46,8 +60,33 @@ export function Dropzone({
       new Promise((resolve) => setTimeout(resolve, 700)),
     ]);
 
-    const failed = results.filter((result) => result.status === "rejected");
+    const success = results.filter(
+      (result) => result.status === "fulfilled"
+    ) as SettledResult[];
+
+    const failed = results.filter(
+      (result) => result.status === "rejected"
+    ) as SettledResult[];
+
     setUploading(false);
+
+    updateUploadInfos({
+      nbFiles: files.length,
+      success: success
+        .filter((result) => result.value)
+        .map((result) => [
+          result.value!.message.filename,
+          result.value!.message.id,
+        ]),
+      failed: files
+        .filter(
+          (file) =>
+            success.find(
+              (result) => result.value?.message.filename === file.name
+            ) === undefined
+        )
+        .map((file) => file.name),
+    });
 
     if (failed.length) {
       setUploadFailed(true);
