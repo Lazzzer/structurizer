@@ -11,7 +11,7 @@ export function TopMainContent({
   displayUploadButton?: boolean;
 }) {
   return (
-    <div className="h-1/5 border-slate-200 border-b-2 flex items-end justify-between">
+    <div className="h-24 2xl:h-44 border-slate-200 border-b-2 flex items-end justify-between">
       <h1 className="mb-4 ml-10 font-cal text-4xl">{title}</h1>
       {displayUploadButton && (
         <Link className={cn(buttonVariants(), "mb-4 mr-4")} href={"/upload"}>

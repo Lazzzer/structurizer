@@ -4,6 +4,12 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { headers } from "next/headers";
 
+import dynamic from "next/dynamic";
+
+const PdfViewer = dynamic(() => import("./pdf-viewer"), {
+  ssr: false,
+});
+
 async function getS3ObjectUrl(uuid: string) {
   const res = await fetch(
     `${process.env.APP_URL}/api/signed-url?uuid=${uuid}`,
@@ -50,31 +56,18 @@ export default async function TextRecognitionPipeline({
   console.log("server component", text);
 
   return (
-    <div className="mx-4 h-2/5 flex flex-col">
+    <div className="mx-4 mb-10 flex flex-col">
       <MultiSteps parentStep={2} />
-      <div className="text-2xl font-bold mb-4">Text Recognition</div>
-      <div className="text-lg mb-4">
-        <div className="mb-4">
-          <span className="font-bold">File name: </span>
-          {filename}
-        </div>
-        <div className="mb-4">
-          <span className="font-bold">File URL: </span>
-          <a href={url} target="_blank" rel="noreferrer">
-            {url}
-          </a>
-        </div>
-        <div className="mb-4">
-          <span className="font-bold">Text: </span>
-          {text}
-        </div>
+      <div className="flex items-center justify-center gap-x-10">
+        <PdfViewer url={url} scaleValue={1} />
+        <div className="w-96 h-96 overflow-hidden">{text}</div>
       </div>
-      <Link
+      {/* <Link
         className={cn(buttonVariants(), "mb-4 mx-4")}
         href={`/data-extraction/${uuid}`}
       >
         Continue
-      </Link>
+      </Link> */}
     </div>
   );
 }
