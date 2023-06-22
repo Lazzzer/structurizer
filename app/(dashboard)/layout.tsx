@@ -83,6 +83,7 @@ export default async function DashboardLayout({
               src="/logo.svg"
               width={205}
               height={38}
+              style={{ width: "auto", height: "auto" }}
               alt="Structurizer logo"
             />
           </Link>

@@ -1,4 +1,6 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
+const flattenColorPalette =
+  require("tailwindcss/lib/util/flattenColorPalette").default;
 
 /** @type {import('tailwindcss').Config} */
 export const darkMode = ["class"];
@@ -76,4 +78,15 @@ export const theme = {
     },
   },
 };
-export const plugins = [require("tailwindcss-animate")];
+export const plugins = [require("tailwindcss-animate"), addVariablesForColors];
+
+function addVariablesForColors({ addBase, theme }) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+
+  addBase({
+    ":root": newVars,
+  });
+}

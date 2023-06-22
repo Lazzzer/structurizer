@@ -1,7 +1,11 @@
+import { TopMainContent } from "@/components/top-main-content";
+import VerificationPipeline from "@/components/verification-pipeline";
+
 export default function VerificationUUIDPage() {
   return (
-    <div>
-      <h1>Verification UUID</h1>
-    </div>
+    <>
+      <TopMainContent title="Verification" />
+      <VerificationPipeline />
+    </>
   );
 }

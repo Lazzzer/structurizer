@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
+import { Provider } from "react-wrap-balancer";
 
 const fontSans = Inter({
   variable: "--font-sans",
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
   description,
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -39,8 +40,10 @@ export default async function RootLayout({
           calSans.variable
         )}
       >
-        <Toaster />
-        {children}
+        <Provider>
+          <Toaster />
+          {children}
+        </Provider>
       </body>
     </html>
   );

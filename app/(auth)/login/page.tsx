@@ -14,9 +14,11 @@ export default function LoginPage() {
         <div className="flex flex-col text-center">
           <Image
             className="mx-auto"
+            priority
             src="/logo.svg"
             width={302}
             height={57}
+            style={{ width: "auto", height: "auto" }}
             alt="Structurizer logo"
           />
           <h1 className="text-2xl mt-8 font-semibold tracking-tight">
