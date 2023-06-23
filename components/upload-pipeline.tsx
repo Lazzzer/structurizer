@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import MultiSteps from "./multi-steps";
 import { buttonVariants } from "./ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -18,9 +17,7 @@ export default function UploadPipeline() {
   const [uploadInfos, setUploadInfos] = useState<UploadInfo | null>(null);
 
   return (
-    <div className="mx-4 h-2/5 flex flex-col">
-      <MultiSteps parentStep={1} parentStatus={status} />
-
+    <div className="mx-4 flex flex-col flex-grow 2xl:-mt-64 -mt-24">
       <div className="flex flex-col flex-1 items-center justify-center">
         {status === "active" && (
           <Dropzone

@@ -54,22 +54,28 @@ export default async function TextRecognitionPipeline({
   const { text } = await getText(url);
 
   return (
-    <div className="mx-4 mb-10 flex flex-col">
-      <MultiSteps parentStep={2} />
-      <div className="flex items-center justify-center gap-x-10">
+    <div className="mx-4 mb-10 flex flex-col flex-grow">
+      <div className="flex flex-1 items-center justify-center gap-x-10">
         <PdfViewer url={url} scaleValue={1} />
-        <Textarea
-          value={text}
-          className="w-96"
-          placeholder="Type your message here."
-        />
+        <div>
+          <Textarea
+            value={text}
+            // onChange={() => {
+            //   // TODO: Put in its own client component
+            // }}
+            className="w-96 h-96"
+            placeholder="Type your message here."
+          />
+          <h1 className="text-2xl font-bold">{filename}</h1>
+
+          <Link
+            className={cn(buttonVariants(), "w-full")}
+            href={`/data-extraction/${uuid}`}
+          >
+            Continue
+          </Link>
+        </div>
       </div>
-      {/* <Link
-        className={cn(buttonVariants(), "mb-4 mx-4")}
-        href={`/data-extraction/${uuid}`}
-      >
-        Continue
-      </Link> */}
     </div>
   );
 }

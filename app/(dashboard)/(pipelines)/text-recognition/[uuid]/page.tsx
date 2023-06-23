@@ -9,9 +9,9 @@ export default function TextRecognitionPipelinePage({
   };
 }) {
   return (
-    <>
-      <TopMainContent title="Text Recognition" />
+    <div className="flex flex-col h-full">
+      <TopMainContent title="Text Recognition" step={2} />
       <TextRecognitionPipeline uuid={params.uuid} />
-    </>
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import VerificationPipeline from "@/components/verification-pipeline";
 export default function VerificationUUIDPage() {
   return (
     <>
-      <TopMainContent title="Verification" />
+      <TopMainContent title="Verification" step={4} />
       <VerificationPipeline />
     </>
   );

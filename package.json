@@ -38,6 +38,7 @@
     "react-hook-form": "^7.45.0",
     "react-pdf": "^7.1.2",
     "react-wrap-balancer": "^1.0.0",
+    "react-zoom-pan-pinch": "^3.0.8",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6",
     "zod": "^3.21.4"

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -38,21 +39,25 @@ export default function PdfViewer({
         style={{ width: "384px", height: "540px" }}
         className="bg-slate-50 border  border-slate-200 rounded-lg overflow-scroll overscroll-contain"
       >
-        <Document
-          file={url}
-          onLoadSuccess={onDocumentLoadSuccess}
-          className="gap-2 flex flex-col"
-        >
-          {Array.from(new Array(numPages), (el, index) => (
-            <Page
-              key={`page_${index + 1}`}
-              height={540}
-              pageNumber={index + 1}
-              scale={scale}
-              className="border border-slate-200"
-            />
-          ))}
-        </Document>
+        <TransformWrapper>
+          <TransformComponent>
+            <Document
+              file={url}
+              onLoadSuccess={onDocumentLoadSuccess}
+              className="gap-2 flex flex-col"
+            >
+              {Array.from(new Array(numPages), (el, index) => (
+                <Page
+                  key={`page_${index + 1}`}
+                  height={540}
+                  pageNumber={index + 1}
+                  scale={scale}
+                  className="border border-slate-200"
+                />
+              ))}
+            </Document>
+          </TransformComponent>
+        </TransformWrapper>
       </div>
     </div>
   );

@@ -64,7 +64,7 @@ export function Step({ step, current, status }: StepProps) {
           key="step"
           animate={{ opacity: 1 }}
           exit={{ scale: 0.5, opacity: 0 }}
-          className="absolute"
+          className="absolute font-cal"
         >
           {step.title}
         </motion.span>
