@@ -58,14 +58,14 @@ export default async function TextRecognitionPipeline({
       <div className="flex flex-1 items-center justify-center gap-x-10">
         <PdfViewer url={url} scaleValue={1} />
         <div>
-          <Textarea
+          {/* <Textarea
             value={text}
             // onChange={() => {
             //   // TODO: Put in its own client component
             // }}
             className="w-96 h-96"
             placeholder="Type your message here."
-          />
+          /> */}
           <h1 className="text-2xl font-bold">{filename}</h1>
 
           <Link

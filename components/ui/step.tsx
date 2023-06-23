@@ -10,7 +10,7 @@ export type StepType = {
 type StepProps = {
   step: StepType;
   current: number;
-  status?: string;
+  status: string;
 };
 
 export function Step({ step, current, status }: StepProps) {
@@ -21,7 +21,7 @@ export function Step({ step, current, status }: StepProps) {
   let initialAnimation: boolean | string = false;
 
   if (step.number === current - 1 && step.number !== 1) {
-    initialAnimation = status ?? false;
+    initialAnimation = false;
   }
 
   return (

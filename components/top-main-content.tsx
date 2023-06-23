@@ -1,29 +1,40 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+"use client";
+
+import { useEffect } from "react";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Icons } from "./icons";
 import MultiSteps from "./multi-steps";
+import { useStepStore } from "@/lib/store";
 
 export function TopMainContent({
   title,
-  step = null,
   displayUploadButton = false,
+  step = undefined,
 }: {
   title: string;
   displayUploadButton?: boolean;
-  step?: number | null;
+  step?: number;
 }) {
+  useEffect(() => {
+    useStepStore.setState(() => ({
+      current: step ?? 0,
+      status: "active",
+    }));
+  }, [step]);
+
   return (
     <div className="border-slate-200 border-b-2 flex-none flex items-end justify-center relative h-32">
       <h1
         className={cn(
-          step !== null ? "text-3xl " : "text-4xl",
+          step !== undefined ? "lg:text-3xl " : "lg:text-4xl",
           "hidden lg:block mb-6 ml-10 absolute font-cal left-0 bottom-0"
         )}
       >
         {title}
       </h1>
-      {step !== null && <MultiSteps parentStep={step} />}
+      {step !== undefined && <MultiSteps />}
 
       {displayUploadButton && (
         <Link

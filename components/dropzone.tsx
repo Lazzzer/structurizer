@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
@@ -8,6 +8,7 @@ import { cn, formatBytes } from "@/lib/utils";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
 import { UploadInfo } from "./upload-pipeline";
+import { useStepStore } from "@/lib/store";
 
 type SettledResult = {
   status: "fulfilled" | "rejected";
@@ -22,11 +23,9 @@ type SettledResult = {
 
 export function Dropzone({
   className,
-  updateStatus,
   updateUploadInfos,
 }: {
   className?: string;
-  updateStatus: (status: string) => void;
   updateUploadInfos: (uploadInfos: UploadInfo) => void;
 }) {
   const [files, setFiles] = useState<File[]>([]);
@@ -78,20 +77,12 @@ export function Dropzone({
           result.value!.message.filename,
           result.value!.message.id,
         ]),
-      failed: files
-        .filter(
-          (file) =>
-            success.find(
-              (result) => result.value?.message.filename === file.name
-            ) === undefined
-        )
-        .map((file) => file.name),
     });
 
     if (failed.length) {
       setUploadFailed(true);
     } else {
-      updateStatus("complete");
+      useStepStore.setState({ status: "complete" });
     }
   }
 
