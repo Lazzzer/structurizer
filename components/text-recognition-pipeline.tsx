@@ -1,15 +1,8 @@
-import MultiSteps from "./multi-steps";
 import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { headers } from "next/headers";
-
-import dynamic from "next/dynamic";
 import { Textarea } from "./ui/textarea";
-
-const PdfViewer = dynamic(() => import("./pdf-viewer"), {
-  ssr: false,
-});
 
 async function getS3ObjectUrl(uuid: string) {
   const res = await fetch(
@@ -54,19 +47,22 @@ export default async function TextRecognitionPipeline({
   const { text } = await getText(url);
 
   return (
-    <div className="mx-4 mb-10 flex flex-col flex-grow">
+    <div className="mx-4 mb-4 flex flex-col flex-grow">
       <div className="flex flex-1 items-center justify-center gap-x-10">
-        <PdfViewer url={url} scaleValue={1} />
+        <object
+          data={`${url}#toolbar=1&navpanes=0&statusbar=0&scrollbar=1&view=fit`}
+          type="application/pdf"
+          className="bg-slate-900 rounded-lg p-2 w-3/8 h-6/7 2xl:w-3/10 2xl:h-3/4"
+        />
         <div>
-          {/* <Textarea
+          <Textarea
             value={text}
             // onChange={() => {
             //   // TODO: Put in its own client component
             // }}
             className="w-96 h-96"
             placeholder="Type your message here."
-          /> */}
-          <h1 className="text-2xl font-bold">{filename}</h1>
+          />
 
           <Link
             className={cn(buttonVariants(), "w-full")}

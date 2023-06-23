@@ -13,13 +13,6 @@ const nextConfig = {
       },
     ];
   },
-  webpack: (config, _) => {
-    config.module.rules.push({
-      test: /\.node/,
-      use: "raw-loader",
-    });
-    return config;
-  },
 };
 
 module.exports = nextConfig;
