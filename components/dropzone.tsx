@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { Switch } from "./ui/switch";

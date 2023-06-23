@@ -1,12 +1,13 @@
 "use client";
 
-import { buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Textarea } from "./ui/textarea";
 import { useState } from "react";
 import { Icons } from "./icons";
 import { Balancer } from "react-wrap-balancer";
+import { useRouter } from "next/navigation";
 
 export default function TextRecognitionPipeline({
   uuid,
@@ -19,7 +20,32 @@ export default function TextRecognitionPipeline({
   text: string;
   filename: string;
 }) {
+  async function sendText(text: string) {
+    setUpdating(true);
+    const res = await fetch("/api/text-recognition/save", {
+      method: "POST",
+      body: JSON.stringify({
+        uuid,
+        text: verifiedText,
+      }),
+    });
+
+    const data = await res.json();
+
+    setUpdating(false);
+
+    console.log(data);
+    console.log(res.status);
+
+    if (res.status !== 200) {
+      throw new Error(data.message);
+    }
+  }
+
+  const router = useRouter();
+  const [isUpdating, setUpdating] = useState(false);
   const [verifiedText, setVerifiedText] = useState(text);
+
   return (
     <div className="mx-4 mb-4 flex flex-col flex-grow">
       <div className="flex flex-1 items-center justify-center gap-x-10">
@@ -47,12 +73,12 @@ export default function TextRecognitionPipeline({
                 height={20}
                 className="inline-block text-slate-500 flex-none"
               />
-              <Balancer>
-                <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500">
+                <Balancer>
                   Please make sure that the text above matches the text in the
                   PDF. Feel free to remove or edit any part of the text.
-                </p>
-              </Balancer>
+                </Balancer>
+              </p>
             </div>
           </div>
 
@@ -63,16 +89,26 @@ export default function TextRecognitionPipeline({
                   variant: "secondary",
                 })
               )}
-              href={`/data-extraction/${uuid}`}
+              href="/dashboard"
             >
               Cancel
             </Link>
-            <Link
-              className={cn(buttonVariants(), "w-48")}
-              href={`/data-extraction/${uuid}`}
+            <Button
+              disabled={isUpdating}
+              className="w-48"
+              onClick={() =>
+                sendText(verifiedText)
+                  .then(() => router.push(`/data-extraction/${uuid}`))
+                  .catch((e) => {
+                    alert(e.message);
+                  })
+              }
             >
+              {isUpdating && (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Confirm & Continue
-            </Link>
+            </Button>
           </div>
         </div>
       </div>
