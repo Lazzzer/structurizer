@@ -15,8 +15,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No URL provided" }, { status: 400 });
   }
 
-  console.log("url", url);
-
   const res = await fetch(
     `${process.env.LLM_STRUCTURIZER_URL}/v1/parsers/pdf/url`,
     {
@@ -29,11 +27,10 @@ export async function POST(req: Request) {
     }
   );
 
-  // if (!res.ok) {
-  //   return NextResponse.json({ error: "Failed to parse PDF" }, { status: 500 });
-  // }
+  if (!res.ok) {
+    return NextResponse.json({ error: res.statusText }, { status: res.status });
+  }
 
   const { content } = await res.json();
-
   return NextResponse.json({ text: content }, { status: 200 });
 }

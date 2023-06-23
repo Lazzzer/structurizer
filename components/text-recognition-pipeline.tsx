@@ -26,16 +26,13 @@ export default function TextRecognitionPipeline({
       method: "POST",
       body: JSON.stringify({
         uuid,
-        text: verifiedText,
+        text,
       }),
     });
 
     const data = await res.json();
 
     setUpdating(false);
-
-    console.log(data);
-    console.log(res.status);
 
     if (res.status !== 200) {
       throw new Error(data.message);
@@ -45,6 +42,9 @@ export default function TextRecognitionPipeline({
   const router = useRouter();
   const [isUpdating, setUpdating] = useState(false);
   const [verifiedText, setVerifiedText] = useState(text);
+  const [errorMsg, setErrorMsg] = useState(
+    text === "" ? "No text found in the PDF" : ""
+  );
 
   return (
     <div className="mx-4 mb-4 flex flex-col flex-grow">
@@ -62,12 +62,21 @@ export default function TextRecognitionPipeline({
             </h1>
             <Textarea
               value={verifiedText}
-              onChange={(e) => setVerifiedText(e.target.value)}
-              className="w-full h-full rounded-lg"
-              placeholder="Type your message here."
-            />
+              onChange={(e) => {
+                setErrorMsg("");
+                setVerifiedText(e.target.value);
+              }}
+              className={cn(
+                errorMsg ? "border-red-500" : "",
 
-            <div className="flex gap-2 items-center justify-center w-full mt-4">
+                "w-full h-full rounded-lg"
+              )}
+            />
+            {errorMsg !== "" && (
+              <p className="mt-1 text-sm text-red-500">{errorMsg}</p>
+            )}
+
+            <div className="flex gap-2 items-center justify-center w-full mt-3">
               <Icons.help
                 width={20}
                 height={20}
@@ -96,13 +105,18 @@ export default function TextRecognitionPipeline({
             <Button
               disabled={isUpdating}
               className="w-48"
-              onClick={() =>
+              onClick={() => {
+                if (verifiedText.trim() === "") {
+                  setErrorMsg("Please enter some text");
+                  return;
+                }
                 sendText(verifiedText)
                   .then(() => router.push(`/data-extraction/${uuid}`))
                   .catch((e) => {
-                    alert(e.message);
-                  })
-              }
+                    setErrorMsg("Something went wrong, please try again");
+                    setUpdating(false);
+                  });
+              }}
             >
               {isUpdating && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

@@ -234,7 +234,7 @@ export function Dropzone({
           </Button>
           {hasUploadFailed && (
             <p className="mt-2 text-red-500 text-xs">
-              Some upload failed. Please try again.
+              The upload failed. Please try again.
             </p>
           )}
         </section>

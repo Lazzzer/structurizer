@@ -12,6 +12,7 @@ import {
   UploadCloud,
   File,
   XCircle,
+  Frown,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -30,6 +31,7 @@ export const Icons = {
   upload: UploadCloud,
   file: File,
   close: XCircle,
+  frown: Frown,
   receipt: ({ ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -15,7 +15,7 @@ async function getS3ObjectUrl(uuid: string) {
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch url");
+    throw new Error("Failed to fetch data");
   }
 
   return res.json();
@@ -30,8 +30,12 @@ async function getText(url: string) {
     body: JSON.stringify({ url }),
   });
 
+  if (res.status === 422) {
+    return { text: "" };
+  }
+
   if (!res.ok) {
-    throw new Error("Failed to fetch text");
+    throw new Error("Failed to do text recognition");
   }
 
   return res.json();
