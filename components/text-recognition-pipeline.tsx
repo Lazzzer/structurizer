@@ -61,7 +61,7 @@ export default function TextRecognitionPipeline({
               <span className="text-ellipsis font-semibold">{filename}</span>
             </h1>
             <Textarea
-              value={text}
+              value={verifiedText}
               onChange={(e) => setVerifiedText(e.target.value)}
               className="w-full h-full rounded-lg"
               placeholder="Type your message here."
