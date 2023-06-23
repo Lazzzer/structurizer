@@ -1,14 +1,8 @@
 "use client";
-import * as React from "react";
 import { Step, StepType } from "./ui/step";
+import { useStepStore } from "@/lib/store";
 
-export default function MultiSteps({
-  parentStep,
-  parentStatus = "active",
-}: {
-  parentStep: number;
-  parentStatus?: string;
-}) {
+export default function MultiSteps() {
   const steps: StepType[] = [
     { number: 1, title: "Upload" },
     { number: 2, title: "Text Recognition" },
@@ -16,27 +10,16 @@ export default function MultiSteps({
     { number: 4, title: "Verification" },
   ];
 
-  React.useEffect(() => {
-    setCurrentStep(parentStep);
-    setStatus(parentStatus);
-  }, [parentStep, parentStatus]);
-
-  const [currentStep, setCurrentStep] = React.useState(parentStep);
-  const [status, setStatus] = React.useState(parentStatus);
+  const { current, status } = useStepStore();
 
   return (
-    <div className="flex justify-center gap-10 py-8">
+    <div className="flex justify-center gap-10 py-6">
       <div
         style={{ width: "355px" }}
         className="bg-slate-200 h-1 absolute  mt-5 -z-10"
       ></div>
       {steps.map((step) => (
-        <Step
-          key={step.number}
-          step={step}
-          current={currentStep}
-          status={status}
-        />
+        <Step key={step.number} step={step} current={current} status={status} />
       ))}
     </div>
   );

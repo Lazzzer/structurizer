@@ -1,20 +1,49 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+"use client";
+
+import { useEffect } from "react";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Icons } from "./icons";
+import MultiSteps from "./multi-steps";
+import { useStepStore } from "@/lib/store";
 
 export function TopMainContent({
   title,
   displayUploadButton = false,
+  step = undefined,
 }: {
   title: string;
   displayUploadButton?: boolean;
+  step?: number;
 }) {
+  useEffect(() => {
+    useStepStore.setState(() => ({
+      current: step ?? 0,
+      status: "active",
+    }));
+  }, [step]);
+
   return (
-    <div className="h-1/5 border-slate-200 border-b-2 flex items-end justify-between">
-      <h1 className="mb-4 ml-10 font-cal text-4xl">{title}</h1>
+    <div className="border-slate-200 border-b-2 flex-none flex items-end justify-center relative h-32">
+      <h1
+        className={cn(
+          step !== undefined ? "lg:text-3xl " : "lg:text-4xl",
+          "hidden lg:block mb-6 ml-10 absolute font-cal left-0 bottom-0"
+        )}
+      >
+        {title}
+      </h1>
+      {step !== undefined && <MultiSteps />}
+
       {displayUploadButton && (
-        <Link className={cn(buttonVariants(), "mb-4 mr-4")} href={"/upload"}>
+        <Link
+          className={cn(
+            buttonVariants(),
+            "mb-6 mr-4 absolute right-0 bottom-0"
+          )}
+          href={"/upload"}
+        >
           <Icons.upload
             width={18}
             height={18}

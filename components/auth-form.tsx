@@ -55,6 +55,14 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
 
     setIsLoading(false);
 
+    if (signInResult?.error) {
+      return toast({
+        title: "Something went wrong.",
+        description: signInResult.error,
+        variant: "destructive",
+      });
+    }
+
     router.refresh();
     router.push("/dashboard");
   }

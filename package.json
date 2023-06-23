@@ -4,7 +4,7 @@
   "author": "Lazar Pavicevic",
   "private": true,
   "scripts": {
-    "dev": "prisma generate && next dev",
+    "dev": "prisma generate && next dev -p 3001",
     "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "lint": "next lint"
@@ -39,7 +39,8 @@
     "react-wrap-balancer": "^1.0.0",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "zustand": "^4.3.8"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

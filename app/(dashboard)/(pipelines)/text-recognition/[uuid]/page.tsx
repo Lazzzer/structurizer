@@ -1,11 +1,64 @@
 import TextRecognitionPipeline from "@/components/text-recognition-pipeline";
 import { TopMainContent } from "@/components/top-main-content";
 
-export default function TextRecognitionUUIDPage() {
+import { headers } from "next/headers";
+
+async function getS3ObjectUrl(uuid: string) {
+  const res = await fetch(
+    `${process.env.APP_URL}/api/signed-url?uuid=${uuid}`,
+    {
+      method: "GET",
+      headers: {
+        Cookie: headers().get("cookie") ?? "",
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
+async function getText(url: string) {
+  const res = await fetch(`${process.env.APP_URL}/api/text-recognition`, {
+    method: "POST",
+    headers: {
+      Cookie: headers().get("cookie") ?? "",
+    },
+    body: JSON.stringify({ url }),
+  });
+
+  if (res.status === 422) {
+    return { text: "" };
+  }
+
+  if (!res.ok) {
+    throw new Error("Failed to do text recognition");
+  }
+
+  return res.json();
+}
+
+export default async function TextRecognitionPipelinePage({
+  params,
+}: {
+  params: {
+    uuid: string;
+  };
+}) {
+  const { url, filename } = await getS3ObjectUrl(params.uuid);
+  const { text } = await getText(url);
   return (
-    <>
-      <TopMainContent title="Text Recognition" />
-      <TextRecognitionPipeline />
-    </>
+    <div className="flex flex-col h-full">
+      <TopMainContent title="Text Recognition" step={2} />
+      <TextRecognitionPipeline
+        uuid={params.uuid}
+        url={url}
+        text={text}
+        filename={filename}
+      />
+    </div>
   );
 }

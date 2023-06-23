@@ -4,7 +4,7 @@ import { TopMainContent } from "@/components/top-main-content";
 export default function DataExtractionUUIDPage() {
   return (
     <>
-      <TopMainContent title="Data Extraction" />
+      <TopMainContent title="Data Extraction" step={3} />
       <DataExtractionPipeline />
     </>
   );
