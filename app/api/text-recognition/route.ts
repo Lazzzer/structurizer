@@ -1,6 +1,8 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { Status } from "@prisma/client";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -9,28 +11,34 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { url } = await req.json();
+  const userUUID = session?.user.id;
 
-  if (!url) {
-    return NextResponse.json({ error: "No URL provided" }, { status: 400 });
+  const { uuid, text } = await req.json();
+
+  if (!uuid || !text) {
+    return NextResponse.json(
+      { error: "No UUID nor text provided" },
+      { status: 400 }
+    );
   }
 
-  const res = await fetch(
-    `${process.env.LLM_STRUCTURIZER_URL}/v1/parsers/pdf/url`,
-    {
-      method: "POST",
-      headers: {
-        "X-API-Key": process.env.X_API_KEY as string,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ url }),
-    }
-  );
+  const updatedExtraction = await prisma.extraction.updateMany({
+    where: {
+      id: uuid,
+      userId: userUUID,
+      status: Status.TO_RECOGNIZE,
+    },
+    data: {
+      text,
+      status: Status.TO_EXTRACT,
+    },
+  });
 
-  if (!res.ok) {
-    return NextResponse.json({ error: res.statusText }, { status: res.status });
+  if (!updatedExtraction.count) {
+    return NextResponse.json(
+      { error: "Extraction not found or not updated" },
+      { status: 404 }
+    );
   }
-
-  const { content } = await res.json();
-  return NextResponse.json({ text: content }, { status: 200 });
+  return NextResponse.json({ message: "Extraction updated" }, { status: 200 });
 }
