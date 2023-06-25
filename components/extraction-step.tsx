@@ -7,9 +7,11 @@ import { Button, buttonVariants } from "./ui/button";
 import { motion } from "framer-motion";
 
 export function ExtractionStep({
+  text,
   category,
   setLlmCall,
 }: {
+  text: string;
   category: { value: string; name: string };
   setLlmCall: (llmCall: boolean) => void;
 }) {
@@ -17,14 +19,39 @@ export function ExtractionStep({
     "active"
   );
 
-  useEffect(() => {
+  async function getStructuredData(category: string, text: string) {
     setTimeout(() => {
       setLlmCall(true);
     }, 500);
-    setTimeout(() => {
-      setStatus("complete");
-      setLlmCall(false);
-    }, 5000);
+    const res = await fetch("/api/data-extraction", {
+      method: "POST",
+      body: JSON.stringify({
+        text,
+        category,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to classify text");
+    }
+
+    const json = await res.json();
+    setLlmCall(false);
+
+    console.log(json);
+    return json;
+  }
+
+  useEffect(() => {
+    const extract = async () => {
+      try {
+        await getStructuredData(category.value, text);
+        setStatus("complete");
+      } catch (e) {
+        setStatus("failed");
+      }
+    };
+    extract();
   }, []);
 
   return (

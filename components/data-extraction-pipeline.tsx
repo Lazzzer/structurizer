@@ -20,12 +20,12 @@ export default function DataExtractionPipeline({
       name: "Receipt",
     },
     {
-      value: "credit card statements",
-      name: "Card Statement",
-    },
-    {
       value: "invoices",
       name: "Invoice",
+    },
+    {
+      value: "credit card statements",
+      name: "Card Statement",
     },
   ];
 
@@ -57,6 +57,7 @@ export default function DataExtractionPipeline({
         <ExtractionStep
           setLlmCall={setLlmCall}
           category={categories.find((c) => c.value === category)!}
+          text={data.text}
         />
       )}
       {/* <Link
