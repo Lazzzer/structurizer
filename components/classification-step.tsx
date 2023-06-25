@@ -35,6 +35,7 @@ export function ClassificationStep({
   ];
 
   async function getClassification() {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     return "receipts";
     const res = await fetch("/api/classification", {
       method: "POST",
@@ -76,109 +77,112 @@ export function ClassificationStep({
 
   return (
     <div>
-      {/* Step Text */}
-      <div
-        className={cn(
-          status === "complete" || status === "confirmed"
-            ? "text-slate-400"
-            : "text-slate-700",
-          "text-xl  font-medium"
-        )}
-      >
-        <span className="font-bold">Step 1 : </span>
-        <span>Classifying text</span>
+      <div className="border rounded-lg border-slate-200 px-5 py-3 bg-white">
+        {/* Step Text */}
+        <div
+          className={cn(
+            status === "confirmed" ? "text-slate-400" : "text-slate-700",
+            "text-xl  font-medium"
+          )}
+        >
+          <span className="font-bold">Step 1 : </span>
+          <span>Text Classification</span>
+          {status === "active" && (
+            <Icons.spinner className="w-6 ml-3 mb-0.5 h-auto animate-spin inline-block " />
+          )}
+          {(status === "complete" || status === "confirmed") && (
+            <Icons.checkCircleInside
+              strokeWidth={2}
+              className="text-green-500 w-6 ml-3 mb-0.5 h-auto inline-block"
+            />
+          )}
+          {status === "failed" && (
+            <Icons.close
+              strokeWidth={2}
+              className="text-red-500 w-6 ml-3 mb-0.5 h-auto inline-block"
+            />
+          )}
+        </div>
+        {/* Step Description */}
         {status === "active" && (
-          <Icons.spinner className="w-6 ml-3 mb-0.5 h-auto animate-spin inline-block " />
+          <p className="text-slate-400 text-xs mt-1 mb-2 w-64 leading-snug">
+            <span>
+              <Balancer>
+                The text is being classified. This might take a few seconds.
+              </Balancer>
+            </span>
+          </p>
         )}
-        {(status === "complete" || status === "confirmed") && (
-          <Icons.checkCircleInside
-            strokeWidth={2}
-            className="text-green-500 w-6 ml-3 mb-0.5 h-auto inline-block"
-          />
+        {status === "complete" && (
+          <div className="text-slate-400 text-xs mt-1 mb-2 w-64 leading-snug">
+            <p>
+              <Balancer>
+                Text classified as
+                <span className="font-semibold ml-1 text-slate-700">
+                  {categories.find((c) => c.value === classification)?.name ??
+                    "Other"}
+                  .
+                </span>
+              </Balancer>
+            </p>
+            <p>
+              {(classification === "other" && (
+                <span>
+                  <Balancer>Please specify the correct category.</Balancer>
+                </span>
+              )) || (
+                <span>
+                  <Balancer>Please confirm if it&apos;s correct.</Balancer>
+                </span>
+              )}
+            </p>
+          </div>
+        )}
+        {status === "confirmed" && (
+          <div className="text-slate-400 text-xs mt-1 mb-2 w-64 leading-snug">
+            <p>
+              <Balancer>
+                Text classified as
+                <span className="font-semibold ml-1 text-slate-700">
+                  {categories.find((c) => c.value === classification)?.name ??
+                    "Other"}
+                </span>
+              </Balancer>
+            </p>
+          </div>
         )}
         {status === "failed" && (
-          <Icons.close
-            strokeWidth={2}
-            className="text-red-500 w-6 ml-3 mb-0.5 h-auto inline-block"
-          />
+          <div className="text-slate-400 text-xs mt-1 mb-2 w-64 leading-snug">
+            <p></p>
+            <Balancer>The text could not be classified.</Balancer>
+            <p>Please specify the correct category.</p>
+          </div>
+        )}
+        {/* Step Dropdown (not displayed when classifying) */}
+        {status !== "active" && status !== "confirmed" && (
+          <Select
+            onValueChange={(value) => {
+              if (status === "failed") setStatus("complete");
+              setClassification(value);
+            }}
+            defaultValue={
+              classification === "other" ? undefined : classification
+            }
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       </div>
-      {/* Step Description */}
-      {status === "active" && (
-        <p className="text-slate-400 text-sm mt-1 mb-2 w-64 leading-snug">
-          <span>
-            <Balancer>
-              The text is being classified. This might take a few seconds.
-            </Balancer>
-          </span>
-        </p>
-      )}
-      {status === "complete" && (
-        <div className="text-slate-700 text-sm mt-1 mb-2 w-64 leading-snug">
-          <p>
-            <Balancer>
-              Text classified as
-              <span className="font-semibold ml-1">
-                {categories.find((c) => c.value === classification)?.name ??
-                  "Other"}
-                .
-              </span>
-            </Balancer>
-          </p>
-          <p>
-            {(classification === "other" && (
-              <span>
-                <Balancer>Please specify the correct category.</Balancer>
-              </span>
-            )) || (
-              <span>
-                <Balancer>Please confirm if it&apos;s correct.</Balancer>
-              </span>
-            )}
-          </p>
-        </div>
-      )}
-      {status === "confirmed" && (
-        <div className="text-slate-400 text-sm mt-1 mb-2 w-64 leading-snug">
-          <p>
-            <Balancer>
-              Text classified as
-              <span className="font-semibold ml-1 text-slate-500">
-                {categories.find((c) => c.value === classification)?.name ??
-                  "Other"}
-              </span>
-            </Balancer>
-          </p>
-        </div>
-      )}
-      {status === "failed" && (
-        <div className="text-slate-400 text-sm mt-1 mb-2 w-64 leading-snug">
-          <p></p>
-          <Balancer>The text could not be classified.</Balancer>
-          <p>Please specify the correct category.</p>
-        </div>
-      )}
-      {/* Step Dropdown (not displayed when classifying) */}
-      {status !== "active" && status !== "confirmed" && (
-        <Select
-          onValueChange={(value) => {
-            if (status === "failed") setStatus("complete");
-            setClassification(value);
-          }}
-          defaultValue={classification === "other" ? undefined : classification}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category.value} value={category.value}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+
       {/* Step Actions */}
       <div className="flex gap-2 mt-3">
         {status !== "confirmed" && (
