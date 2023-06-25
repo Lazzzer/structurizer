@@ -156,8 +156,14 @@ export function ExtractionStep({
         {status === "failed" && (
           <Button
             className={cn("w-full")}
-            onClick={() => {
+            onClick={async () => {
               setStatus("active");
+              try {
+                await getStructuredData(category.value, text);
+                setStatus("complete");
+              } catch (e) {
+                setStatus("failed");
+              }
             }}
           >
             Retry
