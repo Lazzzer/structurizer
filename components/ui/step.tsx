@@ -83,8 +83,17 @@ function CheckIcon() {
       strokeWidth={3}
     >
       <motion.path
-        variants={checkIconVariants}
-        transition={checkIconTransition}
+        variants={{
+          complete: {
+            pathLength: [0, 1],
+          },
+        }}
+        transition={{
+          ease: "easeOut",
+          type: "tween",
+          delay: 0.2,
+          duration: 0.3,
+        }}
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M5 13l4 4L19 7"
@@ -108,18 +117,5 @@ const backgroundVariants = {
     background: "var(--white)",
     borderColor: "var(--slate-600)",
     color: "var(--slate-600)",
-  },
-};
-
-const checkIconTransition = {
-  ease: "easeOut",
-  type: "tween",
-  delay: 0.2,
-  duration: 0.3,
-};
-
-const checkIconVariants = {
-  complete: {
-    pathLength: [0, 1],
   },
 };

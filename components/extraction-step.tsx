@@ -8,8 +8,10 @@ import { motion } from "framer-motion";
 
 export function ExtractionStep({
   category,
+  setLlmCall,
 }: {
   category: { value: string; name: string };
+  setLlmCall: (llmCall: boolean) => void;
 }) {
   const [status, setStatus] = useState<"active" | "failed" | "complete">(
     "active"
@@ -17,7 +19,11 @@ export function ExtractionStep({
 
   useEffect(() => {
     setTimeout(() => {
+      setLlmCall(true);
+    }, 500);
+    setTimeout(() => {
       setStatus("complete");
+      setLlmCall(false);
     }, 5000);
   }, []);
 
@@ -31,7 +37,7 @@ export function ExtractionStep({
         show: { opacity: 1, y: 0, transition: { type: "spring", delay: 0.4 } },
       }}
       viewport={{ once: true }}
-      className="-mt-16 2xl:-mt-12"
+      className="-mt-12"
     >
       <div className="border rounded-lg border-slate-200 px-5 py-3 drop-shadow-custom bg-white">
         {/* Step Text */}

@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Icons } from "./icons";
 import { ClassificationStep } from "./classification-step";
 import { ExtractionStep } from "./extraction-step";
+import { SparklesIcon } from "./icons";
+import { cn } from "@/lib/utils";
 
 export default function DataExtractionPipeline({
   data,
@@ -30,6 +31,7 @@ export default function DataExtractionPipeline({
 
   const [step, setStep] = useState(1);
   const [category, setCategory] = useState("other");
+  const [llmCall, setLlmCall] = useState(true);
 
   useEffect(() => {
     if (category !== "other") {
@@ -39,17 +41,21 @@ export default function DataExtractionPipeline({
 
   return (
     <div className="mx-4 flex flex-col flex-grow items-center justify-center">
-      <Icons.sparkles
-        strokeWidth={0}
-        className="w-24 mb-4 h-auto 2xl:-mt-64 -mt-32"
+      <SparklesIcon
+        className={cn(
+          llmCall ? "opacity-100" : "opacity-0",
+          "w-16 h-auto mb-4 transition-opacity duration-500 2xl:-mt-72 -mt-36"
+        )}
       />
       <ClassificationStep
+        setLlmCall={setLlmCall}
         categories={categories}
         updateCategory={setCategory}
         text={data.text}
       />
       {step === 2 && (
         <ExtractionStep
+          setLlmCall={setLlmCall}
           category={categories.find((c) => c.value === category)!}
         />
       )}

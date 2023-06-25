@@ -17,14 +17,20 @@ export function ClassificationStep({
   categories,
   text,
   updateCategory,
+  setLlmCall,
 }: {
   categories: { value: string; name: string }[];
   text: string;
   updateCategory: (category: string) => void;
+  setLlmCall: (llmCall: boolean) => void;
 }) {
   async function getClassification() {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return "receipts";
+    setLlmCall(true);
+
+    // await new Promise((resolve) => setTimeout(resolve, 2000));
+    // setLlmCall(false);
+    // return "receipts";
+
     const res = await fetch("/api/classification", {
       method: "POST",
       body: JSON.stringify({
@@ -41,6 +47,7 @@ export function ClassificationStep({
       confidence: number;
     };
 
+    setLlmCall(false);
     if (confidence < 60) return "other";
     return classification;
   }
