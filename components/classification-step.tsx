@@ -11,29 +11,17 @@ import {
 } from "./ui/select";
 import Link from "next/link";
 import { Button, buttonVariants } from "./ui/button";
+import { motion } from "framer-motion";
 
 export function ClassificationStep({
+  categories,
   text,
   updateCategory,
 }: {
+  categories: { value: string; name: string }[];
   text: string;
   updateCategory: (category: string) => void;
 }) {
-  const categories = [
-    {
-      value: "receipts",
-      name: "Receipt",
-    },
-    {
-      value: "credit card statements",
-      name: "Card Statement",
-    },
-    {
-      value: "invoices",
-      name: "Invoice",
-    },
-  ];
-
   async function getClassification() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return "receipts";
@@ -53,7 +41,7 @@ export function ClassificationStep({
       confidence: number;
     };
 
-    if (confidence < 50) return "other";
+    if (confidence < 60) return "other";
     return classification;
   }
 
@@ -76,8 +64,11 @@ export function ClassificationStep({
   }, []);
 
   return (
-    <div>
-      <div className="border rounded-lg border-slate-200 px-5 py-3 bg-white">
+    <motion.div>
+      <motion.div
+        layout="position"
+        className="border rounded-lg border-slate-200 px-5 py-3 bg-white"
+      >
         {/* Step Text */}
         <div
           className={cn(
@@ -146,6 +137,7 @@ export function ClassificationStep({
                 <span className="font-semibold ml-1 text-slate-700">
                   {categories.find((c) => c.value === classification)?.name ??
                     "Other"}
+                  .
                 </span>
               </Balancer>
             </p>
@@ -181,7 +173,7 @@ export function ClassificationStep({
             </SelectContent>
           </Select>
         )}
-      </div>
+      </motion.div>
 
       {/* Step Actions */}
       <div className="flex gap-2 mt-3">
@@ -208,6 +200,6 @@ export function ClassificationStep({
           </Button>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

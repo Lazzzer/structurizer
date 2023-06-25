@@ -4,14 +4,35 @@ import { Icons } from "./icons";
 import Balancer from "react-wrap-balancer";
 import Link from "next/link";
 import { Button, buttonVariants } from "./ui/button";
+import { motion } from "framer-motion";
 
-export function ExtractionStep() {
+export function ExtractionStep({
+  category,
+}: {
+  category: { value: string; name: string };
+}) {
   const [status, setStatus] = useState<"active" | "failed" | "complete">(
     "active"
   );
 
+  useEffect(() => {
+    setTimeout(() => {
+      setStatus("complete");
+    }, 5000);
+  }, []);
+
   return (
-    <div className="-mt-16 2xl:-mt-12">
+    <motion.div
+      layout="position"
+      initial="hidden"
+      animate="show"
+      variants={{
+        hidden: { opacity: 0, y: 10 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", delay: 0.4 } },
+      }}
+      viewport={{ once: true }}
+      className="-mt-16 2xl:-mt-12"
+    >
       <div className="border rounded-lg border-slate-200 px-5 py-3 drop-shadow-custom bg-white">
         {/* Step Text */}
         <div className="text-slate-700 text-xl  font-medium">
@@ -37,7 +58,13 @@ export function ExtractionStep() {
         {status === "active" && (
           <p className="text-slate-400 text-xs mt-1 mb-2 w-80 leading-snug">
             <span>
-              <Balancer>The data is being extracted and structured.</Balancer>
+              <Balancer>
+                The data is being structured as
+                <span className="font-semibold ml-1 text-slate-700">
+                  {category.name}
+                </span>
+                .
+              </Balancer>
             </span>
             <span>
               <Balancer>
@@ -53,6 +80,15 @@ export function ExtractionStep() {
                 The data has been correctly extracted and structured.
               </Balancer>
             </p>
+            <span>
+              <Balancer>
+                A valid structure of
+                <span className="font-semibold mx-1 text-slate-700">
+                  {category.name}
+                </span>
+                has been created.
+              </Balancer>
+            </span>
           </div>
         )}
         {status === "failed" && (
@@ -61,9 +97,7 @@ export function ExtractionStep() {
               <Balancer>The data could not be extracted.</Balancer>
             </p>
             <span>
-              <Balancer>
-                This might take a while depending the size of the text.
-              </Balancer>
+              <Balancer>Please try again.</Balancer>
             </span>
           </div>
         )}
@@ -76,7 +110,7 @@ export function ExtractionStep() {
         >
           Cancel
         </Link>
-        {status !== "active" && (
+        {status === "complete" && (
           <Button
             className={cn("w-full")}
             onClick={() => {
@@ -86,7 +120,17 @@ export function ExtractionStep() {
             Continue
           </Button>
         )}
+        {status === "failed" && (
+          <Button
+            className={cn("w-full")}
+            onClick={() => {
+              setStatus("active");
+            }}
+          >
+            Retry
+          </Button>
+        )}
       </div>
-    </div>
+    </motion.div>
   );
 }
