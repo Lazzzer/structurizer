@@ -112,7 +112,7 @@ export default function TextRecognitionPipeline({
                 }
                 sendText(verifiedText)
                   .then(() => router.push(`/data-extraction/${uuid}`))
-                  .catch((e) => {
+                  .catch(() => {
                     setErrorMsg("Something went wrong, please try again");
                     setUpdating(false);
                   });

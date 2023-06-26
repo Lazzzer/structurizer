@@ -58,14 +58,9 @@ export default function DataExtractionPipeline({
           setLlmCall={setLlmCall}
           category={categories.find((c) => c.value === category)!}
           text={data.text}
+          uuid={data.uuid}
         />
       )}
-      {/* <Link
-        className={cn(buttonVariants(), "mb-4 mx-4")}
-        href={`/verification/${data.uuid}`}
-      >
-        Continue
-      </Link> */}
     </div>
   );
 }

@@ -5,18 +5,28 @@ import Balancer from "react-wrap-balancer";
 import Link from "next/link";
 import { Button, buttonVariants } from "./ui/button";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export function ExtractionStep({
   text,
+  uuid,
   category,
   setLlmCall,
 }: {
   text: string;
+  uuid: string;
   category: { value: string; name: string };
   setLlmCall: (llmCall: boolean) => void;
 }) {
+  const router = useRouter();
+
   const [status, setStatus] = useState<"active" | "failed" | "complete">(
     "active"
+  );
+  const [isUpdating, setUpdating] = useState(false);
+  const [json, setJson] = useState({});
+  const [errorMsg, setErrorMsg] = useState(
+    text === "" ? "Could not proceed" : ""
   );
 
   async function getStructuredData(category: string, text: string) {
@@ -31,15 +41,31 @@ export function ExtractionStep({
       }),
     });
 
+    setLlmCall(false);
     if (!res.ok) {
       throw new Error("Failed to classify text");
     }
 
     const json = await res.json();
-    setLlmCall(false);
+    setJson(json);
+  }
 
-    console.log(json);
-    return json;
+  async function sendJson(text: string) {
+    setUpdating(true);
+    const res = await fetch("/api/data-extraction/save", {
+      method: "POST",
+      body: JSON.stringify({
+        uuid,
+        json,
+      }),
+    });
+
+    const data = await res.json();
+    if (res.status !== 200) {
+      throw new Error(data.message);
+    }
+
+    setUpdating(false);
   }
 
   useEffect(() => {
@@ -136,6 +162,9 @@ export function ExtractionStep({
         )}
       </div>
       {/* Step Actions */}
+      {errorMsg !== "" && (
+        <p className="mt-1 text-sm text-red-500">{errorMsg}</p>
+      )}
       <div className="flex gap-2 mt-3">
         <Link
           className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
@@ -145,11 +174,20 @@ export function ExtractionStep({
         </Link>
         {status === "complete" && (
           <Button
+            disabled={isUpdating}
             className={cn("w-full")}
             onClick={() => {
-              setStatus("complete");
+              sendJson(text)
+                .then(() => router.push(`/verification/${uuid}`))
+                .catch(() => {
+                  setErrorMsg("Something went wrong, please try again");
+                  setUpdating(false);
+                });
             }}
           >
+            {isUpdating && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Continue
           </Button>
         )}
