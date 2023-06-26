@@ -22,23 +22,28 @@ async function getS3ObjectUrl(uuid: string) {
 }
 
 async function getText(url: string) {
-  const res = await fetch(`${process.env.APP_URL}/api/text-recognition`, {
-    method: "POST",
-    headers: {
-      Cookie: headers().get("cookie") ?? "",
-    },
-    body: JSON.stringify({ url }),
-  });
+  const res = await fetch(
+    `${process.env.LLM_STRUCTURIZER_URL}/v1/parsers/pdf/url`,
+    {
+      method: "POST",
+      headers: {
+        "X-API-Key": process.env.X_API_KEY as string,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url }),
+    }
+  );
 
   if (res.status === 422) {
-    return { text: "" };
+    return "";
   }
 
   if (!res.ok) {
     throw new Error("Failed to do text recognition");
   }
 
-  return res.json();
+  const { content } = await res.json();
+  return content;
 }
 
 export default async function TextRecognitionPipelinePage({
@@ -49,7 +54,7 @@ export default async function TextRecognitionPipelinePage({
   };
 }) {
   const { url, filename } = await getS3ObjectUrl(params.uuid);
-  const { text } = await getText(url);
+  const text = await getText(url);
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Text Recognition" step={2} />

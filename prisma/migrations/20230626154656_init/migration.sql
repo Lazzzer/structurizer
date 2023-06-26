@@ -16,6 +16,7 @@ CREATE TABLE "Extraction" (
     "filename" TEXT NOT NULL,
     "objectPath" TEXT NOT NULL,
     "text" TEXT,
+    "category" TEXT,
     "json" JSONB,
     "userId" TEXT NOT NULL,
     "status" "Status" NOT NULL DEFAULT 'TO_RECOGNIZE',

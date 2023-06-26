@@ -31,6 +31,10 @@ module.exports = {
       height: {
         "6/7": "85%",
       },
+      dropShadow: {
+        // custom: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        custom: "0 -6px 12px rgba(0,0,0,0.1)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: 0 },

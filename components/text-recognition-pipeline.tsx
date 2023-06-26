@@ -22,8 +22,8 @@ export default function TextRecognitionPipeline({
 }) {
   async function sendText(text: string) {
     setUpdating(true);
-    const res = await fetch("/api/text-recognition/save", {
-      method: "POST",
+    const res = await fetch("/api/text-recognition", {
+      method: "PUT",
       body: JSON.stringify({
         uuid,
         text,
@@ -112,7 +112,7 @@ export default function TextRecognitionPipeline({
                 }
                 sendText(verifiedText)
                   .then(() => router.push(`/data-extraction/${uuid}`))
-                  .catch((e) => {
+                  .catch(() => {
                     setErrorMsg("Something went wrong, please try again");
                     setUpdating(false);
                   });

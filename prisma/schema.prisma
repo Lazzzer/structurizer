@@ -30,6 +30,7 @@ model Extraction {
   filename   String
   objectPath String
   text       String?
+  category   String?
   json       Json?
   userId     String
   status     Status   @default(TO_RECOGNIZE)
