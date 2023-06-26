@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Status } from "@prisma/client";
 
-export async function POST(req: Request) {
+export async function PUT(req: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session) {

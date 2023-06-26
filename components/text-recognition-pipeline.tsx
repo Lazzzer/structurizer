@@ -23,7 +23,7 @@ export default function TextRecognitionPipeline({
   async function sendText(text: string) {
     setUpdating(true);
     const res = await fetch("/api/text-recognition", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({
         uuid,
         text,

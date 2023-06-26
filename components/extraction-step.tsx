@@ -25,9 +25,7 @@ export function ExtractionStep({
   );
   const [isUpdating, setUpdating] = useState(false);
   const [json, setJson] = useState({});
-  const [errorMsg, setErrorMsg] = useState(
-    text === "" ? "Could not proceed" : ""
-  );
+  const [errorMsg, setErrorMsg] = useState("");
 
   async function getStructuredData(category: string, text: string) {
     setTimeout(() => {
@@ -50,13 +48,14 @@ export function ExtractionStep({
     setJson(json);
   }
 
-  async function sendJson(text: string) {
+  async function sendJson(json: any) {
     setUpdating(true);
     const res = await fetch("/api/data-extraction/save", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({
         uuid,
         json,
+        category: category.value,
       }),
     });
 
@@ -177,7 +176,8 @@ export function ExtractionStep({
             disabled={isUpdating}
             className={cn("w-full")}
             onClick={() => {
-              sendJson(text)
+              setErrorMsg("");
+              sendJson(json)
                 .then(() => router.push(`/verification/${uuid}`))
                 .catch(() => {
                   setErrorMsg("Something went wrong, please try again");
