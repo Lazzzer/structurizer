@@ -27,7 +27,6 @@ export async function GET(req: Request) {
     where: {
       id: extractionUUID,
       userId: userUUID,
-      status: "TO_RECOGNIZE",
     },
   });
 
