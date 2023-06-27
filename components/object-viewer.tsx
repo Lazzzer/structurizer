@@ -20,8 +20,13 @@ import { Icons } from "./icons";
 import { Label } from "./ui/label";
 import { AnimatePresence, motion } from "framer-motion";
 
-function ReceiptsViewer({ receipt }: { receipt: any }) {
-  const [verifiedReceipt, setVerifiedReceipt] = useState(receipt);
+function ReceiptsViewer({
+  verifiedReceipt,
+  setVerifiedReceipt,
+}: {
+  verifiedReceipt: any;
+  setVerifiedReceipt: (receipt: any) => void;
+}) {
   const [isItemsOpen, setIsItemsOpen] = useState(true);
   return (
     <div className="w-full min-h-full h-20 p-2 overflow-scroll">
@@ -369,17 +374,21 @@ function ReceiptsViewer({ receipt }: { receipt: any }) {
 export function ObjectViewer({
   className,
   category,
-  jsonStr,
+  json,
+  setVerifiedJson,
 }: {
   className?: string;
   category: string;
-  jsonStr: string;
+  json: any;
+  setVerifiedJson: (json: any) => void;
 }) {
-  console.log(category);
   return (
     <ScrollArea className={cn(className, "w-full h-full")}>
       {category === "receipts" && (
-        <ReceiptsViewer receipt={JSON.parse(jsonStr)} />
+        <ReceiptsViewer
+          verifiedReceipt={json}
+          setVerifiedReceipt={setVerifiedJson}
+        />
       )}
     </ScrollArea>
   );
