@@ -14,6 +14,10 @@ import {
   File,
   XCircle,
   Frown,
+  ChevronsUpDown,
+  Brackets,
+  Trash,
+  PlusCircle,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -33,6 +37,10 @@ export const Icons = {
   file: File,
   close: XCircle,
   frown: Frown,
+  chevronsUpDown: ChevronsUpDown,
+  brackets: Brackets,
+  trash: Trash,
+  plusCircle: PlusCircle,
   receipt: ({ ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -4,6 +4,7 @@ import { Icons } from "./icons";
 import { Button, buttonVariants } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { cn } from "@/lib/utils";
+import { ObjectViewer } from "./object-viewer";
 
 export default function VerificationPipeline({
   uuid,
@@ -68,7 +69,10 @@ export default function VerificationPipeline({
             <h1 className="text-2xl mb-1 font-bold text-slate-800">
               Extracted Data
             </h1>
-            <div className="bg-red-200 w-full h-full">json structure</div>
+            <div className="w-full h-full rounded-lg border border-slate-200 p-3 overflow-hidden">
+              <ObjectViewer category={category} jsonStr={json} />
+            </div>
+
             <div className="flex justify-end gap-2 items-center absolute -bottom-12 right-0">
               <Link
                 className={cn(
@@ -84,7 +88,7 @@ export default function VerificationPipeline({
                 variant={"secondary"}
                 className="relative inline-flex w-40 overflow-hidden bg-slate-100 p-[1.5px] group"
               >
-                <span className="absolute inset-[-1000%] group-hover:animate-[spin_2s_linear_infinite] bg-slate-100 group-hover:bg-[conic-gradient(from_90deg_at_50%_50%,#FD95FF_0%,#FD95FF_50%,#00E1F0_100%)]" />
+                <span className="absolute inset-[-1000%] group-hover:animate-[spin_2s_linear_infinite] bg-slate-100 group-hover:bg-[conic-gradient(from_90deg_at_50%_50%,#FD95FF_0%,#80BBF8_50%,#00E1F0_100%)]" />
                 <span className="inline-flex h-full w-full items-center rounded justify-center bg-slate-100 px-3 py-1 backdrop-blur-3xl">
                   <Icons.sparkles
                     width={18}
