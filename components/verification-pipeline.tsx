@@ -8,6 +8,7 @@ import { ObjectViewer } from "./object-viewer";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { useStepStore } from "@/lib/store";
 
 export default function VerificationPipeline({
   uuid,
@@ -24,236 +25,250 @@ export default function VerificationPipeline({
   json: any;
   filename: string;
 }) {
+  async function sendJson(json: any) {
+    const res = await fetch("/api/verification", {
+      method: "POST",
+      body: JSON.stringify({
+        uuid,
+        json,
+      }),
+    });
+    const data = await res.json();
+    if (res.status !== 201) {
+      throw new Error(data.message);
+    }
+  }
+
   async function analyze() {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    return {
-      corrections: [
-        {
-          field: "transactions",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "credit_card",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "credit_card.name",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "credit_card.holder",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "credit_card.number",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "transaction",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "recipient",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "recipient.name",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "recipient.address",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "issuer",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "issuer.name",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "issuer.address",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "from",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "from.name",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "from.address",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "to",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "to.name",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "to.address",
-          issue: "Incorrect total amount",
-          description:
-            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-          suggestion: "Change the total amount to 82.27",
-        },
-        {
-          field: "category",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "number",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "date",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "time",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "items",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "subtotal",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "tax",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "tip",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "total",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "total_amount_due",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "currency",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-        {
-          field: "invoice_number",
-          issue: "Missing item",
-          description:
-            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-          suggestion:
-            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-        },
-      ],
-      textAnalysis:
-        "The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text. The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text.",
-    };
+    // await new Promise((resolve) => setTimeout(resolve, 2000));
+    // return {
+    //   corrections: [
+    //     {
+    //       field: "transactions",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "credit_card",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "credit_card.name",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "credit_card.holder",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "credit_card.number",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "transaction",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "recipient",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "recipient.name",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "recipient.address",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "issuer",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "issuer.name",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "issuer.address",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "from",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "from.name",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "from.address",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "to",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "to.name",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "to.address",
+    //       issue: "Incorrect total amount",
+    //       description:
+    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+    //       suggestion: "Change the total amount to 82.27",
+    //     },
+    //     {
+    //       field: "category",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "number",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "date",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "time",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "items",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "subtotal",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "tax",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "tip",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "total",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "total_amount_due",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "currency",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //     {
+    //       field: "invoice_number",
+    //       issue: "Missing item",
+    //       description:
+    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+    //       suggestion:
+    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+    //     },
+    //   ],
+    //   textAnalysis:
+    //     "The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text. The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text.",
+    // };
     const res = await fetch("/api/analysis", {
       method: "POST",
       headers: {
@@ -273,6 +288,9 @@ export default function VerificationPipeline({
   }
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isUpdating, setUpdating] = useState(false);
+  const [isProcessed, setIsProcessed] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [analysisResult, setAnalysisResult] = useState<{
     corrections: any[];
     textAnalysis: string;
@@ -281,168 +299,203 @@ export default function VerificationPipeline({
   return (
     <div className="mx-4 mb-4 flex flex-col flex-grow">
       <div className="flex flex-1 flex-col justify-center">
-        <div
-          style={{
-            height: "80%",
-          }}
-          className="w-full flex justify-center items-start gap-x-10 -mt-12"
-        >
-          <Tabs
+        {isProcessed ? (
+          <div className="w-full h-full flex flex-col justify-center items-center">
+            <Icons.checkCircleInside
+              strokeWidth={1.4}
+              className="text-green-500 w-32 h-32 my-6"
+            />
+            <p className="text-center text-slate-500 mb-6">
+              Your file has been processed successfully!
+            </p>
+            <Link className={cn(buttonVariants(), "w-40")} href={"/dashboard"}>
+              Back to Dashboard
+            </Link>
+          </div>
+        ) : (
+          <div
             style={{
-              height: "calc(100% - 48px)",
+              height: "80%",
             }}
-            defaultValue="pdf"
-            className="w-3/8 2xl:w-3/10"
+            className="w-full flex justify-center items-start gap-x-10 -mt-12"
           >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="pdf">PDF View</TabsTrigger>
-              <TabsTrigger value="text">Text View</TabsTrigger>
-            </TabsList>
-            <TabsContent
-              value="pdf"
-              className="p-2 w-full h-full bg-slate-900 rounded-lg"
+            <Tabs
+              style={{
+                height: "calc(100% - 48px)",
+              }}
+              defaultValue="pdf"
+              className="w-3/8 2xl:w-3/10"
             >
-              <object
-                data={`${url}#toolbar=1&navpanes=0&statusbar=0&scrollbar=1&view=fitH`}
-                type="application/pdf"
-                className="w-full h-full rounded-md"
-              />
-            </TabsContent>
-            <TabsContent
-              value="text"
-              className="w-full h-full border p-4 border-slate-200 rounded-lg"
-            >
-              <div
-                style={{
-                  maxHeight: "57vh", // preformatted elements really don't like height: 100%, so here we are...
-                }}
-                className="w-full text-xs text-slate-700 whitespace-break-spaces overflow-auto"
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="pdf">PDF View</TabsTrigger>
+                <TabsTrigger value="text">Text View</TabsTrigger>
+              </TabsList>
+              <TabsContent
+                value="pdf"
+                className="p-2 w-full h-full bg-slate-900 rounded-lg"
               >
-                {text}
-              </div>
-            </TabsContent>
-          </Tabs>
-          <div className="w-2/5 h-full flex flex-col justify-center relative">
-            <div className="mb-2 flex justify-between">
-              <h1 className="text-2xl mb-2 font-bold text-slate-800">
-                Extracted Data
-              </h1>
-              <SparklesIcon
-                className={cn(
-                  isAnalyzing ? "opacity-100" : "opacity-0",
-                  "w-12 h-auto mb-4 transition-opacity duration-500 absolute right-14 -top-2"
-                )}
-              />
-              {analysisResult !== null && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
+                <object
+                  data={`${url}#toolbar=1&navpanes=0&statusbar=0&scrollbar=1&view=fitH`}
+                  type="application/pdf"
+                  className="w-full h-full rounded-md"
+                />
+              </TabsContent>
+              <TabsContent
+                value="text"
+                className="w-full h-full border p-4 border-slate-200 rounded-lg"
+              >
+                <div
+                  style={{
+                    maxHeight: "57vh", // preformatted elements really don't like height: 100%, so here we are...
+                  }}
+                  className="w-full text-xs text-slate-700 whitespace-break-spaces overflow-auto"
                 >
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant={"ghost"} className="h-10">
+                  {text}
+                </div>
+              </TabsContent>
+            </Tabs>
+            <div className="w-2/5 h-full flex flex-col justify-center relative">
+              <div className="mb-2 flex justify-between">
+                <h1 className="text-2xl mb-2 font-bold text-slate-800">
+                  Extracted Data
+                </h1>
+                <SparklesIcon
+                  className={cn(
+                    isAnalyzing ? "opacity-100" : "opacity-0",
+                    "w-12 h-auto mb-4 transition-opacity duration-500 absolute right-14 -top-2"
+                  )}
+                />
+                {analysisResult !== null && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
+                  >
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant={"ghost"} className="h-10">
+                          <Icons.sparkles
+                            width={18}
+                            height={18}
+                            className="mr-2"
+                          />
+                          Show Textual Analysis
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        style={{
+                          width: "400px",
+                          maxHeight: "550px",
+                        }}
+                        className="px-4 py-2 h-auto mr-20 overflow-scroll"
+                      >
+                        <h1 className="text-lg font-bold text-slate-800 mb-2">
+                          Textual Analysis
+                        </h1>
+                        <p className="w-full text-sm whitespace-pre-wrap text-justify text-slate-600 mb-2 leading-snug">
+                          {analysisResult.textAnalysis}
+                        </p>
+                      </PopoverContent>
+                    </Popover>
+                  </motion.div>
+                )}
+              </div>
+
+              <div className="w-full h-full rounded-lg p-[1px] overflow-hidden relative">
+                <span
+                  className={cn(
+                    isAnalyzing
+                      ? "bg-white bg-[conic-gradient(from_90deg_at_50%_50%,#FD95FF_0%,#80BBF8_50%,#00E1F0_100%)]"
+                      : "bg-slate-200",
+                    "absolute inset-[-1000%] animate-[spin_2s_linear_infinite]"
+                  )}
+                />
+                <ObjectViewer
+                  category={category}
+                  json={verifiedJson}
+                  setVerifiedJson={setVerifiedJson}
+                  corrections={analysisResult?.corrections ?? []}
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 items-center absolute -bottom-12 right-0">
+                <Link
+                  className={cn(
+                    buttonVariants({
+                      variant: "secondary",
+                    })
+                  )}
+                  href="/dashboard"
+                >
+                  Cancel
+                </Link>
+                {analysisResult === null && (
+                  <Button
+                    disabled={isAnalyzing}
+                    variant={"secondary"}
+                    className="relative inline-flex w-40 overflow-hidden bg-slate-100 p-[1.5px] group"
+                    onClick={() => {
+                      setIsAnalyzing(true);
+                      analyze()
+                        .then((data) => {
+                          setAnalysisResult(data);
+                          setIsAnalyzing(false);
+                        })
+                        .catch((err) => {
+                          console.error(err);
+                          setIsAnalyzing(false);
+                        });
+                    }}
+                  >
+                    <span className="absolute inset-[-1000%] group-hover:animate-[spin_2s_linear_infinite] bg-slate-100 group-hover:bg-[conic-gradient(from_90deg_at_50%_50%,#FD95FF_0%,#80BBF8_50%,#00E1F0_100%)]" />
+                    <span className="inline-flex h-full w-full items-center rounded justify-center bg-slate-100 px-3 py-1 backdrop-blur-3xl">
+                      {(isAnalyzing && (
+                        <Icons.spinner
+                          width={18}
+                          height={18}
+                          className="mr-2 animate-spin inline-block"
+                        />
+                      )) || (
                         <Icons.sparkles
                           width={18}
                           height={18}
-                          className="mr-2"
+                          className="inline-block mr-2"
                         />
-                        Show Textual Analysis
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      style={{
-                        width: "400px",
-                        maxHeight: "550px",
-                      }}
-                      className="px-4 py-2 h-auto mr-20 overflow-scroll"
-                    >
-                      <h1 className="text-lg font-bold text-slate-800 mb-2">
-                        Textual Analysis
-                      </h1>
-                      <p className="w-full text-sm whitespace-pre-wrap text-justify text-slate-600 mb-2 leading-snug">
-                        {analysisResult.textAnalysis}
-                      </p>
-                    </PopoverContent>
-                  </Popover>
-                </motion.div>
-              )}
-            </div>
-
-            <div className="w-full h-full rounded-lg p-[1px] overflow-hidden relative">
-              <span
-                className={cn(
-                  isAnalyzing
-                    ? "bg-white bg-[conic-gradient(from_90deg_at_50%_50%,#FD95FF_0%,#80BBF8_50%,#00E1F0_100%)]"
-                    : "bg-slate-200",
-                  "absolute inset-[-1000%] animate-[spin_2s_linear_infinite]"
+                      )}
+                      Analyze
+                    </span>
+                  </Button>
                 )}
-              />
-              <ObjectViewer
-                category={category}
-                json={verifiedJson}
-                setVerifiedJson={setVerifiedJson}
-                corrections={analysisResult?.corrections ?? []}
-              />
-            </div>
-
-            <div className="flex justify-end gap-2 items-center absolute -bottom-12 right-0">
-              <Link
-                className={cn(
-                  buttonVariants({
-                    variant: "secondary",
-                  })
-                )}
-                href="/dashboard"
-              >
-                Cancel
-              </Link>
-              {analysisResult === null && (
                 <Button
-                  disabled={isAnalyzing}
-                  variant={"secondary"}
-                  className="relative inline-flex w-40 overflow-hidden bg-slate-100 p-[1.5px] group"
+                  disabled={isAnalyzing || isUpdating}
+                  className="w-40"
                   onClick={() => {
-                    setIsAnalyzing(true);
-                    analyze()
-                      .then((data) => {
-                        setAnalysisResult(data);
-                        setIsAnalyzing(false);
+                    setUpdating(true);
+                    setErrorMsg("");
+                    sendJson(json)
+                      .then(() => {
+                        setIsProcessed(true);
+                        useStepStore.setState({ status: "complete" });
+                        setUpdating(false);
                       })
-                      .catch((err) => {
-                        console.error(err);
-                        setIsAnalyzing(false);
+                      .catch(() => {
+                        setErrorMsg("Something went wrong, please try again");
+                        setUpdating(false);
                       });
                   }}
                 >
-                  <span className="absolute inset-[-1000%] group-hover:animate-[spin_2s_linear_infinite] bg-slate-100 group-hover:bg-[conic-gradient(from_90deg_at_50%_50%,#FD95FF_0%,#80BBF8_50%,#00E1F0_100%)]" />
-                  <span className="inline-flex h-full w-full items-center rounded justify-center bg-slate-100 px-3 py-1 backdrop-blur-3xl">
-                    {(isAnalyzing && (
-                      <Icons.spinner
-                        width={18}
-                        height={18}
-                        className="mr-2 animate-spin inline-block"
-                      />
-                    )) || (
-                      <Icons.sparkles
-                        width={18}
-                        height={18}
-                        className="inline-block mr-2"
-                      />
-                    )}
-                    Analyze
-                  </span>
+                  {isUpdating && (
+                    <Icons.spinner
+                      width={18}
+                      height={18}
+                      className="mr-2 animate-spin inline-block"
+                    />
+                  )}
+                  Confirm
                 </Button>
-              )}
-              <Button
-                disabled={isAnalyzing}
-                className="w-40"
-                onClick={() => {}}
-              >
-                Confirm
-              </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

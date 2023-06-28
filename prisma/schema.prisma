@@ -12,10 +12,13 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  username    String       @unique
-  password    String
-  extractions Extraction[]
+  id            String          @id @default(uuid())
+  username      String          @unique
+  password      String
+  extractions   Extraction[]
+  Receipt       Receipt[]
+  Invoice       Invoice[]
+  CardStatement CardStatement[]
 }
 
 enum Status {
@@ -38,4 +41,97 @@ model Extraction {
   updatedAt  DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Receipt {
+  id           String        @id @default(uuid())
+  userId       String
+  extractionId String
+  objectPath   String
+  number       String?
+  category     String?
+  date         DateTime?
+  time         String?
+  from         String?
+  subtotal     Float?
+  tax          Float?
+  tip          Float?
+  total        Float?
+  items        ReceiptItem[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model ReceiptItem {
+  id          String  @id @default(uuid())
+  receiptId   String
+  description String?
+  quantity    Float?
+  amount      Float?
+
+  Receipt Receipt @relation(fields: [receiptId], references: [id])
+}
+
+model Invoice {
+  id             String        @id @default(uuid())
+  userId         String
+  extractionId   String
+  objectPath     String
+  invoiceNumber  String?
+  category       String?
+  date           DateTime?
+  fromName       String?
+  fromAddress    String?
+  toName         String?
+  toAddress      String?
+  items          InvoiceItem[]
+  currency       String?
+  totalAmountDue Float?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model InvoiceItem {
+  id          String  @id @default(uuid())
+  invoiceId   String
+  description String?
+  amount      Float?
+
+  Invoice Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+model CardStatement {
+  id               String            @id @default(uuid())
+  userId           String
+  extractionId     String
+  objectPath       String
+  issuerName       String?
+  issuerAddress    String?
+  recipientName    String?
+  recipientAddress String?
+  creditCardName   String?
+  creditCardHolder String?
+  creditCardNumber String?
+  date             DateTime?
+  transactions     CardTransaction[]
+  currency         String?
+  totalAmountDue   Float?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model CardTransaction {
+  id              String  @id @default(uuid())
+  cardStatementId String
+  description     String?
+  category        String?
+  amount          Float?
+
+  CardStatement CardStatement @relation(fields: [cardStatementId], references: [id])
 }
