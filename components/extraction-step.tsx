@@ -49,7 +49,6 @@ export function ExtractionStep({
   }
 
   async function sendJson(json: any) {
-    setUpdating(true);
     const res = await fetch("/api/data-extraction/save", {
       method: "PUT",
       body: JSON.stringify({
@@ -63,8 +62,6 @@ export function ExtractionStep({
     if (res.status !== 200) {
       throw new Error(data.message);
     }
-
-    setUpdating(false);
   }
 
   useEffect(() => {
@@ -176,6 +173,7 @@ export function ExtractionStep({
             disabled={isUpdating}
             className={cn("w-full")}
             onClick={() => {
+              setUpdating(true);
               setErrorMsg("");
               sendJson(json)
                 .then(() => router.push(`/verification/${uuid}`))
@@ -195,6 +193,7 @@ export function ExtractionStep({
           <Button
             className={cn("w-full")}
             onClick={async () => {
+              setUpdating(true);
               setStatus("active");
               try {
                 await getStructuredData(category.value, text);
@@ -202,6 +201,7 @@ export function ExtractionStep({
               } catch (e) {
                 setStatus("failed");
               }
+              setUpdating(false);
             }}
           >
             Retry

@@ -485,9 +485,13 @@ export function CardStatementsViewer({
                             </Label>
                             <Select
                               onValueChange={(value) => {
+                                const newTransactions = [
+                                  ...verifiedCardStatement.transactions,
+                                ];
+                                newTransactions[index].category = value;
                                 setVerifiedCardStatement({
                                   ...verifiedCardStatement,
-                                  category: value,
+                                  transactions: newTransactions,
                                 });
                               }}
                               defaultValue={transaction.category}
@@ -505,24 +509,6 @@ export function CardStatementsViewer({
                                 )}
                               </SelectContent>
                             </Select>
-                            {/* <Input
-                              id={`transaction-${index}-category`}
-                              placeholder="null"
-                              type="text"
-                              className="w-full h-8"
-                              onChange={(e) => {
-                                const newTransactions = [
-                                  ...verifiedCardStatement.transactions,
-                                ];
-                                newTransactions[index].category =
-                                  e.target.value;
-                                setVerifiedCardStatement({
-                                  ...verifiedCardStatement,
-                                  transactions: newTransactions,
-                                });
-                              }}
-                              value={transaction.category}
-                            /> */}
                           </div>
                           <div className="w-2/5">
                             <Label htmlFor={`transaction-${index}-amount`}>
