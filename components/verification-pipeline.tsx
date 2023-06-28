@@ -29,6 +29,90 @@ export default function VerificationPipeline({
     return {
       corrections: [
         {
+          field: "transactions",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "credit_card",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "credit_card.name",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "credit_card.holder",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "credit_card.number",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "transaction",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "recipient",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "recipient.name",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "recipient.address",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "issuer",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "issuer.name",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "issuer.address",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
           field: "from",
           issue: "Incorrect total amount",
           description:

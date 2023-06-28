@@ -261,7 +261,7 @@ export const cardStatementsSchema = {
         description: "Transaction of the credit card statement.",
         additionalProperties: false,
         properties: {
-          name: {
+          description: {
             type: "string",
             description:
               "Name of the transaction, including the country code if applicable.",
@@ -286,7 +286,7 @@ export const cardStatementsSchema = {
             minimum: 0,
           },
         },
-        required: ["name", "category", "amount"],
+        required: ["description", "category", "amount"],
       },
     },
     currency: {

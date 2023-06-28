@@ -2,6 +2,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ReceiptsViewer } from "./receipts-viewer";
 import { cn } from "@/lib/utils";
 import { InvoicesViewer } from "./invoices-viewer";
+import { CardStatementsViewer } from "./card-statements-viewer";
 
 export function ObjectViewer({
   className,
@@ -18,7 +19,7 @@ export function ObjectViewer({
 }) {
   const correctionsMap = new Map();
   corrections.forEach((correction) => {
-    correctionsMap.set(correction.field, correction);
+    correctionsMap.set(correction.field.replace(/\[.*\]/g, ""), correction);
   });
 
   return (
@@ -36,6 +37,13 @@ export function ObjectViewer({
         <InvoicesViewer
           verifiedInvoice={json}
           setVerifiedInvoice={setVerifiedJson}
+          corrections={correctionsMap}
+        />
+      )}
+      {category === "credit card statements" && (
+        <CardStatementsViewer
+          verifiedCardStatement={json}
+          setVerifiedCardStatement={setVerifiedJson}
           corrections={correctionsMap}
         />
       )}

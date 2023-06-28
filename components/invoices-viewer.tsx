@@ -198,7 +198,7 @@ export function InvoicesViewer({
                 from: { ...verifiedInvoice.from, name: e.target.value },
               });
             }}
-            value={verifiedInvoice.from.name}
+            value={verifiedInvoice.from?.name}
           />
           <div className="flex items-center gap-1 mb-1">
             <Label
@@ -230,7 +230,7 @@ export function InvoicesViewer({
                 from: { ...verifiedInvoice.from, address: e.target.value },
               });
             }}
-            value={verifiedInvoice.from.address}
+            value={verifiedInvoice.from?.address}
           />
         </div>
       </div>
@@ -281,7 +281,7 @@ export function InvoicesViewer({
                 to: { ...verifiedInvoice.to, name: e.target.value },
               });
             }}
-            value={verifiedInvoice.to.name}
+            value={verifiedInvoice.to?.name}
           />
           <div className="flex items-center gap-1 mb-1">
             <Label
@@ -314,7 +314,7 @@ export function InvoicesViewer({
                 to: { ...verifiedInvoice.to, address: e.target.value },
               });
             }}
-            value={verifiedInvoice.to.address}
+            value={verifiedInvoice.to?.address}
           />
         </div>
       </div>
