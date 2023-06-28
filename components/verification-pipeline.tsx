@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { ObjectViewer } from "./object-viewer";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export default function VerificationPipeline({
   uuid,
@@ -25,9 +26,89 @@ export default function VerificationPipeline({
 }) {
   async function analyze() {
     return {
-      corrections: [],
+      corrections: [
+        {
+          field: "from",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "category",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "number",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "date",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "time",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "items",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "subtotal",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "tax",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "tip",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "total",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+      ],
       textAnalysis:
-        "Upon analyzing the original text and the generated JSON output, I noticed two discrepancies. First, the item 'Hitachino West' with a quantity of 1 and an amount of 13.00 is missing from the items list in the generated JSON output. This item should be added to the items list to accurately represent the original text. Second, the total amount in the generated JSON output is incorrect. The output shows a total amount of 102.27, while the original text has a total amount of 82.27. The total amount in the generated JSON output should be corrected to 82.27 to match the original text.",
+        "The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text.",
     };
     const res = await fetch("/api/analysis", {
       method: "POST",
@@ -47,8 +128,11 @@ export default function VerificationPipeline({
     return data;
   }
 
-  const [isAnalyzing, setisAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<{
+    corrections: any[];
+    textAnalysis: string;
+  } | null>(null);
   const [verifiedJson, setVerifiedJson] = useState(JSON.parse(json));
   return (
     <div className="mx-4 mb-4 flex flex-col flex-grow">
@@ -99,15 +183,33 @@ export default function VerificationPipeline({
               <h1 className="text-2xl mb-2 font-bold text-slate-800">
                 Extracted Data
               </h1>
-              {analysisResult && (
+              {analysisResult !== null && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <Button variant={"ghost"} className="h-10">
-                    <Icons.sparkles width={18} height={18} className="mr-2" />
-                    Show Textual Analysis
-                  </Button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant={"ghost"} className="h-10">
+                        <Icons.sparkles
+                          width={18}
+                          height={18}
+                          className="mr-2"
+                        />
+                        Show Textual Analysis
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      style={{
+                        width: "550px",
+                      }}
+                      className="px-6 py-4 mr-20"
+                    >
+                      <div className="w-full text-sm whitespace-pre-wrap text-justify text-slate-700 mb-2">
+                        {analysisResult.textAnalysis}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </motion.div>
               )}
             </div>
@@ -117,6 +219,7 @@ export default function VerificationPipeline({
                 category={category}
                 json={verifiedJson}
                 setVerifiedJson={setVerifiedJson}
+                corrections={analysisResult?.corrections ?? []}
               />
             </div>
 
@@ -137,15 +240,15 @@ export default function VerificationPipeline({
                   variant={"secondary"}
                   className="relative inline-flex w-40 overflow-hidden bg-slate-100 p-[1.5px] group"
                   onClick={() => {
-                    setisAnalyzing(true);
+                    setIsAnalyzing(true);
                     analyze()
                       .then((data) => {
                         setAnalysisResult(data);
-                        setisAnalyzing(false);
+                        setIsAnalyzing(false);
                       })
                       .catch((err) => {
                         console.error(err);
-                        setisAnalyzing(false);
+                        setIsAnalyzing(false);
                       });
                   }}
                 >
@@ -168,7 +271,11 @@ export default function VerificationPipeline({
                   </span>
                 </Button>
               )}
-              <Button className="w-40" onClick={() => {}}>
+              <Button
+                disabled={isAnalyzing}
+                className="w-40"
+                onClick={() => {}}
+              >
                 Confirm
               </Button>
             </div>
