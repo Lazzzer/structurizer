@@ -36,6 +36,41 @@ export default function VerificationPipeline({
           suggestion: "Change the total amount to 82.27",
         },
         {
+          field: "from.name",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "from.address",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "to",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "to.name",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
+          field: "to.address",
+          issue: "Incorrect total amount",
+          description:
+            "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
+          suggestion: "Change the total amount to 82.27",
+        },
+        {
           field: "category",
           issue: "Missing item",
           description:
@@ -101,6 +136,30 @@ export default function VerificationPipeline({
         },
         {
           field: "total",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "total_amount_due",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "currency",
+          issue: "Missing item",
+          description:
+            "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
+          suggestion:
+            "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
+        },
+        {
+          field: "invoice_number",
           issue: "Missing item",
           description:
             "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
@@ -209,9 +268,9 @@ export default function VerificationPipeline({
                     <PopoverContent
                       style={{
                         width: "400px",
-                        height: "550px",
+                        maxHeight: "550px",
                       }}
-                      className="px-4 py-2 mr-20 overflow-scroll"
+                      className="px-4 py-2 h-auto mr-20 overflow-scroll"
                     >
                       <h1 className="text-lg font-bold text-slate-800 mb-2">
                         Textual Analysis
