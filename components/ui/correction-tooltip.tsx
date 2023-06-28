@@ -36,17 +36,29 @@ export function CorrectionTooltip({
         </TooltipTrigger>
         <TooltipContent className={cn(classNameContent)}>
           <div>
-            <div>
-              <h3>Issue</h3>
-              <p>{correction.issue}</p>
+            <div className="mx-1 mt-2 mb-2">
+              <h3 className="font-semibold ml-2 mb-0.5 text-slate-800">
+                Issue
+              </h3>
+              <p className="text-slate-600 px-2.5 py-1.5 text-sm bg-slate-50 rounded leading-snug text-justify">
+                {correction.issue}
+              </p>
             </div>
-            <div>
-              <h3>Description</h3>
-              <p>{correction.description}</p>
+            <div className="mx-1 my-1">
+              <h3 className="font-semibold ml-2 mb-0.5 text-slate-800">
+                Description
+              </h3>
+              <p className="text-slate-600 px-2.5 py-1.5 text-sm bg-slate-50 rounded leading-snug text-justify">
+                {correction.description}
+              </p>
             </div>
-            <div>
-              <h3>Suggestion</h3>
-              <p>{correction.suggestion}</p>
+            <div className="mx-1 mt-2 mb-2">
+              <h3 className="font-semibold ml-2 mb-0.5 text-slate-800">
+                Suggestion
+              </h3>
+              <p className="text-slate-600 px-2.5 py-1.5 text-sm bg-slate-50 rounded leading-snug text-justify">
+                {correction.suggestion}
+              </p>
             </div>
           </div>
         </TooltipContent>

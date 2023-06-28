@@ -540,7 +540,9 @@ export function ObjectViewer({
   });
 
   return (
-    <ScrollArea className={cn(className, "w-full h-full")}>
+    <ScrollArea
+      className={cn(className, "w-full h-full bg-white rounded-lg p-2")}
+    >
       {category === "receipts" && (
         <ReceiptsViewer
           verifiedReceipt={json}

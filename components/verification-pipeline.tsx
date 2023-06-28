@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Icons } from "./icons";
+import { Icons, SparklesIcon } from "./icons";
 import { Button, buttonVariants } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,7 @@ export default function VerificationPipeline({
   filename: string;
 }) {
   async function analyze() {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     return {
       corrections: [
         {
@@ -108,7 +109,7 @@ export default function VerificationPipeline({
         },
       ],
       textAnalysis:
-        "The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text.",
+        "The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text. The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text.",
     };
     const res = await fetch("/api/analysis", {
       method: "POST",
@@ -183,10 +184,16 @@ export default function VerificationPipeline({
               <h1 className="text-2xl mb-2 font-bold text-slate-800">
                 Extracted Data
               </h1>
+              <SparklesIcon
+                className={cn(
+                  isAnalyzing ? "opacity-100" : "opacity-0",
+                  "w-12 h-auto mb-4 transition-opacity duration-500 absolute right-14 -top-2"
+                )}
+              />
               {analysisResult !== null && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
                 >
                   <Popover>
                     <PopoverTrigger asChild>
@@ -201,20 +208,32 @@ export default function VerificationPipeline({
                     </PopoverTrigger>
                     <PopoverContent
                       style={{
-                        width: "550px",
+                        width: "400px",
+                        height: "550px",
                       }}
-                      className="px-6 py-4 mr-20"
+                      className="px-4 py-2 mr-20 overflow-scroll"
                     >
-                      <div className="w-full text-sm whitespace-pre-wrap text-justify text-slate-700 mb-2">
+                      <h1 className="text-lg font-bold text-slate-800 mb-2">
+                        Textual Analysis
+                      </h1>
+                      <p className="w-full text-sm whitespace-pre-wrap text-justify text-slate-600 mb-2 leading-snug">
                         {analysisResult.textAnalysis}
-                      </div>
+                      </p>
                     </PopoverContent>
                   </Popover>
                 </motion.div>
               )}
             </div>
 
-            <div className="w-full h-full rounded-lg border border-slate-200 p-3 overflow-hidden">
+            <div className="w-full h-full rounded-lg p-[1px] overflow-hidden relative">
+              <span
+                className={cn(
+                  isAnalyzing
+                    ? "bg-white bg-[conic-gradient(from_90deg_at_50%_50%,#FD95FF_0%,#80BBF8_50%,#00E1F0_100%)]"
+                    : "bg-slate-200",
+                  "absolute inset-[-1000%] animate-[spin_2s_linear_infinite]"
+                )}
+              />
               <ObjectViewer
                 category={category}
                 json={verifiedJson}
