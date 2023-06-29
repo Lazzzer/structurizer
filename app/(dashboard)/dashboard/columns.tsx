@@ -4,11 +4,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -170,34 +178,55 @@ export const columns: ColumnDef<Extraction>[] = [
       );
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="flex h-8 w-8 p-0 data-[state=open]:bg-slate-100"
-            >
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[160px]">
-            <DropdownMenuItem>
-              <Link
-                href={`${status?.link}${row.original.id}`}
-                className="flex items-center w-full"
+        <Dialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex h-8 w-8 p-0 data-[state=open]:bg-slate-100"
               >
-                <RefreshCw className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                Process
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-              Delete
-              <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuItem>
+                <Link
+                  href={`${status?.link}${row.original.id}`}
+                  className="flex items-center w-full"
+                >
+                  <RefreshCw className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
+                  Process
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  console.log("delete");
+                }}
+              >
+                <DialogTrigger className="flex items-center w-full">
+                  <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
+                  Delete
+                </DialogTrigger>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Extraction in Pipelines</DialogTitle>
+              <DialogDescription className="pt-4">
+                Are you sure? This will permanently delete the current
+                extraction and remove the associated file. This action cannot be
+                undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="destructive">Delete</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       );
     },
   },
@@ -209,12 +238,8 @@ export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
   ),
   {
     id: "actions",
-    cell: ({ row }) => {
-      const status = statuses.find(
-        (status) => status.value === row.original.status
-      );
-
-      return (
+    cell: () => (
+      <Dialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -227,13 +252,27 @@ export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[160px]">
             <DropdownMenuItem>
-              <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-              Delete
-              <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+              <DialogTrigger className="flex items-center w-full">
+                <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
+                Delete
+              </DialogTrigger>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      );
-    },
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Processed Extraction</DialogTitle>
+            <DialogDescription className="pt-4">
+              Are you sure? This will permanently delete the current extraction
+              and remove the associated file and extracted data. This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="destructive">Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    ),
   },
 ];

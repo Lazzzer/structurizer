@@ -77,7 +77,11 @@ export default function VerificationPipeline({
             <p className="text-center text-slate-500 mb-6">
               Your file has been processed successfully!
             </p>
-            <Link className={cn(buttonVariants(), "w-40")} href={"/dashboard"}>
+            <Link
+              className={cn(buttonVariants(), "w-40")}
+              href={"/dashboard"}
+              prefetch={false}
+            >
               Back to Dashboard
             </Link>
           </div>
