@@ -20,6 +20,9 @@ async function getExtractions() {
   }
   const userUUID = session?.user.id;
   const currentExtractions = await prisma.extraction.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
     where: {
       user: {
         id: userUUID,
@@ -31,6 +34,9 @@ async function getExtractions() {
   });
 
   const finishedExtractions = await prisma.extraction.findMany({
+    orderBy: {
+      updatedAt: "desc",
+    },
     where: {
       user: {
         id: userUUID,

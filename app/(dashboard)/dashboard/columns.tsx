@@ -73,6 +73,7 @@ export const columns: ColumnDef<Extraction>[] = [
     enableSorting: false,
   },
   {
+    id: "category",
     accessorKey: "category",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Category" />
@@ -95,6 +96,9 @@ export const columns: ColumnDef<Extraction>[] = [
           )}
         </div>
       );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
     },
   },
   {
