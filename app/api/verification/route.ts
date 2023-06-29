@@ -174,5 +174,5 @@ export async function POST(req: Request) {
     );
   }
 
-  return NextResponse.json({ message: "Process finished" }, { status: 201 });
+  return NextResponse.json({ message: "Process finished" }, { status: 200 });
 }

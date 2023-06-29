@@ -21,7 +21,6 @@ export default async function VerificationPipelinePage({
         category={data.category as string}
         text={data.text as string}
         json={data.json}
-        filename={data.filename}
       />
     </div>
   );

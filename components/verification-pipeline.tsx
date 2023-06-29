@@ -16,259 +16,28 @@ export default function VerificationPipeline({
   text,
   category,
   json,
-  filename,
 }: {
   uuid: string;
   url: string;
   text: string;
   category: string;
   json: any;
-  filename: string;
 }) {
   async function sendJson(json: any) {
     const res = await fetch("/api/verification", {
       method: "POST",
       body: JSON.stringify({
         uuid,
-        json,
+        json: JSON.stringify(verifiedJson),
       }),
     });
     const data = await res.json();
-    if (res.status !== 201) {
+    if (res.status !== 200) {
       throw new Error(data.message);
     }
   }
 
   async function analyze() {
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-    // return {
-    //   corrections: [
-    //     {
-    //       field: "transactions",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "credit_card",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "credit_card.name",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "credit_card.holder",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "credit_card.number",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "transaction",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "recipient",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "recipient.name",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "recipient.address",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "issuer",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "issuer.name",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "issuer.address",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "from",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "from.name",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "from.address",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "to",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "to.name",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "to.address",
-    //       issue: "Incorrect total amount",
-    //       description:
-    //         "The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. The discrepancy might be due to a processing error.",
-    //       suggestion: "Change the total amount to 82.27",
-    //     },
-    //     {
-    //       field: "category",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "number",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "date",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "time",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "items",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "subtotal",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "tax",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "tip",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "total",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "total_amount_due",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "currency",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //     {
-    //       field: "invoice_number",
-    //       issue: "Missing item",
-    //       description:
-    //         "The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight.",
-    //       suggestion:
-    //         "Add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list.",
-    //     },
-    //   ],
-    //   textAnalysis:
-    //     "The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text. The first discrepancy I noticed was in the 'total' field. The total amount in the generated JSON is 102.27, but according to the original text, the total amount should be 82.27. This discrepancy might be due to a processing error where the total amount was incorrectly calculated or transcribed. My suggestion for correction is to change the total amount to 82.27 to match the original text.\n\nThe second discrepancy I noticed was in the 'items' field. The item 'Hitachino West' with a quantity of 1 and amount of 13.00 is missing in the generated JSON. This might be due to a processing error or oversight where the item was not included in the JSON output. My suggestion for correction is to add the item 'Hitachino West' with a quantity of 1 and amount of 13.00 to the items list to match the original text.",
-    // };
     const res = await fetch("/api/analysis", {
       method: "POST",
       headers: {
@@ -417,7 +186,10 @@ export default function VerificationPipeline({
                 />
               </div>
 
-              <div className="flex justify-end gap-2 items-center absolute -bottom-12 right-0">
+              <div className="flex w-screen justify-end gap-2 items-center absolute -bottom-12 right-0">
+                {errorMsg !== "" && (
+                  <div className="text-sm text-red-500">{errorMsg}</div>
+                )}
                 <Link
                   className={cn(
                     buttonVariants({
@@ -432,9 +204,10 @@ export default function VerificationPipeline({
                   <Button
                     disabled={isAnalyzing}
                     variant={"secondary"}
-                    className="relative inline-flex w-40 overflow-hidden bg-slate-100 p-[1.5px] group"
+                    className="relative inline-flex w-36 overflow-hidden bg-slate-100 p-[1.5px] group"
                     onClick={() => {
                       setIsAnalyzing(true);
+                      setErrorMsg("");
                       analyze()
                         .then((data) => {
                           setAnalysisResult(data);
@@ -442,6 +215,9 @@ export default function VerificationPipeline({
                         })
                         .catch((err) => {
                           console.error(err);
+                          setErrorMsg(
+                            "Something went wrong during analysis. Please try again."
+                          );
                           setIsAnalyzing(false);
                         });
                     }}
@@ -467,7 +243,7 @@ export default function VerificationPipeline({
                 )}
                 <Button
                   disabled={isAnalyzing || isUpdating}
-                  className="w-40"
+                  className="w-36"
                   onClick={() => {
                     setUpdating(true);
                     setErrorMsg("");
