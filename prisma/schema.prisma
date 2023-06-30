@@ -29,24 +29,27 @@ enum Status {
 }
 
 model Extraction {
-  id         String   @id @default(uuid())
-  filename   String
-  objectPath String
-  text       String?
-  category   String?
-  json       Json?
-  userId     String
-  status     Status   @default(TO_RECOGNIZE)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id            String         @id @default(uuid())
+  userId        String
+  filename      String
+  objectPath    String
+  status        Status         @default(TO_RECOGNIZE)
+  category      String?
+  text          String?
+  json          Json?
+  receipt       Receipt?
+  invoice       Invoice?
+  cardStatement CardStatement?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Receipt {
   id           String        @id @default(uuid())
   userId       String
-  extractionId String
+  extractionId String        @unique
   objectPath   String
   number       String?
   category     String?
@@ -61,7 +64,8 @@ model Receipt {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extraction Extraction @relation(fields: [extractionId], references: [id], onDelete: Cascade)
 }
 
 model ReceiptItem {
@@ -71,13 +75,13 @@ model ReceiptItem {
   quantity    Float?
   amount      Float?
 
-  Receipt Receipt @relation(fields: [receiptId], references: [id])
+  receipt Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
 }
 
 model Invoice {
   id             String        @id @default(uuid())
   userId         String
-  extractionId   String
+  extractionId   String        @unique
   objectPath     String
   invoiceNumber  String?
   category       String?
@@ -92,7 +96,8 @@ model Invoice {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extraction Extraction @relation(fields: [extractionId], references: [id], onDelete: Cascade)
 }
 
 model InvoiceItem {
@@ -101,13 +106,13 @@ model InvoiceItem {
   description String?
   amount      Float?
 
-  Invoice Invoice @relation(fields: [invoiceId], references: [id])
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
 model CardStatement {
   id               String            @id @default(uuid())
   userId           String
-  extractionId     String
+  extractionId     String            @unique
   objectPath       String
   issuerName       String?
   issuerAddress    String?
@@ -123,7 +128,8 @@ model CardStatement {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extraction Extraction @relation(fields: [extractionId], references: [id], onDelete: Cascade)
 }
 
 model CardTransaction {
@@ -133,5 +139,5 @@ model CardTransaction {
   category        String?
   amount          Float?
 
-  CardStatement CardStatement @relation(fields: [cardStatementId], references: [id])
+  cardStatement CardStatement @relation(fields: [cardStatementId], references: [id], onDelete: Cascade)
 }
