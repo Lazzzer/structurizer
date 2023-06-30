@@ -113,7 +113,7 @@ export const columns: ColumnDef<Extraction>[] = [
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem>
                 <Link
-                  href={`/text-recognition/${row.original.id}`}
+                  href={`/data-extraction/${row.original.id}`}
                   className="flex items-center w-full"
                 >
                   <RefreshCw className="mr-2 h-3.5 w-3.5 text-slate-900/70" />

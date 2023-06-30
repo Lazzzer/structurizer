@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 
@@ -28,10 +29,17 @@ import { useRouter } from "next/navigation";
 
 export type Extraction = {
   id: string;
+  category: "receipts" | "invoices" | "credit card statements";
   filename: string;
   createdAt: Date;
   updatedAt: Date;
 };
+
+export const categories = [
+  { value: "receipts", label: "Receipts" },
+  { value: "invoices", label: "Invoices" },
+  { value: "credit card statements", label: "Card Statements" },
+];
 
 async function deleteExtraction(uuid: string) {
   const res = await fetch(`/api/delete/extraction?uuid=${uuid}`, {
@@ -56,6 +64,31 @@ export const columns: ColumnDef<Extraction>[] = [
       </div>
     ),
     enableSorting: false,
+  },
+  {
+    id: "category",
+    accessorKey: "category",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Category" />
+    ),
+    cell: ({ row }) => {
+      const category = categories.find(
+        (category) => category.value === row.original.category
+      );
+      return (
+        <div className="w-36">
+          <Badge
+            className="py-1 border-slate-900 text-slate-900"
+            variant={"outline"}
+          >
+            {category?.label}
+          </Badge>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
   },
   {
     accessorKey: "filename",
@@ -113,7 +146,7 @@ export const columns: ColumnDef<Extraction>[] = [
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem>
                 <Link
-                  href={`/text-recognition/${row.original.id}`}
+                  href={`/verification/${row.original.id}`}
                   className="flex items-center w-full"
                 >
                   <RefreshCw className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
