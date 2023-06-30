@@ -69,3 +69,25 @@ export async function getExtractionData(uuid: string, status: Status) {
 
   return extractionData;
 }
+
+export async function getExtractions(status: Status) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    throw new Error("Cannot authenticate user");
+  }
+  const userUUID = session?.user.id;
+  const extractions = await prisma.extraction.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    where: {
+      user: {
+        id: userUUID,
+      },
+      status: status,
+    },
+  });
+
+  return extractions;
+}

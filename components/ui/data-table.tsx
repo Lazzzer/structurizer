@@ -34,7 +34,7 @@ interface DataTableProps<TData, TValue> {
     columnId: string;
     placeholder: string;
   };
-  categories: {
+  categories?: {
     label: string;
     value: string;
   }[];
