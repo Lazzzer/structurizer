@@ -113,7 +113,89 @@ export async function getReceipts() {
     },
   });
 
-  console.log(receipts);
+  const monthlyExpenses = await prisma.$queryRaw`
+  SELECT
+    EXTRACT(MONTH FROM date) AS month,
+    SUM(total) AS total
+  FROM
+    "Receipt"
+  WHERE
+    date IS NOT NULL AND
+    "userId" = ${userUUID}
+  GROUP BY
+    EXTRACT(MONTH FROM date)
+`;
 
-  return receipts;
+  const categoryCounts = await prisma.receipt.groupBy({
+    by: ["category"],
+    where: {
+      userId: userUUID,
+    },
+    _count: {
+      category: true,
+    },
+  });
+
+  const categoryDistribution = categoryCounts.map((item) => ({
+    category: item.category,
+    percentage: (item._count.category / receipts.length) * 100,
+  }));
+
+  const highestTotalAmount = await prisma.receipt.aggregate({
+    where: {
+      userId: userUUID,
+    },
+    _max: {
+      total: true,
+    },
+  });
+
+  const mostExpensiveCategory = await prisma.receipt.groupBy({
+    by: ["category"],
+    where: {
+      userId: userUUID,
+    },
+    _sum: {
+      total: true,
+    },
+    orderBy: {
+      _sum: {
+        total: "desc",
+      },
+    },
+    take: 1,
+  });
+
+  const mostRecurrentFrom = await prisma.receipt.groupBy({
+    by: ["from"],
+    _count: {
+      from: true,
+    },
+    where: {
+      userId: userUUID,
+    },
+    orderBy: {
+      from: "desc",
+    },
+    take: 1,
+  });
+
+  const response = {
+    receipts,
+    monthlyExpenses,
+    categoryDistribution,
+    highestTotalAmount: {
+      total: highestTotalAmount._max.total,
+    },
+    mostExpensiveCategory: {
+      category: mostExpensiveCategory[0].category,
+      total: mostExpensiveCategory[0]._sum.total,
+    },
+    mostRecurrentFrom: {
+      from: mostRecurrentFrom[0].from,
+      count: mostRecurrentFrom[0]._count.from,
+    },
+  };
+
+  return response;
 }

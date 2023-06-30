@@ -4,7 +4,7 @@ import { Receipt, categories, columns } from "./columns";
 import { getReceipts } from "@/lib/requests";
 
 export default async function ReceiptsPage() {
-  const receipts = await getReceipts();
+  const { receipts } = await getReceipts();
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Receipts" displayUploadButton />
