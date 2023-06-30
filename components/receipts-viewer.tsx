@@ -29,7 +29,6 @@ export function ReceiptsViewer({
   setVerifiedReceipt: (receipt: any) => void;
   corrections: Map<any, any>;
 }) {
-  console.log(corrections);
   const [isItemsOpen, setIsItemsOpen] = useState(true);
   return (
     <div className="w-full min-h-full h-20 p-2 overflow-scroll">

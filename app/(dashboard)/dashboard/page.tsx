@@ -59,6 +59,7 @@ export default async function DashboardPage() {
       <div className="m-8 flex flex-col flex-grow items-center justify-center space-y-12 2xl:space-y-20">
         <DataTable
           title="Documents in Pipelines"
+          emptyMessage="No documents in pipelines"
           filterColumn={{
             columnId: "filename",
             placeholder: "Filter by file name",
@@ -70,6 +71,7 @@ export default async function DashboardPage() {
         />
         <DataTable
           title="Latest Data Extractions"
+          emptyMessage="No data extractions"
           filterColumn={{
             columnId: "filename",
             placeholder: "Filter by file name",
