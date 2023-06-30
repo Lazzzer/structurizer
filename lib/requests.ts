@@ -91,3 +91,29 @@ export async function getExtractions(status: Status) {
 
   return extractions;
 }
+
+export async function getReceipts() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    throw new Error("Cannot authenticate user");
+  }
+  const userUUID = session?.user.id;
+  const receipts = await prisma.receipt.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    where: {
+      user: {
+        id: userUUID,
+      },
+    },
+    include: {
+      extraction: true,
+    },
+  });
+
+  console.log(receipts);
+
+  return receipts;
+}
