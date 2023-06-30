@@ -13,7 +13,7 @@ interface DataTableToolbarProps<TData> {
     columnId: string;
     placeholder: string;
   };
-  categories: {
+  categories?: {
     label: string;
     value: string;
   }[];
@@ -55,7 +55,7 @@ export function DataTableToolbar<TData>({
             options={statuses}
           />
         )}
-        {table.getColumn("category") && (
+        {categories && table.getColumn("category") && (
           <DataTableFacetedFilter
             column={table.getColumn("category")}
             title="Category"
