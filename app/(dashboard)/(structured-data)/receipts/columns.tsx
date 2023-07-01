@@ -1,5 +1,6 @@
 "use client";
 
+import { SheetReceipt } from "@/components/sheet-receipt";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,13 +20,24 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Status } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Trash, RefreshCw } from "lucide-react";
-import Link from "next/link";
+import { MoreHorizontal, PanelRightOpen, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export type Receipt = {
@@ -160,22 +172,9 @@ export const columns: ColumnDef<Receipt>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
-    // cell: ({ row }) => (
-    //   <div className="w-32 text-slate-900">
-    //     {row.getValue<Date>("date").toLocaleDateString("en-GB")}
-    //   </div>
-    // ),
     cell: ({ row }) => (
-      <div
-        title={row.getValue("date")}
-        className={cn(
-          row.original.date === null ? "text-slate-400" : " text-slate-900",
-          "w-32"
-        )}
-      >
-        {row.original.date === null
-          ? "None"
-          : row.getValue<Date>("date").toLocaleDateString("en-GB")}
+      <div className="w-32 text-slate-900">
+        {row.getValue<Date>("date").toLocaleDateString("en-GB")}
       </div>
     ),
   },
@@ -222,54 +221,68 @@ export const columns: ColumnDef<Receipt>[] = [
   },
   {
     id: "actions",
-    cell: ({ table, row }) => {
+    cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const router = useRouter();
       return (
-        <AlertDialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex h-8 w-8 p-0 data-[state=open]:bg-slate-100"
-              >
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuItem className="cursor-pointer">
-                <AlertDialogTrigger asChild>
-                  <div className="flex items-center w-full">
-                    <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                    Delete
-                  </div>
-                </AlertDialogTrigger>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure? This will permanently delete the current receipt
-                and remove its associated file and extraction. This action
-                cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={async () => {
-                  await deleteExtraction(row.original.extractionId);
-                  router.refresh();
-                }}
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Sheet>
+          <AlertDialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex h-8 w-8 p-0 data-[state=open]:bg-slate-100"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[160px]">
+                <DropdownMenuItem className="cursor-pointer">
+                  <SheetTrigger asChild>
+                    <div className="flex items-center w-full">
+                      <PanelRightOpen className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
+                      Show
+                    </div>
+                  </SheetTrigger>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer">
+                  <AlertDialogTrigger asChild>
+                    <div className="flex items-center w-full">
+                      <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
+                      Delete
+                    </div>
+                  </AlertDialogTrigger>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure? This will permanently delete the current receipt
+                  and remove its associated file and extraction. This action
+                  cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    await deleteExtraction(row.original.extractionId);
+                    router.refresh();
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <SheetContent>
+            <SheetReceipt uuid={row.original.id} />
+          </SheetContent>
+        </Sheet>
       );
     },
   },

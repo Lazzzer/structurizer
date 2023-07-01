@@ -218,8 +218,5 @@ ORDER BY
       count: mostRecurrentFrom[0]._count.from,
     },
   };
-
-  console.log(response);
-
   return response;
 }

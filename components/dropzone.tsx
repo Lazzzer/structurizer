@@ -113,7 +113,6 @@ export function Dropzone({
       <div className="flex items-center gap-2 mb-4">
         <Switch
           id="bulk-processing"
-          // disabled
           onCheckedChange={() =>
             setBulkProcessing((previousState) => !previousState)
           }
