@@ -113,17 +113,39 @@ export async function getReceipts() {
     },
   });
 
-  const monthlyExpenses = await prisma.$queryRaw`
-  SELECT
-    EXTRACT(MONTH FROM date) AS month,
-    SUM(total) AS total
-  FROM
+  const avgMonthlyExpenses: any = await prisma.$queryRaw`
+WITH months AS (
+    SELECT generate_series(1,12) AS month
+),
+receipts AS (
+    SELECT
+        COALESCE(EXTRACT(MONTH FROM date), 0) AS month,
+        AVG(total) AS average
+    FROM
+        "Receipt"
+    WHERE
+        "userId" = ${userUUID}
+    GROUP BY
+        EXTRACT(MONTH FROM date)
+)
+SELECT
+    months.month,
+    COALESCE(receipts.average, 0) AS average
+FROM
+    months
+LEFT JOIN 
+    receipts ON months.month = receipts.month
+UNION ALL
+SELECT
+    0 as month,
+    AVG(total) AS average
+FROM
     "Receipt"
-  WHERE
-    date IS NOT NULL AND
+WHERE
+    date IS NULL AND
     "userId" = ${userUUID}
-  GROUP BY
-    EXTRACT(MONTH FROM date)
+ORDER BY 
+    month
 `;
 
   const categoryCounts = await prisma.receipt.groupBy({
@@ -182,7 +204,7 @@ export async function getReceipts() {
 
   const response = {
     receipts,
-    monthlyExpenses,
+    avgMonthlyExpenses,
     categoryDistribution,
     highestTotalAmount: {
       total: highestTotalAmount._max.total,

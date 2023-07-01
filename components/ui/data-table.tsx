@@ -74,7 +74,7 @@ export function DataTable<TData, TValue>({
     <div className="space-y-2 w-full">
       {data.length === 0 ? (
         <div className="w-full">
-          <h2 className="text-xl font-bold text-slate-800 mb-2">{title}</h2>
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">{title}</h2>
           <div className="h-64 2xl:h-72 w-full border border-dashed rounded-lg border-slate-200 flex flex-col items-center justify-center">
             <Icons.empty
               strokeWidth={1.4}
