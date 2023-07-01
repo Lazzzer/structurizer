@@ -40,9 +40,6 @@ export function CategoryDistributionChart({
     bgColorClass: string;
   }[];
 }) {
-  const filteredCategories = categories.filter((c) =>
-    data.find((d) => d.category === c.value)
-  );
   return (
     <div className="w-full h-4/5 border border-slate-200 rounded-md flex justify-center items-center p-3">
       <ResponsiveContainer width="50%" height="100%">
@@ -54,12 +51,11 @@ export function CategoryDistributionChart({
             nameKey="category"
             innerRadius={"55%"}
           >
-            {data.map((_, index) => (
+            {data.map((d, index) => (
               <Cell
                 key={`cell-${index}`}
                 className={cn(
-                  filteredCategories[index % filteredCategories.length]
-                    .fillColorClass
+                  categories.find((c) => c.value === d.category)?.fillColorClass
                 )}
               />
             ))}
@@ -67,22 +63,22 @@ export function CategoryDistributionChart({
         </PieChart>
       </ResponsiveContainer>
       <div className="w-1/2 flex flex-col justify-center space-y-1 items-center">
-        {data.map((c, index) => (
+        {data.map((d, index) => (
           <div
             key={index}
             className="text-sm 2xl:text-lg space-x-2 flex items-center w-full"
           >
             <span
               className={cn(
-                filteredCategories[index].bgColorClass,
+                categories.find((c) => c.value === d.category)?.bgColorClass,
                 "inline-block w-2 h-2 rounded-full"
               )}
             ></span>
             <span className="text-slate-600">
-              {filteredCategories[index].label}
+              {categories.find((c) => c.value === d.category)?.label}
             </span>
             <span className="font-semibold text-slate-800">
-              {c.percentage.toFixed(1)}%
+              {d.percentage.toFixed(1)}%
             </span>
           </div>
         ))}

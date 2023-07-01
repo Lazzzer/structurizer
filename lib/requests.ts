@@ -92,7 +92,7 @@ export async function getExtractions(status: Status) {
   return extractions;
 }
 
-export async function getReceipts() {
+export async function getReceiptsData() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -112,6 +112,10 @@ export async function getReceipts() {
       extraction: true,
     },
   });
+
+  if (receipts.length === 0) {
+    return null;
+  }
 
   const avgMonthlyExpenses: any = await prisma.$queryRaw`
 WITH months AS (
@@ -191,7 +195,9 @@ ORDER BY
       userId: userUUID,
     },
     orderBy: {
-      from: "desc",
+      _count: {
+        from: "desc",
+      },
     },
     take: 1,
   });
