@@ -54,8 +54,8 @@ model Receipt {
   from         String
   category     String
   total        Float
+  date         DateTime
   number       String?
-  date         DateTime?
   time         String?
   subtotal     Float?
   tax          Float?
@@ -84,8 +84,8 @@ model Invoice {
   extractionId   String        @unique
   objectPath     String
   category       String
+  date           DateTime
   invoiceNumber  String?
-  date           DateTime?
   fromName       String?
   fromAddress    String?
   toName         String?
@@ -114,6 +114,7 @@ model CardStatement {
   userId           String
   extractionId     String            @unique
   objectPath       String
+  date             DateTime
   issuerName       String?
   issuerAddress    String?
   recipientName    String?
@@ -121,7 +122,6 @@ model CardStatement {
   creditCardName   String?
   creditCardHolder String?
   creditCardNumber String?
-  date             DateTime?
   transactions     CardTransaction[]
   currency         String?
   totalAmountDue   Float?

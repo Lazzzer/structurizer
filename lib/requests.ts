@@ -135,15 +135,6 @@ FROM
     months
 LEFT JOIN 
     receipts ON months.month = receipts.month
-UNION ALL
-SELECT
-    0 as month,
-    AVG(total) AS average
-FROM
-    "Receipt"
-WHERE
-    date IS NULL AND
-    "userId" = ${userUUID}
 ORDER BY 
     month
 `;
@@ -160,7 +151,10 @@ ORDER BY
 
   const categoryDistribution = categoryCounts.map((item) => ({
     category: item.category,
-    percentage: (item._count.category / receipts.length) * 100,
+    percentage:
+      receipts.length === 0
+        ? 0
+        : (item._count.category / receipts.length) * 100,
   }));
 
   const highestTotalAmount = await prisma.receipt.aggregate({
@@ -218,6 +212,8 @@ ORDER BY
       count: mostRecurrentFrom[0]._count.from,
     },
   };
+
+  console.log(response);
 
   return response;
 }

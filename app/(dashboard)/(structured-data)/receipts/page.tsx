@@ -2,19 +2,14 @@ import { TopMainContent } from "@/components/top-main-content";
 import { DataTable } from "@/components/ui/data-table";
 import { Receipt, categories, columns } from "./columns";
 import { getReceipts } from "@/lib/requests";
-import { MonthlyExpensesGraph } from "@/components/monthly-expenses-graph";
+import { MonthlyExpensesBarChart } from "@/components/monthly-expenses-bar-chart";
 import { getMonthNames } from "@/lib/utils";
+import { CategoryDistributionChart } from "@/components/pie-chart";
 
 export default async function ReceiptsPage() {
-  const { receipts, avgMonthlyExpenses } = await getReceipts();
+  const { receipts, avgMonthlyExpenses, categoryDistribution } =
+    await getReceipts();
   const formattedAvgMonthlyExpenses = avgMonthlyExpenses.map((m: any) => {
-    if (m.month === 0) {
-      return {
-        name: "N/A",
-        fullName: "None",
-        value: m.average,
-      };
-    }
     const { shortName, longName } = getMonthNames(m.month);
     return {
       name: shortName,
@@ -35,15 +30,18 @@ export default async function ReceiptsPage() {
               <h3 className="font-semibold text-slate-800 mb-1">
                 Average Monthly Expenses
               </h3>
-              <div className="w-full h-4/5 border border-slate-200 rounded-md pl-1 pr-2 pt-6 pb-2 2xl:pt-10 2xl:pb-4">
-                <MonthlyExpensesGraph data={formattedAvgMonthlyExpenses} />
+              <div className="w-full h-4/5 border border-slate-200 rounded-md pr-3 pt-6 pb-2 2xl:pt-10 2xl:pb-4">
+                <MonthlyExpensesBarChart data={formattedAvgMonthlyExpenses} />
               </div>
             </div>
-            <div className="w-full h-4/5 col-span-3">
+            <div className="w-full h-full col-span-3">
               <h3 className="font-semibold text-slate-800 mb-1">
                 Category Distribution
               </h3>
-              <div className="border border-slate-200 rounded-md w-full h-full"></div>
+              <CategoryDistributionChart
+                data={categoryDistribution}
+                categories={categories}
+              />
             </div>
             <div className="w-full h-4/5 col-span-2">
               <h3 className="font-semibold text-slate-800 mb-1">Statistics</h3>

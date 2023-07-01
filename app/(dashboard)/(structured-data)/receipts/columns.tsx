@@ -44,34 +44,44 @@ export type Receipt = {
 
 export const categories = [
   {
-    value: "retail",
-    label: "Retail",
-    textClass: "text-violet-500",
-    borderClass: "border-violet-400",
+    value: "cafe",
+    label: "Cafe & Bar",
+    textClass: "text-cyan-800",
+    borderClass: "border-cyan-800",
+    fillColorClass: "fill-cyan-800",
+    bgColorClass: "bg-cyan-800",
   },
   {
     value: "groceries",
     label: "Groceries",
     textClass: "text-pink-500",
     borderClass: "border-pink-400",
+    fillColorClass: "fill-pink-400",
+    bgColorClass: "bg-pink-400",
+  },
+  {
+    value: "other",
+    label: "Other",
+    textClass: "text-slate-500",
+    borderClass: "border-slate-400",
+    fillColorClass: "fill-slate-400",
+    bgColorClass: "bg-slate-400",
   },
   {
     value: "restaurant",
     label: "Restaurant",
     textClass: "text-cyan-500",
     borderClass: "border-cyan-400",
+    fillColorClass: "fill-cyan-400",
+    bgColorClass: "bg-cyan-400",
   },
   {
-    value: "cafe",
-    label: "Cafe & Bar",
-    textClass: "text-cyan-800",
-    borderClass: "border-cyan-800",
-  },
-  {
-    value: "other",
-    label: "Other",
-    textClass: "text-gray-500",
-    borderClass: "border-gray-400",
+    value: "retail",
+    label: "Retail",
+    textClass: "text-violet-500",
+    borderClass: "border-violet-400",
+    fillColorClass: "fill-violet-400",
+    bgColorClass: "bg-violet-400",
   },
 ];
 
