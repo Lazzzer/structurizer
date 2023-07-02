@@ -18,15 +18,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { deleteExtraction } from "@/lib/client-requests";
+import { deleteExtraction, updateReceipt } from "@/lib/client-requests";
+import { Icons } from "./icons";
+import { useRouter } from "next/navigation";
 
 type ReceiptWithItems = Receipt & {
   items: ReceiptItem[];
 };
 
 export function SheetReceipt({ uuid }: { uuid: string }) {
+  const router = useRouter();
   const [receipt, setReceipt] = useState<ReceiptWithItems | null>(null);
 
+  const [isUpdating, setIsUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isPdfDisplayed, setIsPdfDisplayed] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -42,15 +46,15 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
       throw new Error("No receipt found");
     }
     const receipt = await res.json();
+    receipt.date = receipt?.date
+      ? new Date(receipt.date).toISOString().split("T")[0]
+      : null;
     return receipt;
   }
 
   useEffect(() => {
     const fetch = async () => {
       const receipt = await fetchReceipt(uuid);
-      receipt.date = receipt?.date
-        ? new Date(receipt.date).toISOString().split("T")[0]
-        : null;
       setReceipt(receipt);
       setEditedReceipt(receipt);
     };
@@ -177,7 +181,26 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
             >
               Cancel
             </Button>
-            <Button className="w-20">Confirm</Button>
+            <Button
+              className="w-40"
+              disabled={isUpdating}
+              onClick={async () => {
+                setIsUpdating(true);
+                await updateReceipt(editedReceipt);
+                const newReceipt = await fetchReceipt(uuid);
+                setReceipt(newReceipt);
+                setEditedReceipt(newReceipt);
+                setIsEditing(false);
+                setIsUpdating(false);
+                router.refresh();
+                router.push("/receipts");
+              }}
+            >
+              {isUpdating && (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Confirm
+            </Button>
           </div>
         </div>
       )}
