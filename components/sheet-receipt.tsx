@@ -108,23 +108,27 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
                 <h4 className="col-span-2 justify-self-end">Quantity</h4>
                 <h4 className="col-span-2 justify-self-end">Amount</h4>
               </div>
-              {receipt.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="mt-1 grid grid-cols-8 text-sm text-slate-700"
-                >
-                  <p
-                    title={item.description}
-                    className="col-span-4 truncate overflow-hidden"
+              <div className="h-full max-h-52 2xl:max-h-96 overflow-scroll">
+                {receipt.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="mt-1 grid grid-cols-8 text-sm text-slate-700"
                   >
-                    {item.description}
-                  </p>
-                  <p className="col-span-2 justify-self-end">{item.quantity}</p>
-                  <p className="col-span-2 justify-self-end">
-                    {item.amount.toFixed(2)}
-                  </p>
-                </div>
-              ))}
+                    <p
+                      title={item.description}
+                      className="col-span-4 truncate overflow-hidden"
+                    >
+                      {item.description}
+                    </p>
+                    <p className="col-span-2 justify-self-end">
+                      {item.quantity}
+                    </p>
+                    <p className="col-span-2 justify-self-end">
+                      {item.amount.toFixed(2)}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
           <div className="mt-6">
