@@ -1,6 +1,6 @@
 "use client";
 
-import { SheetReceipt } from "@/components/sheet-receipt";
+import { SheetInvoice } from "@/components/sheet-invoice";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -259,7 +259,7 @@ export const columns: ColumnDef<Invoice>[] = [
             </AlertDialogContent>
           </AlertDialog>
           <SheetContent className="w-[512px]">
-            <SheetReceipt uuid={row.original.id} />
+            <SheetInvoice uuid={row.original.id} />
           </SheetContent>
         </Sheet>
       );
