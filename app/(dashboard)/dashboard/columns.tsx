@@ -22,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { deleteExtraction } from "@/lib/client-requests";
 import { cn } from "@/lib/utils";
 import { Status } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
@@ -67,14 +68,6 @@ export const statuses = [
     borderClass: "border-violet-300",
   },
 ];
-
-async function deleteExtraction(uuid: string) {
-  const res = await fetch(`/api/delete/extraction?uuid=${uuid}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
-}
 
 export const columns: ColumnDef<Extraction>[] = [
   {

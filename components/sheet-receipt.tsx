@@ -7,6 +7,18 @@ import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 import { ReceiptsViewer } from "./receipts-viewer";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
+import { deleteExtraction } from "@/lib/client-requests";
 
 type ReceiptWithItems = Receipt & {
   items: ReceiptItem[];
@@ -192,9 +204,35 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
           <Label htmlFor="bulk-processing">Display PDF</Label>
         </div>
         <div className="flex gap-2">
-          <Button variant={"destructive"} className="w-20">
-            Delete
-          </Button>
+          <AlertDialog>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure? This will permanently delete the current receipt
+                  and remove its associated file and extraction. This action
+                  cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    setIsPdfDisplayed(false);
+                    await deleteExtraction(receipt!.extractionId);
+                    window.location.reload();
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+            <AlertDialogTrigger asChild>
+              <Button variant={"destructive"} className="w-20">
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+          </AlertDialog>
           {!isEditing && (
             <Button
               className="w-20"

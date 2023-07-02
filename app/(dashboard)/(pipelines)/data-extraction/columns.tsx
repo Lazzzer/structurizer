@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { deleteExtraction } from "@/lib/client-requests";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Trash, RefreshCw } from "lucide-react";
 import Link from "next/link";
@@ -32,14 +33,6 @@ export type Extraction = {
   createdAt: Date;
   updatedAt: Date;
 };
-
-async function deleteExtraction(uuid: string) {
-  const res = await fetch(`/api/delete/extraction?uuid=${uuid}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
-}
 
 export const columns: ColumnDef<Extraction>[] = [
   {
