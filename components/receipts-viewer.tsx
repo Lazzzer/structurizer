@@ -27,7 +27,7 @@ export function ReceiptsViewer({
 }: {
   verifiedReceipt: any;
   setVerifiedReceipt: (receipt: any) => void;
-  corrections: Map<any, any>;
+  corrections?: Map<any, any>;
 }) {
   const [isItemsOpen, setIsItemsOpen] = useState(true);
   return (
@@ -37,7 +37,7 @@ export function ReceiptsViewer({
         <div className="grid grid-cols-2">
           <div
             className={cn(
-              corrections.has("from") ? "text-red-500" : "text-slate-800",
+              corrections?.has("from") ? "text-red-500" : "text-slate-800",
               "flex items-center gap-1"
             )}
           >
@@ -47,11 +47,11 @@ export function ReceiptsViewer({
             >
               From
             </Label>
-            {corrections.has("from") && (
+            {corrections?.has("from") && (
               <CorrectionTooltip
                 classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
                 classNameContent="w-80"
-                correction={corrections.get("from")}
+                correction={corrections?.get("from")}
               ></CorrectionTooltip>
             )}
           </div>
@@ -70,7 +70,7 @@ export function ReceiptsViewer({
         <div className="grid grid-cols-2">
           <div
             className={cn(
-              corrections.has("category") ? "text-red-500" : "text-slate-800",
+              corrections?.has("category") ? "text-red-500" : "text-slate-800",
               "flex items-center gap-1"
             )}
           >
@@ -80,11 +80,11 @@ export function ReceiptsViewer({
             >
               Category
             </Label>
-            {corrections.has("category") && (
+            {corrections?.has("category") && (
               <CorrectionTooltip
                 classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
                 classNameContent="w-80"
-                correction={corrections.get("category")}
+                correction={corrections?.get("category")}
               ></CorrectionTooltip>
             )}
           </div>
@@ -110,7 +110,7 @@ export function ReceiptsViewer({
         <div className="grid grid-cols-2">
           <div
             className={cn(
-              corrections.has("number") ? "text-red-500" : "text-slate-800",
+              corrections?.has("number") ? "text-red-500" : "text-slate-800",
               "flex items-center gap-1"
             )}
           >
@@ -120,11 +120,11 @@ export function ReceiptsViewer({
             >
               Number
             </Label>
-            {corrections.has("number") && (
+            {corrections?.has("number") && (
               <CorrectionTooltip
                 classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
                 classNameContent="w-80"
-                correction={corrections.get("number")}
+                correction={corrections?.get("number")}
               ></CorrectionTooltip>
             )}
           </div>
@@ -147,18 +147,18 @@ export function ReceiptsViewer({
           <div className="flex items-center gap-1">
             <Label
               className={cn(
-                corrections.has("date") ? "text-red-500" : "text-slate-800",
+                corrections?.has("date") ? "text-red-500" : "text-slate-800",
                 "font-semibold self-center text-base"
               )}
               htmlFor="date"
             >
               Date
             </Label>
-            {corrections.has("date") && (
+            {corrections?.has("date") && (
               <CorrectionTooltip
                 classNameTrigger="h-6 w-6 p-1 text-red-500 hover:bg-red-100 hover:text-red-600"
                 classNameContent="w-80 font-normal"
-                correction={corrections.get("date")}
+                correction={corrections?.get("date")}
               ></CorrectionTooltip>
             )}
             <span className="font-semibold text-slate-800 mx-1 self-center text-base">
@@ -166,18 +166,18 @@ export function ReceiptsViewer({
             </span>
             <Label
               className={cn(
-                corrections.has("time") ? "text-red-500" : "text-slate-800",
+                corrections?.has("time") ? "text-red-500" : "text-slate-800",
                 "font-semibold self-center text-base"
               )}
               htmlFor="time"
             >
               Time
             </Label>
-            {corrections.has("time") && (
+            {corrections?.has("time") && (
               <CorrectionTooltip
                 classNameTrigger="h-6 w-6 p-1 text-red-500 hover:bg-red-100 hover:text-red-600"
                 classNameContent="w-80 font-normal"
-                correction={corrections.get("time")}
+                correction={corrections?.get("time")}
               ></CorrectionTooltip>
             )}
           </div>
@@ -216,7 +216,7 @@ export function ReceiptsViewer({
           <div className="flex items-center justify-between">
             <h4
               className={cn(
-                corrections.has("items") ? "text-red-500" : "text-slate-800",
+                corrections?.has("items") ? "text-red-500" : "text-slate-800",
                 "font-semibold flex items-center"
               )}
             >
@@ -225,11 +225,11 @@ export function ReceiptsViewer({
                 strokeWidth={3}
                 className="h-4 w-4 ml-1 inline-block"
               />
-              {corrections.has("items") && (
+              {corrections?.has("items") && (
                 <CorrectionTooltip
                   classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
                   classNameContent="w-80 font-normal"
-                  correction={corrections.get("items")}
+                  correction={corrections?.get("items")}
                 ></CorrectionTooltip>
               )}
               <Button
@@ -370,7 +370,7 @@ export function ReceiptsViewer({
         <div className="grid grid-cols-2">
           <div
             className={cn(
-              corrections.has("subtotal") ? "text-red-500" : "text-slate-800",
+              corrections?.has("subtotal") ? "text-red-500" : "text-slate-800",
               "flex items-center gap-1"
             )}
           >
@@ -380,11 +380,11 @@ export function ReceiptsViewer({
             >
               Subtotal
             </Label>
-            {corrections.has("subtotal") && (
+            {corrections?.has("subtotal") && (
               <CorrectionTooltip
                 classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
                 classNameContent="w-80"
-                correction={corrections.get("subtotal")}
+                correction={corrections?.get("subtotal")}
               ></CorrectionTooltip>
             )}
           </div>
@@ -407,7 +407,7 @@ export function ReceiptsViewer({
         <div className="grid grid-cols-2">
           <div
             className={cn(
-              corrections.has("tax") ? "text-red-500" : "text-slate-800",
+              corrections?.has("tax") ? "text-red-500" : "text-slate-800",
               "flex items-center gap-1"
             )}
           >
@@ -417,11 +417,11 @@ export function ReceiptsViewer({
             >
               Tax
             </Label>
-            {corrections.has("tax") && (
+            {corrections?.has("tax") && (
               <CorrectionTooltip
                 classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
                 classNameContent="w-80"
-                correction={corrections.get("tax")}
+                correction={corrections?.get("tax")}
               ></CorrectionTooltip>
             )}
           </div>
@@ -444,7 +444,7 @@ export function ReceiptsViewer({
         <div className="grid grid-cols-2">
           <div
             className={cn(
-              corrections.has("tip") ? "text-red-500" : "text-slate-800",
+              corrections?.has("tip") ? "text-red-500" : "text-slate-800",
               "flex items-center gap-1"
             )}
           >
@@ -454,11 +454,11 @@ export function ReceiptsViewer({
             >
               Tip
             </Label>
-            {corrections.has("tip") && (
+            {corrections?.has("tip") && (
               <CorrectionTooltip
                 classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
                 classNameContent="w-80"
-                correction={corrections.get("tip")}
+                correction={corrections?.get("tip")}
               ></CorrectionTooltip>
             )}
           </div>
@@ -481,7 +481,7 @@ export function ReceiptsViewer({
         <div className="grid grid-cols-2">
           <div
             className={cn(
-              corrections.has("total") ? "text-red-500" : "text-slate-800",
+              corrections?.has("total") ? "text-red-500" : "text-slate-800",
               "flex items-center gap-1"
             )}
           >
@@ -491,11 +491,11 @@ export function ReceiptsViewer({
             >
               Total
             </Label>
-            {corrections.has("total") && (
+            {corrections?.has("total") && (
               <CorrectionTooltip
                 classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
                 classNameContent="w-80"
-                correction={corrections.get("total")}
+                correction={corrections?.get("total")}
               ></CorrectionTooltip>
             )}
           </div>

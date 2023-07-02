@@ -14,7 +14,13 @@ type ReceiptWithItems = Receipt & {
 
 export function SheetReceipt({ uuid }: { uuid: string }) {
   const [receipt, setReceipt] = useState<ReceiptWithItems | null>(null);
+
   const [isEditing, setIsEditing] = useState(false);
+  const [isPdfDisplayed, setIsPdfDisplayed] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [editedReceipt, setEditedReceipt] = useState<ReceiptWithItems | null>(
+    null
+  );
 
   async function fetchReceipt(uuid: string) {
     const res = await fetch(`/api/receipts?uuid=${uuid}`, {
@@ -30,7 +36,11 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
   useEffect(() => {
     const fetch = async () => {
       const receipt = await fetchReceipt(uuid);
+      receipt.date = receipt?.date
+        ? new Date(receipt.date).toISOString().split("T")[0]
+        : null;
       setReceipt(receipt);
+      setEditedReceipt(receipt);
     };
 
     console.log("fetching");
@@ -38,12 +48,11 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
     fetch();
   }, []);
 
-  const date = receipt?.date ? new Date(receipt.date) : null;
   return (
     <div className="h-full w-full my-4 relative">
       <h1 className="text-2xl font-bold">Receipt</h1>
       {!isEditing && receipt && (
-        <div className="w-full ">
+        <div className="w-full">
           <div className="mt-10 flex justify-between items-center">
             <h2 className="text-xl font-semibold text-slate-900">Category</h2>
             <p className="text-slate-700 text-end">
@@ -71,13 +80,7 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
               <h3 className="font-semibold text-slate-900">Date Time</h3>
               <p className="text-slate-700 text-sm leading-snug">
                 <span>{receipt.time !== null ? `${receipt.time} - ` : ""}</span>
-                <span>
-                  {date?.toLocaleDateString("en-GB", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </span>
+                <span>{receipt.date as unknown as string}</span>
               </p>
             </div>
           </div>
@@ -144,37 +147,74 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
               </p>
             </div>
           </div>
-          <div className="w-full flex gap-2 items-center justify-between absolute bottom-2 right-0">
-            <div className="flex items-center gap-1">
-              <Switch
-                id="display-pdf"
-                // onCheckedChange={() =>
-                //   setBulkProcessing((previousState) => !previousState)
-                // }
-                // checked={isBulkProcessing}
-              />
-              <Label htmlFor="bulk-processing">Display PDF</Label>
-            </div>
-
-            <div className="flex gap-2">
-              <Button variant={"destructive"} className="w-20">
-                Delete
-              </Button>
-              <Button className="w-20" onClick={() => setIsEditing(true)}>
-                Edit
-              </Button>
-            </div>
-          </div>
         </div>
       )}
       {isEditing && receipt && (
         <div className="w-full h-full">
-          <ReceiptsViewer
-            verifiedReceipt={receipt}
-            setVerifiedReceipt={setReceipt}
-            corrections={new Map()}
-          />
+          <div className="w-full h-3/4 p-1 mt-2 border border-slate-200 border-dashed rounded-lg">
+            <ReceiptsViewer
+              verifiedReceipt={editedReceipt}
+              setVerifiedReceipt={setEditedReceipt}
+            />
+          </div>
+          <div className="mt-2 flex gap-2 justify-end">
+            <Button
+              variant={"secondary"}
+              className="w-20"
+              onClick={() => setIsEditing(false)}
+            >
+              Cancel
+            </Button>
+            <Button className="w-20">Confirm</Button>
+          </div>
         </div>
+      )}
+      <div className="w-full flex gap-2 items-center justify-between absolute bottom-2 right-0">
+        <div className="flex items-center gap-1">
+          <Switch
+            id="display-pdf"
+            onCheckedChange={async () => {
+              if (!isPdfDisplayed) {
+                const res = await fetch(
+                  `/api/signed-url?uuid=${receipt?.extractionId}`,
+                  {
+                    method: "GET",
+                  }
+                );
+                const { url } = await res.json();
+                console.log(url);
+                setPdfUrl(url);
+              }
+              setIsPdfDisplayed((isPdfDisplayed) => !isPdfDisplayed);
+            }}
+            checked={isPdfDisplayed}
+          />
+          <Label htmlFor="bulk-processing">Display PDF</Label>
+        </div>
+        <div className="flex gap-2">
+          <Button variant={"destructive"} className="w-20">
+            Delete
+          </Button>
+          {!isEditing && (
+            <Button
+              className="w-20"
+              onClick={() => {
+                setEditedReceipt(receipt);
+                setIsEditing(true);
+              }}
+            >
+              Edit
+            </Button>
+          )}
+        </div>
+      </div>
+      {isPdfDisplayed && pdfUrl !== null && (
+        <object
+          data={`${pdfUrl}#toolbar=1&navpanes=0&statusbar=0&scrollbar=1&view=fit`}
+          type="application/pdf"
+          style={{ width: "calc(100vw - 512px)", marginRight: "488px" }}
+          className="h-screen absolute -top-10 right-0"
+        />
       )}
     </div>
   );

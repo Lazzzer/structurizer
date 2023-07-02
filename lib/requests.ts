@@ -194,11 +194,14 @@ ORDER BY
     where: {
       userId: userUUID,
     },
-    orderBy: {
-      _count: {
-        from: "desc",
+    orderBy: [
+      {
+        _count: {
+          from: "desc",
+        },
       },
-    },
+      { from: "asc" },
+    ],
     take: 1,
   });
 
