@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
-import { ReceiptsViewer } from "./receipts-viewer";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,11 +16,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { deleteExtraction, updateReceipt } from "@/lib/client-requests";
+import { deleteExtraction, updateInvoice } from "@/lib/client-requests";
 import { Icons } from "./icons";
 import { useRouter } from "next/navigation";
 import { categories } from "@/app/(dashboard)/(structured-data)/invoices/columns";
 import { mapCurrency } from "@/lib/utils";
+import { EditInvoiceViewer } from "@/app/(dashboard)/(structured-data)/invoices/edit-invoice-viewer";
 
 type InvoiceWithItems = Invoice & {
   items: InvoiceItem[];
@@ -83,7 +83,7 @@ export function SheetInvoice({ uuid }: { uuid: string }) {
                 <span>{invoice.date as unknown as string}</span>
               </p>
             </div>
-            {invoice.invoiceNumber !== null && (
+            {invoice.invoiceNumber && (
               <div>
                 <h3 className="font-semibold text-slate-900">Number</h3>
                 <p className="text-slate-700 text-sm leading-snug text-end">
@@ -97,31 +97,22 @@ export function SheetInvoice({ uuid }: { uuid: string }) {
             <p className="text-slate-700 text-sm leading-snug">
               {invoice.fromName}
             </p>
-            <p className="text-slate-500 text-xs leading-snug">
-              {invoice.fromAddress}
-            </p>
-          </div>
-          {/* <div className="mt-3">
-            <h3 className="font-semibold text-lg text-slate-900">Issuer</h3>
-            <div>
-              <h4 className="mt-2 font-medium text-slate-800">Name</h4>
-              <p className="text-slate-700 text-sm leading-snug">
-                {invoice.fromName}
-              </p>
-              <h4 className="mt-2 font-medium text-slate-800">Address</h4>
-              <p className="text-slate-700 text-sm leading-snug">
+            {invoice.fromAddress && (
+              <p className="text-slate-500 text-xs leading-snug">
                 {invoice.fromAddress}
               </p>
-            </div>
-          </div> */}
+            )}
+          </div>
           <div className="mt-3">
             <h3 className="font-semibold text-lg text-slate-900">Recipient</h3>
             <p className="text-slate-700 text-sm leading-snug">
-              {invoice.toName}
+              {invoice?.toName || "Unknown"}
             </p>
-            <p className="text-slate-500 text-xs leading-snug">
-              {invoice.toAddress}
-            </p>
+            {invoice?.toAddress && (
+              <p className="text-slate-500 text-xs leading-snug">
+                {invoice.toAddress}
+              </p>
+            )}
           </div>
           <div className="mt-6">
             <div>
@@ -142,13 +133,11 @@ export function SheetInvoice({ uuid }: { uuid: string }) {
                       title={item.description}
                       className="col-span-6 truncate overflow-hidden"
                     >
-                      {item.description}
+                      {item.description ?? "N/A"}
                     </p>
-                    {item.amount !== null && (
-                      <p className="col-span-2 justify-self-end">
-                        {item.amount.toFixed(2)}
-                      </p>
-                    )}
+                    <p className="col-span-2 justify-self-end">
+                      {item.amount?.toFixed(2) ?? "N/A"}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -160,9 +149,7 @@ export function SheetInvoice({ uuid }: { uuid: string }) {
                 Total Amount Due
               </h3>
               <p className="text-slate-700 text-lg leading-snug text-end">
-                {invoice.currency !== null && (
-                  <span>{mapCurrency(invoice.currency)} </span>
-                )}
+                <span>{mapCurrency(invoice.currency ?? "")} </span>
                 {invoice.totalAmountDue.toFixed(2)}
               </p>
             </div>
@@ -172,9 +159,9 @@ export function SheetInvoice({ uuid }: { uuid: string }) {
       {isEditing && invoice && (
         <div className="w-full h-full">
           <div className="w-full h-3/4 p-1 mt-2 border border-slate-200 border-dashed rounded-lg">
-            <ReceiptsViewer
-              verifiedReceipt={editedInvoice}
-              setVerifiedReceipt={setEditedInvoice}
+            <EditInvoiceViewer
+              editInvoice={editedInvoice!}
+              setEditInvoice={setEditedInvoice}
             />
           </div>
           <div className="mt-2 flex gap-2 justify-end">
@@ -190,14 +177,14 @@ export function SheetInvoice({ uuid }: { uuid: string }) {
               disabled={isUpdating}
               onClick={async () => {
                 setIsUpdating(true);
-                await updateReceipt(editedInvoice);
-                const newReceipt = await fetchInvoice(uuid);
-                setInvoice(newReceipt);
-                setEditedInvoice(newReceipt);
+                await updateInvoice(editedInvoice);
+                const newInvoice = await fetchInvoice(uuid);
+                setInvoice(newInvoice);
+                setEditedInvoice(newInvoice);
                 setIsEditing(false);
                 setIsUpdating(false);
                 router.refresh();
-                router.push("/receipts");
+                router.push("/invoices");
               }}
             >
               {isUpdating && (

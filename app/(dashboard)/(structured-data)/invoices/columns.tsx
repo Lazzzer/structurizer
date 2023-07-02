@@ -238,9 +238,9 @@ export const columns: ColumnDef<Invoice>[] = [
             </DropdownMenu>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
+                <AlertDialogTitle>Delete Invoice</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure? This will permanently delete the current receipt
+                  Are you sure? This will permanently delete the current invoice
                   and remove its associated file and extraction. This action
                   cannot be undone.
                 </AlertDialogDescription>
