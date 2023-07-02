@@ -16,3 +16,16 @@ export function formatBytes(bytes: number, decimals: number = 2) {
 
   return parseFloat(bytes.toFixed(decimals)) + " " + units[i];
 }
+
+export function getMonthNames(number: number) {
+  const date = new Date();
+  date.setMonth(number - 1);
+
+  const shortName = date.toLocaleString("en-GB", { month: "short" });
+  const longName = date.toLocaleString("en-GB", { month: "long" });
+
+  return {
+    shortName,
+    longName,
+  };
+}

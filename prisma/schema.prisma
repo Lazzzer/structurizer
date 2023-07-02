@@ -51,15 +51,15 @@ model Receipt {
   userId       String
   extractionId String        @unique
   objectPath   String
+  from         String
+  category     String
+  total        Float
+  date         DateTime
   number       String?
-  category     String?
-  date         DateTime?
   time         String?
-  from         String?
   subtotal     Float?
   tax          Float?
   tip          Float?
-  total        Float?
   items        ReceiptItem[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -69,11 +69,11 @@ model Receipt {
 }
 
 model ReceiptItem {
-  id          String  @id @default(uuid())
+  id          String @id @default(uuid())
   receiptId   String
-  description String?
-  quantity    Float?
-  amount      Float?
+  description String
+  quantity    Float
+  amount      Float
 
   receipt Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
 }
@@ -83,9 +83,9 @@ model Invoice {
   userId         String
   extractionId   String        @unique
   objectPath     String
+  category       String
+  date           DateTime
   invoiceNumber  String?
-  category       String?
-  date           DateTime?
   fromName       String?
   fromAddress    String?
   toName         String?
@@ -114,6 +114,7 @@ model CardStatement {
   userId           String
   extractionId     String            @unique
   objectPath       String
+  date             DateTime
   issuerName       String?
   issuerAddress    String?
   recipientName    String?
@@ -121,7 +122,6 @@ model CardStatement {
   creditCardName   String?
   creditCardHolder String?
   creditCardNumber String?
-  date             DateTime?
   transactions     CardTransaction[]
   currency         String?
   totalAmountDue   Float?
@@ -135,8 +135,8 @@ model CardStatement {
 model CardTransaction {
   id              String  @id @default(uuid())
   cardStatementId String
+  category        String
   description     String?
-  category        String?
   amount          Float?
 
   cardStatement CardStatement @relation(fields: [cardStatementId], references: [id], onDelete: Cascade)
