@@ -223,3 +223,135 @@ ORDER BY
   };
   return response;
 }
+
+export async function getInvoicesData() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    throw new Error("Cannot authenticate user");
+  }
+  const userUUID = session?.user.id;
+  const invoices = await prisma.invoice.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    where: {
+      user: {
+        id: userUUID,
+      },
+    },
+    include: {
+      extraction: true,
+    },
+  });
+
+  if (invoices.length === 0) {
+    return null;
+  }
+
+  const avgMonthlyExpenses: any = await prisma.$queryRaw`
+WITH months AS (
+    SELECT generate_series(1,12) AS month
+),
+invoices AS (
+    SELECT
+        COALESCE(EXTRACT(MONTH FROM date), 0) AS month,
+        AVG("totalAmountDue") AS average
+    FROM
+        "Invoice"
+    WHERE
+        "userId" = ${userUUID}
+    GROUP BY
+        EXTRACT(MONTH FROM date)
+)
+SELECT
+    months.month,
+    COALESCE(invoices.average, 0) AS average
+FROM
+    months
+LEFT JOIN 
+    invoices ON months.month = invoices.month
+ORDER BY 
+    month
+`;
+
+  const categoryCounts = await prisma.invoice.groupBy({
+    by: ["category"],
+    where: {
+      userId: userUUID,
+    },
+    _count: {
+      category: true,
+    },
+  });
+
+  const categoryDistribution = categoryCounts.map((item) => ({
+    category: item.category,
+    percentage:
+      invoices.length === 0
+        ? 0
+        : (item._count.category / invoices.length) * 100,
+  }));
+
+  const highestTotalAmount = await prisma.invoice.aggregate({
+    where: {
+      userId: userUUID,
+    },
+    _max: {
+      totalAmountDue: true,
+    },
+  });
+
+  const mostExpensiveCategory = await prisma.invoice.groupBy({
+    by: ["category"],
+    where: {
+      userId: userUUID,
+    },
+    _sum: {
+      totalAmountDue: true,
+    },
+    orderBy: {
+      _sum: {
+        totalAmountDue: "desc",
+      },
+    },
+    take: 1,
+  });
+
+  const mostRecurrentIssuer = await prisma.invoice.groupBy({
+    by: ["fromName"],
+    _count: {
+      fromName: true,
+    },
+    where: {
+      userId: userUUID,
+    },
+    orderBy: [
+      {
+        _count: {
+          fromName: "desc",
+        },
+      },
+      { fromName: "asc" },
+    ],
+    take: 1,
+  });
+
+  const response = {
+    invoices,
+    avgMonthlyExpenses,
+    categoryDistribution,
+    highestTotalAmount: {
+      total: highestTotalAmount._max.totalAmountDue,
+    },
+    mostExpensiveCategory: {
+      category: mostExpensiveCategory[0].category,
+      total: mostExpensiveCategory[0]._sum.totalAmountDue,
+    },
+    mostRecurrentIssuer: {
+      fromName: mostRecurrentIssuer[0].fromName,
+      count: mostRecurrentIssuer[0]._count.fromName,
+    },
+  };
+  return response;
+}

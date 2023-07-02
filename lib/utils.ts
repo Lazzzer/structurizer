@@ -29,3 +29,22 @@ export function getMonthNames(number: number) {
     longName,
   };
 }
+
+export function mapCurrency(currency: string) {
+  switch (currency) {
+    case "EUR":
+      return "€";
+    case "USD":
+      return "$";
+    case "GBP":
+      return "£";
+    case "JPY":
+      return "¥";
+    case "CNY":
+      return "¥";
+    case "KRW":
+      return "₩";
+    default:
+      return currency;
+  }
+}

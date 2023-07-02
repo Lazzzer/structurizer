@@ -6,7 +6,6 @@ import { MonthlyExpensesBarChart } from "@/components/monthly-expenses-bar-chart
 import { getMonthNames } from "@/lib/utils";
 import { CategoryDistributionChart } from "@/components/pie-chart";
 import { Statistics } from "@/components/statistics";
-import { Icons } from "@/components/icons";
 
 export default async function ReceiptsPage() {
   const data = await getReceiptsData();
