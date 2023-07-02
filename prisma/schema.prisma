@@ -84,15 +84,15 @@ model Invoice {
   extractionId   String        @unique
   objectPath     String
   category       String
+  fromName       String
+  totalAmountDue Float
   date           DateTime
   invoiceNumber  String?
-  fromName       String?
   fromAddress    String?
   toName         String?
   toAddress      String?
-  items          InvoiceItem[]
   currency       String?
-  totalAmountDue Float?
+  items          InvoiceItem[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -101,9 +101,9 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id          String  @id @default(uuid())
+  id          String @id @default(uuid())
   invoiceId   String
-  description String?
+  description String
   amount      Float?
 
   invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)

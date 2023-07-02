@@ -1,6 +1,6 @@
 "use client";
 
-import { SheetReceipt } from "@/components/sheet-receipt";
+import { SheetInvoice } from "@/components/sheet-invoice";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,37 +26,38 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { deleteExtraction } from "@/lib/client-requests";
 
-import { cn } from "@/lib/utils";
+import { cn, mapCurrency } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, PanelRightOpen, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export type Receipt = {
+export type Invoice = {
   id: string;
   extractionId: string;
   extraction: {
     filename: string;
   };
-  category: "retail" | "groceries" | "restaurant" | "cafe" | "other";
-  from: string;
-  total: number;
-  number: string | null;
+  category: "hobbies" | "services" | "b2b" | "other";
+  fromName: string;
+  totalAmountDue: number;
+  invoiceNumber: string;
+  currency: string | null;
   date: Date;
   createdAt: Date;
 };
 
 export const categories = [
   {
-    value: "cafe",
-    label: "Cafe & Bar",
+    value: "b2b",
+    label: "Business",
     textClass: "text-cyan-800",
     borderClass: "border-cyan-800",
     fillColorClass: "fill-cyan-800",
     bgColorClass: "bg-cyan-800",
   },
   {
-    value: "groceries",
-    label: "Groceries",
+    value: "hobbies",
+    label: "Hobbies",
     textClass: "text-pink-500",
     borderClass: "border-pink-400",
     fillColorClass: "fill-pink-400",
@@ -71,31 +72,24 @@ export const categories = [
     bgColorClass: "bg-slate-400",
   },
   {
-    value: "restaurant",
-    label: "Restaurant",
+    value: "services",
+    label: "Services",
     textClass: "text-cyan-500",
     borderClass: "border-cyan-400",
     fillColorClass: "fill-cyan-400",
     bgColorClass: "bg-cyan-400",
   },
-  {
-    value: "retail",
-    label: "Retail",
-    textClass: "text-violet-500",
-    borderClass: "border-violet-400",
-    fillColorClass: "fill-violet-400",
-    bgColorClass: "bg-violet-400",
-  },
 ];
 
-export const columns: ColumnDef<Receipt>[] = [
+export const columns: ColumnDef<Invoice>[] = [
   {
     accessorKey: "number",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Number" />
     ),
     cell: ({ row }) => {
-      const value = row.original.number === "" ? "None" : row.original.number;
+      const value =
+        row.original.invoiceNumber === "" ? "None" : row.original.invoiceNumber;
       return (
         <div
           title={row.getValue("number")}
@@ -137,16 +131,17 @@ export const columns: ColumnDef<Receipt>[] = [
     },
   },
   {
-    accessorKey: "from",
+    id: "fromName",
+    accessorKey: "fromName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="From" />
+      <DataTableColumnHeader column={column} title="Issuer" />
     ),
     cell: ({ row }) => (
       <div
-        title={row.getValue("from")}
+        title={row.getValue("fromName")}
         className="w-40 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
-        {row.getValue("from")}
+        {row.original.fromName}
       </div>
     ),
   },
@@ -156,22 +151,23 @@ export const columns: ColumnDef<Receipt>[] = [
       <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => (
-      <div className="w-32 text-slate-900">
+      <div className="w-28 text-slate-900">
         {row.getValue<Date>("date").toLocaleDateString("en-GB")}
       </div>
     ),
   },
   {
-    accessorKey: "total",
+    accessorKey: "totalAmountDue",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Total" />
+      <DataTableColumnHeader column={column} title="Total Due" />
     ),
     cell: ({ row }) => (
       <div
-        title={row.getValue("total")}
-        className="w-20 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
+        title={row.getValue("totalAmountDue")}
+        className="w-32 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
-        {row.original.total.toFixed(2)}
+        <span>{mapCurrency(row.original.currency ?? "")} </span>
+        {row.original.totalAmountDue.toFixed(2)}
       </div>
     ),
   },
@@ -242,9 +238,9 @@ export const columns: ColumnDef<Receipt>[] = [
             </DropdownMenu>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
+                <AlertDialogTitle>Delete Invoice</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure? This will permanently delete the current receipt
+                  Are you sure? This will permanently delete the current invoice
                   and remove its associated file and extraction. This action
                   cannot be undone.
                 </AlertDialogDescription>
@@ -263,7 +259,7 @@ export const columns: ColumnDef<Receipt>[] = [
             </AlertDialogContent>
           </AlertDialog>
           <SheetContent className="w-[512px]">
-            <SheetReceipt uuid={row.original.id} />
+            <SheetInvoice uuid={row.original.id} />
           </SheetContent>
         </Sheet>
       );

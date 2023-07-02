@@ -15,3 +15,13 @@ export async function updateReceipt(receipt: any) {
   if (!res.ok) throw new Error("Network response was not ok");
   return res.json();
 }
+
+export async function updateInvoice(invoice: any) {
+  const res = await fetch(`/api/invoices/update`, {
+    method: "PUT",
+    body: JSON.stringify(invoice),
+  });
+  console.log(res.statusText, res.status);
+  if (!res.ok) throw new Error("Network response was not ok");
+  return res.json();
+}
