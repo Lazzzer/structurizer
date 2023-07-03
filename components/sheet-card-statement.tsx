@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { deleteExtraction } from "@/lib/client-requests";
+import { deleteExtraction, updateCardStatement } from "@/lib/client-requests";
 import { Icons } from "./icons";
 import { useRouter } from "next/navigation";
 import { mapCurrency } from "@/lib/utils";

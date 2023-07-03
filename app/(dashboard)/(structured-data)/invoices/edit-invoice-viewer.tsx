@@ -18,6 +18,7 @@ import { invoicesSchema } from "@/lib/llm/schema";
 import { cn } from "@/lib/utils";
 import { Invoice } from "@prisma/client";
 import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
 import { useState } from "react";
 
 type InvoiceItem = {
@@ -37,7 +38,7 @@ type EditInvoiceViewerProps = {
 export function EditInvoiceViewer({
   editInvoice,
   setEditInvoice,
-}: EditInvoiceViewerProps): JSX.Element {
+}: EditInvoiceViewerProps): React.JSX.Element {
   const [isItemsOpen, setIsItemsOpen] = useState(true);
   console.log(editInvoice);
   return (
