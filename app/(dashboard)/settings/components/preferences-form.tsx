@@ -26,24 +26,75 @@ import {
 import Balancer from "react-wrap-balancer";
 import { toast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
-import { Preferences } from "@prisma/client";
+import { Extraction, Preferences } from "@prisma/client";
+import { ExtractionSelect } from "./extraction-select";
 
-const formSchema = z.object({
-  classificationModel: z.string({
-    required_error: "Please select a model.",
-  }),
-  extractionModel: z.string({
-    required_error: "Please select a model.",
-  }),
-  analysisModel: z.string({
-    required_error: "Please select a model.",
-  }),
-  enableReceiptsOneShot: z.boolean(),
-  enableInvoicesOneShot: z.boolean(),
-  enableCardStatementsOneShot: z.boolean(),
-});
+type PreferencesFormProps = {
+  preferences: Preferences;
+  extractions: Extraction[];
+};
 
-export function PreferencesForm({ preferences }: { preferences: Preferences }) {
+const formSchema = z
+  .object({
+    classificationModel: z.string({
+      required_error: "Please select a model.",
+    }),
+    extractionModel: z.string({
+      required_error: "Please select a model.",
+    }),
+    analysisModel: z.string({
+      required_error: "Please select a model.",
+    }),
+    enableReceiptsOneShot: z.boolean(),
+    enableInvoicesOneShot: z.boolean(),
+    enableCardStatementsOneShot: z.boolean(),
+    receiptExampleExtractionId: z.string().uuid().nullish(),
+    invoiceExampleExtractionId: z.string().uuid().nullish(),
+    cardStatementExampleExtractionId: z.string().uuid().nullish(),
+  })
+  .refine(
+    (data) => {
+      console.log(data.enableReceiptsOneShot, data.receiptExampleExtractionId);
+      if (data.enableReceiptsOneShot && !data.receiptExampleExtractionId)
+        return false;
+      return true;
+    },
+    {
+      message: "Please select an extraction of receipts.",
+      path: ["receiptExampleExtractionId"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.enableInvoicesOneShot && !data.invoiceExampleExtractionId)
+        return false;
+      return true;
+    },
+    {
+      message: "Please select an extraction of invoices.",
+      path: ["invoiceExampleExtractionId"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (
+        data.enableCardStatementsOneShot &&
+        !data.cardStatementExampleExtractionId
+      )
+        return false;
+
+      return true;
+    },
+    {
+      message: "Please select an extraction of card statements.",
+      path: ["cardStatementExampleExtractionId"],
+    }
+  );
+
+export function PreferencesForm({
+  preferences,
+  extractions,
+}: PreferencesFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,6 +105,10 @@ export function PreferencesForm({ preferences }: { preferences: Preferences }) {
       enableInvoicesOneShot: !!preferences.invoiceExampleExtractionId,
       enableCardStatementsOneShot:
         !!preferences.cardStatementExampleExtractionId,
+      receiptExampleExtractionId: preferences.receiptExampleExtractionId,
+      invoiceExampleExtractionId: preferences.invoiceExampleExtractionId,
+      cardStatementExampleExtractionId:
+        preferences.cardStatementExampleExtractionId,
     },
   });
 
@@ -67,6 +122,7 @@ export function PreferencesForm({ preferences }: { preferences: Preferences }) {
         </pre>
       ),
     });
+    console.log(values);
   }
 
   return (
@@ -218,8 +274,16 @@ export function PreferencesForm({ preferences }: { preferences: Preferences }) {
             </p>
             <p className="text-slate-500 text-xs mt-1 w-3/5">
               <Balancer>
-                This feature can greatly improve the accuracy of the models if
-                your documents are similar.
+                This technique can greatly improve the accuracy of the models if
+                your documents are similar. It is recommended to use a model
+                with a context window large enough to process the example and
+                the new document.
+              </Balancer>
+            </p>
+            <p className="text-slate-500 text-xs mt-1 w-3/5">
+              <Balancer>
+                The feature is available while there is at least one extraction
+                of the corresponding category.
               </Balancer>
             </p>
             {/* Enable One-Shot Learning for Receipts */}
@@ -234,12 +298,26 @@ export function PreferencesForm({ preferences }: { preferences: Preferences }) {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       aria-readonly
+                      disabled={
+                        extractions.filter(
+                          (extraction) => extraction.category === "receipts"
+                        ).length === 0
+                      }
                     />
                   </FormControl>
                   <FormLabel>Enable For Receipts</FormLabel>
                 </FormItem>
               )}
             />
+            {form.getValues("enableReceiptsOneShot") && (
+              <ExtractionSelect
+                form={form}
+                name="receiptExampleExtractionId"
+                extractions={extractions.filter(
+                  (extraction) => extraction.category === "receipts"
+                )}
+              />
+            )}
             {/* Enable One-Shot Learning for Invoices */}
             <FormField
               control={form.control}
@@ -252,6 +330,11 @@ export function PreferencesForm({ preferences }: { preferences: Preferences }) {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       aria-readonly
+                      disabled={
+                        extractions.filter(
+                          (extraction) => extraction.category === "invoices"
+                        ).length === 0
+                      }
                     />
                   </FormControl>
                   <FormLabel className="inline-block">
@@ -260,6 +343,15 @@ export function PreferencesForm({ preferences }: { preferences: Preferences }) {
                 </FormItem>
               )}
             />
+            {form.getValues("enableInvoicesOneShot") && (
+              <ExtractionSelect
+                form={form}
+                name="invoiceExampleExtractionId"
+                extractions={extractions.filter(
+                  (extraction) => extraction.category === "invoices"
+                )}
+              />
+            )}
             {/* Enable One-Shot Learning for Card Statements */}
             <FormField
               control={form.control}
@@ -272,14 +364,30 @@ export function PreferencesForm({ preferences }: { preferences: Preferences }) {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       aria-readonly
+                      disabled={
+                        extractions.filter(
+                          (extraction) =>
+                            extraction.category === "credit card statements"
+                        ).length === 0
+                      }
                     />
                   </FormControl>
                   <FormLabel>Enable For Card Statements</FormLabel>
                 </FormItem>
               )}
             />
+            {form.getValues("enableCardStatementsOneShot") && (
+              <ExtractionSelect
+                form={form}
+                name="cardStatementExampleExtractionId"
+                extractions={extractions.filter(
+                  (extraction) =>
+                    extraction.category === "credit card statements"
+                )}
+              />
+            )}
           </div>
-          <Button className="w-40 mt-12" type="submit">
+          <Button className="w-40 mt-8" type="submit">
             Save Preferences
           </Button>
         </form>

@@ -1,12 +1,12 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { TopMainContent } from "@/components/top-main-content";
 import { Button } from "@/components/ui/button";
-import { getServerSession } from "next-auth";
-import { PreferencesForm } from "./preferences-form";
-import { getUserPreferences } from "@/lib/requests";
+import { PreferencesForm } from "./components/preferences-form";
+import { getExtractions, getUserPreferences } from "@/lib/requests";
+import { Status } from "@prisma/client";
 
 export default async function SettingsPage() {
   const preferences = await getUserPreferences();
+  const extractions = await getExtractions(Status.PROCESSED);
   return (
     <div className="h-full">
       <TopMainContent title="Settings" displayUploadButton />
@@ -15,7 +15,10 @@ export default async function SettingsPage() {
           <h1 className="text-2xl font-bold text-slate-900  mb-2">
             Data Extraction Preferences
           </h1>
-          <PreferencesForm preferences={preferences} />
+          <PreferencesForm
+            preferences={preferences}
+            extractions={extractions}
+          />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">Account</h1>
