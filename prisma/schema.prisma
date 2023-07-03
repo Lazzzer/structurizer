@@ -115,7 +115,8 @@ model CardStatement {
   extractionId     String            @unique
   objectPath       String
   date             DateTime
-  issuerName       String?
+  issuerName       String
+  totalAmountDue   Float
   issuerAddress    String?
   recipientName    String?
   recipientAddress String?
@@ -124,7 +125,6 @@ model CardStatement {
   creditCardNumber String?
   transactions     CardTransaction[]
   currency         String?
-  totalAmountDue   Float?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
@@ -133,11 +133,11 @@ model CardStatement {
 }
 
 model CardTransaction {
-  id              String  @id @default(uuid())
+  id              String @id @default(uuid())
   cardStatementId String
   category        String
-  description     String?
-  amount          Float?
+  description     String
+  amount          Float
 
   cardStatement CardStatement @relation(fields: [cardStatementId], references: [id], onDelete: Cascade)
 }

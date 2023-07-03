@@ -355,3 +355,129 @@ ORDER BY
   };
   return response;
 }
+
+export async function getCardStatementsData() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    throw new Error("Cannot authenticate user");
+  }
+  const userUUID = session?.user.id;
+
+  const cardStatements = await prisma.cardStatement.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    where: {
+      user: {
+        id: userUUID,
+      },
+    },
+    include: {
+      extraction: true,
+    },
+  });
+
+  if (cardStatements.length === 0) {
+    return null;
+  }
+
+  const avgMonthlyExpenses: { month: number; average: number }[] =
+    await prisma.$queryRaw`
+    WITH months AS (SELECT generate_series(1,12) AS month),
+    cardStatements AS (
+        SELECT
+            COALESCE(EXTRACT(MONTH FROM date), 0) AS month,
+            AVG("totalAmountDue") AS average
+        FROM "CardStatement"
+        WHERE "userId" = ${userUUID}
+        GROUP BY EXTRACT(MONTH FROM date)
+    )
+    SELECT
+        months.month,
+        COALESCE(cardStatements.average, 0) AS average
+    FROM months
+    LEFT JOIN cardStatements ON months.month = cardStatements.month
+    ORDER BY month
+  `;
+
+  const categoryDistribution: {
+    category: string;
+    count: number;
+    percentage: number;
+  }[] = await prisma.$queryRaw`
+    SELECT 
+      t.category,
+      COUNT(t.category) as count,
+      COUNT(t.category) * 100.0 / (
+        SELECT COUNT(*) 
+        FROM "CardTransaction" as t
+        JOIN "CardStatement" as s ON t."cardStatementId" = s.id 
+        WHERE s."userId" = ${userUUID}
+      ) as percentage
+    FROM "CardTransaction" as t
+    JOIN "CardStatement" as s ON t."cardStatementId" = s.id
+    WHERE s."userId" = ${userUUID}
+    GROUP BY t.category
+  `;
+
+  const highestTotalAmount = await prisma.cardStatement.aggregate({
+    where: {
+      userId: userUUID,
+    },
+    _max: {
+      totalAmountDue: true,
+    },
+  });
+
+  const mostExpensiveCategory: {
+    category: string;
+    totalamount: number;
+  }[] = await prisma.$queryRaw`
+    SELECT 
+      t.category,
+      SUM(t.amount) as totalAmount
+    FROM "CardTransaction" as t
+    JOIN "CardStatement" as s ON t."cardStatementId" = s.id
+    WHERE s."userId" = ${userUUID}
+    GROUP BY t.category
+    ORDER BY totalAmount DESC
+    LIMIT 1
+  `;
+
+  const mostRecurrentTransaction: {
+    description: string;
+    count: number;
+  }[] = await prisma.$queryRaw`
+    SELECT 
+      t.description,
+      COUNT(t.description) as count
+    FROM "CardTransaction" as t
+    JOIN "CardStatement" as s ON t."cardStatementId" = s.id
+    WHERE s."userId" = ${userUUID}
+    GROUP BY t.description
+    ORDER BY count DESC
+    LIMIT 1
+  `;
+
+  const response = {
+    cardStatements,
+    avgMonthlyExpenses,
+    categoryDistribution: categoryDistribution.map((item) => ({
+      category: item.category,
+      percentage: parseFloat(item.percentage.toFixed(2)),
+    })),
+    highestTotalAmount: {
+      total: highestTotalAmount._max.totalAmountDue,
+    },
+    mostExpensiveCategory: {
+      category: mostExpensiveCategory[0].category,
+      total: mostExpensiveCategory[0].totalamount,
+    },
+    mostRecurrentTransaction: {
+      transaction: mostRecurrentTransaction[0].description,
+      count: mostRecurrentTransaction[0].count,
+    },
+  };
+  return response;
+}
