@@ -9,6 +9,13 @@ async function main() {
     create: {
       username: "johndoe",
       password: await hash("supersecret", 10),
+      preferences: {
+        create: {
+          classificationModel: "gpt-3.5-turbo-16k",
+          extractionModel: "gpt-3.5-turbo-16k",
+          analysisModel: "gpt-4",
+        },
+      },
     },
   });
   console.log(user);
