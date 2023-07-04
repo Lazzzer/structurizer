@@ -48,3 +48,12 @@ export function mapCurrency(currency: string) {
       return currency;
   }
 }
+
+export async function minDelay<T>(promise: Promise<T>, ms: number) {
+  let [p] = await Promise.all([
+    promise,
+    new Promise<void>((resolve) => setTimeout(resolve, ms)),
+  ]);
+
+  return p;
+}

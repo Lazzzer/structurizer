@@ -12,13 +12,29 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(uuid())
-  username      String          @unique
-  password      String
-  extractions   Extraction[]
-  Receipt       Receipt[]
-  Invoice       Invoice[]
-  CardStatement CardStatement[]
+  id             String          @id @default(uuid())
+  username       String          @unique
+  password       String
+  extractions    Extraction[]
+  receipts       Receipt[]
+  invoices       Invoice[]
+  cardStatements CardStatement[]
+  preferences    Preferences?
+}
+
+model Preferences {
+  id                               String   @id @default(uuid())
+  userId                           String   @unique
+  classificationModel              String
+  extractionModel                  String
+  analysisModel                    String
+  receiptExampleExtractionId       String?
+  invoiceExampleExtractionId       String?
+  cardStatementExampleExtractionId String?
+  createdAt                        DateTime @default(now())
+  updatedAt                        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Status {
