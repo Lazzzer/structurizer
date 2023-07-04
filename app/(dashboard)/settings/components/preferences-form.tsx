@@ -30,6 +30,8 @@ import { Switch } from "@/components/ui/switch";
 import { Extraction, Preferences } from "@prisma/client";
 import { ExtractionSelect } from "./extraction-select";
 import { Icons } from "@/components/icons";
+import { useState } from "react";
+import { minDelay } from "@/lib/utils";
 
 type PreferencesFormProps = {
   preferences: Preferences;
@@ -40,6 +42,7 @@ export function PreferencesForm({
   preferences,
   extractions,
 }: PreferencesFormProps) {
+  const [isUpdating, setUpdating] = useState(false);
   const form = useForm<z.infer<typeof preferencesSchema>>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
@@ -58,10 +61,13 @@ export function PreferencesForm({
   });
 
   async function onSubmit(values: z.infer<typeof preferencesSchema>) {
-    const res = await fetch("/api/preferences", {
+    setUpdating(true);
+    const request = fetch("/api/preferences", {
       method: "PUT",
       body: JSON.stringify(values),
     });
+    const res = await minDelay(request, 500);
+    setUpdating(false);
 
     if (!res.ok) {
       toast({
@@ -351,7 +357,10 @@ export function PreferencesForm({
               />
             )}
           </div>
-          <Button className="w-40 mt-8" type="submit">
+          <Button disabled={isUpdating} className="w-44 mt-8" type="submit">
+            {isUpdating && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Save Preferences
           </Button>
         </form>
