@@ -16,11 +16,11 @@ import {
 } from "@/components/ui/select";
 import { Extraction } from "@prisma/client";
 
-type ExtractionSelectProps = {
+interface ExtractionSelectProps {
   form: any;
   name: string;
   extractions: Extraction[];
-};
+}
 
 export function ExtractionSelect({
   form,

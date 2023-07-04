@@ -33,16 +33,15 @@ import { Icons } from "@/components/icons";
 import { useState } from "react";
 import { minDelay } from "@/lib/utils";
 
-type PreferencesFormProps = {
+interface PreferencesFormProps {
   preferences: Preferences;
   extractions: Extraction[];
-};
+}
 
 export function PreferencesForm({
   preferences,
   extractions,
 }: PreferencesFormProps) {
-  const [isUpdating, setUpdating] = useState(false);
   const form = useForm<z.infer<typeof preferencesSchema>>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
@@ -60,9 +59,11 @@ export function PreferencesForm({
     },
   });
 
+  const [isUpdating, setUpdating] = useState(false);
+
   async function onSubmit(values: z.infer<typeof preferencesSchema>) {
     setUpdating(true);
-    const request = fetch("/api/preferences", {
+    const request = fetch("/api/account", {
       method: "PUT",
       body: JSON.stringify(values),
     });
