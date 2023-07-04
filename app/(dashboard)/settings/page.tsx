@@ -12,7 +12,7 @@ export default async function SettingsPage() {
       <TopMainContent title="Settings" displayUploadButton />
       <div className="m-8 flex flex-col flex-grow space-y-10 2xl:space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900  mb-2">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Data Extraction Preferences
           </h1>
           <PreferencesForm

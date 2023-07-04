@@ -102,7 +102,7 @@ export function PreferencesForm({
         <h2 className="font-bold text-slate-800 text-lg">
           Select Language Model
         </h2>
-        <p className="text-slate-600">
+        <p className="text-slate-600 text-sm">
           You can choose between multiple language models for each step of the
           data extraction process.
         </p>
@@ -239,7 +239,7 @@ export function PreferencesForm({
             <h2 className="font-bold text-slate-800 text-lg">
               One-Shot Learning
             </h2>
-            <p className="text-slate-600">
+            <p className="text-slate-600 text-sm mb-2">
               You can define an existing Data Extraction as example for the next
               extractions of the same category.
             </p>
