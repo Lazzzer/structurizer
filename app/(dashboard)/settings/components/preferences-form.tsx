@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { preferencesSchema } from "@/lib/validations/preferences";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,75 +29,19 @@ import { toast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { Extraction, Preferences } from "@prisma/client";
 import { ExtractionSelect } from "./extraction-select";
+import { Icons } from "@/components/icons";
 
 type PreferencesFormProps = {
   preferences: Preferences;
   extractions: Extraction[];
 };
 
-const formSchema = z
-  .object({
-    classificationModel: z.string({
-      required_error: "Please select a model.",
-    }),
-    extractionModel: z.string({
-      required_error: "Please select a model.",
-    }),
-    analysisModel: z.string({
-      required_error: "Please select a model.",
-    }),
-    enableReceiptsOneShot: z.boolean(),
-    enableInvoicesOneShot: z.boolean(),
-    enableCardStatementsOneShot: z.boolean(),
-    receiptExampleExtractionId: z.string().uuid().nullish(),
-    invoiceExampleExtractionId: z.string().uuid().nullish(),
-    cardStatementExampleExtractionId: z.string().uuid().nullish(),
-  })
-  .refine(
-    (data) => {
-      console.log(data.enableReceiptsOneShot, data.receiptExampleExtractionId);
-      if (data.enableReceiptsOneShot && !data.receiptExampleExtractionId)
-        return false;
-      return true;
-    },
-    {
-      message: "Please select an extraction of receipts.",
-      path: ["receiptExampleExtractionId"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.enableInvoicesOneShot && !data.invoiceExampleExtractionId)
-        return false;
-      return true;
-    },
-    {
-      message: "Please select an extraction of invoices.",
-      path: ["invoiceExampleExtractionId"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (
-        data.enableCardStatementsOneShot &&
-        !data.cardStatementExampleExtractionId
-      )
-        return false;
-
-      return true;
-    },
-    {
-      message: "Please select an extraction of card statements.",
-      path: ["cardStatementExampleExtractionId"],
-    }
-  );
-
 export function PreferencesForm({
   preferences,
   extractions,
 }: PreferencesFormProps) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof preferencesSchema>>({
+    resolver: zodResolver(preferencesSchema),
     defaultValues: {
       classificationModel: preferences.classificationModel,
       extractionModel: preferences.extractionModel,
@@ -112,16 +57,35 @@ export function PreferencesForm({
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      ),
+  async function onSubmit(values: z.infer<typeof preferencesSchema>) {
+    const res = await fetch("/api/preferences", {
+      method: "PUT",
+      body: JSON.stringify(values),
     });
+
+    if (!res.ok) {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong.",
+        description: "Your preferences could not be updated. Please try again.",
+      });
+    } else {
+      toast({
+        title: "Preferences updated.",
+        description: (
+          <span className="flex items-center gap-2">
+            Your preferences have been updated.
+            <Icons.checkCircleInside
+              strokeWidth={2}
+              width={24}
+              height={24}
+              className="text-green-500 inline-block"
+            />
+          </span>
+        ),
+      });
+    }
+
     console.log(values);
   }
 
