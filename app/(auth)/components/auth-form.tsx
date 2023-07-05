@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import { cn, minDelay } from "@/lib/utils";
@@ -12,9 +13,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { Icons } from "@/components/icons";
-import { useRouter } from "next/navigation";
 
-interface AuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface AuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  type: "login" | "register";
+}
 
 type FormData = z.infer<typeof authSchema>;
 
@@ -33,6 +35,25 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
+    if (props.type === "register") {
+      const res = await minDelay(
+        fetch("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify(data),
+        }),
+        500
+      );
+
+      if (res.status !== 201) {
+        setIsLoading(false);
+        return toast({
+          title: "Failed to sign up.",
+          description: "Your sign up request failed. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+
     const res = await minDelay(
       signIn("credentials", {
         username: data.username.toLowerCase(),
@@ -98,7 +119,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Sign In
+            {props.type === "login" ? "Sign In" : "Sign Up"}
           </Button>
         </div>
       </form>
