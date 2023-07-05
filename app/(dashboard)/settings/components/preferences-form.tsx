@@ -45,9 +45,13 @@ export function PreferencesForm({
   const form = useForm<z.infer<typeof preferencesSchema>>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
-      classificationModel: preferences.classificationModel,
-      extractionModel: preferences.extractionModel,
-      analysisModel: preferences.analysisModel,
+      classificationModel: preferences.classificationModel as
+        | "gpt-3.5-turbo"
+        | "gpt-3.5-turbo-16k",
+      extractionModel: preferences.extractionModel as
+        | "gpt-3.5-turbo"
+        | "gpt-3.5-turbo-16k",
+      analysisModel: preferences.analysisModel as "gpt-4" | "gpt-3.5-turbo-16k",
       enableReceiptsOneShot: !!preferences.receiptExampleExtractionId,
       enableInvoicesOneShot: !!preferences.invoiceExampleExtractionId,
       enableCardStatementsOneShot:

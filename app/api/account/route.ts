@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 
 import * as z from "zod";
 import { validateBody } from "@/lib/validations/request";
-import { getUser } from "@/lib/user";
+import { getUser } from "@/lib/session";
 import { deleteUserFolder } from "@/lib/s3";
 
 export async function PUT(req: NextRequest) {

@@ -9,7 +9,6 @@ import { Statistics } from "@/components/statistics";
 
 export default async function CardStatementsPage() {
   const data = await getCardStatementsData();
-  console.log(data);
   const formattedAvgMonthlyExpenses = data!.avgMonthlyExpenses.map((m: any) => {
     const { shortName, longName } = getMonthNames(m.month);
     return {
