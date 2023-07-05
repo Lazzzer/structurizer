@@ -29,7 +29,12 @@ export function HelpPopover({
           )}
         />
       </PopoverTrigger>
-      <PopoverContent className={cn("w-80 text-slate-800", contentClassName)}>
+      <PopoverContent
+        className={cn(
+          "w-80 text-slate-800 max-h-56 h-full overflow-scroll",
+          contentClassName
+        )}
+      >
         {children}
       </PopoverContent>
     </Popover>

@@ -12,6 +12,11 @@ export type NavSectionItems = {
   items: NavItem[];
 };
 
+export type StepType = {
+  number: number;
+  title: string;
+};
+
 export type UploadInfo = {
   nbFiles: number;
   success: [string, string][]; // [filename, uuid][]

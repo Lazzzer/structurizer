@@ -10,6 +10,7 @@ import { useCallback, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { UploadInfo } from "types";
 import { HelpPopover } from "@/components/ui/help-popover";
+import { motion } from "framer-motion";
 
 interface DropzoneProps extends React.HTMLAttributes<HTMLDivElement> {
   updateUploadInfos: (uploadInfos: UploadInfo) => void;
@@ -108,7 +109,14 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
   });
 
   return (
-    <div className={cn(className, "flex flex-col items-center justify-center")}>
+    <motion.div
+      layout="position"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className={cn(className, "flex flex-col items-center justify-center")}
+    >
       <div className="flex items-center gap-2 mb-4">
         <Switch
           id="bulk-processing"
@@ -118,7 +126,7 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
           checked={isBulkProcessing}
         />
         <Label htmlFor="bulk-processing">Bulk Processing</Label>
-        <HelpPopover contentClassName="w-[500px]">
+        <HelpPopover contentClassName="w-[500px] overflow-scroll">
           <div className="flex items-center gap-2 mb-2">
             <Icons.help width={20} height={20} />
             <h3 className="font-semibold">Bulk Processing</h3>
@@ -240,6 +248,6 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
           )}
         </section>
       )}
-    </div>
+    </motion.div>
   );
 }

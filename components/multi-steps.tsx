@@ -1,5 +1,6 @@
 "use client";
-import { Step, StepType } from "./ui/step";
+import type { StepType } from "types";
+import { Step } from "./ui/step";
 import { useStepStore } from "@/lib/store";
 
 export default function MultiSteps() {
