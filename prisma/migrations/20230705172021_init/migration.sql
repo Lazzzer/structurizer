@@ -4,10 +4,26 @@ CREATE TYPE "Status" AS ENUM ('TO_RECOGNIZE', 'TO_EXTRACT', 'TO_VERIFY', 'PROCES
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "username" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Preferences" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "classificationModel" TEXT NOT NULL,
+    "extractionModel" TEXT NOT NULL,
+    "analysisModel" TEXT NOT NULL,
+    "receiptExampleExtractionId" TEXT,
+    "invoiceExampleExtractionId" TEXT,
+    "cardStatementExampleExtractionId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Preferences_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -32,15 +48,15 @@ CREATE TABLE "Receipt" (
     "userId" TEXT NOT NULL,
     "extractionId" TEXT NOT NULL,
     "objectPath" TEXT NOT NULL,
+    "from" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
+    "total" DOUBLE PRECISION NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
     "number" TEXT,
-    "category" TEXT,
-    "date" TIMESTAMP(3),
     "time" TEXT,
-    "from" TEXT,
     "subtotal" DOUBLE PRECISION,
     "tax" DOUBLE PRECISION,
     "tip" DOUBLE PRECISION,
-    "total" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -51,9 +67,9 @@ CREATE TABLE "Receipt" (
 CREATE TABLE "ReceiptItem" (
     "id" TEXT NOT NULL,
     "receiptId" TEXT NOT NULL,
-    "description" TEXT,
-    "quantity" DOUBLE PRECISION,
-    "amount" DOUBLE PRECISION,
+    "description" TEXT NOT NULL,
+    "quantity" DOUBLE PRECISION NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT "ReceiptItem_pkey" PRIMARY KEY ("id")
 );
@@ -64,15 +80,15 @@ CREATE TABLE "Invoice" (
     "userId" TEXT NOT NULL,
     "extractionId" TEXT NOT NULL,
     "objectPath" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
+    "fromName" TEXT NOT NULL,
+    "totalAmountDue" DOUBLE PRECISION NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
     "invoiceNumber" TEXT,
-    "category" TEXT,
-    "date" TIMESTAMP(3),
-    "fromName" TEXT,
     "fromAddress" TEXT,
     "toName" TEXT,
     "toAddress" TEXT,
     "currency" TEXT,
-    "totalAmountDue" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -83,7 +99,7 @@ CREATE TABLE "Invoice" (
 CREATE TABLE "InvoiceItem" (
     "id" TEXT NOT NULL,
     "invoiceId" TEXT NOT NULL,
-    "description" TEXT,
+    "description" TEXT NOT NULL,
     "amount" DOUBLE PRECISION,
 
     CONSTRAINT "InvoiceItem_pkey" PRIMARY KEY ("id")
@@ -95,16 +111,16 @@ CREATE TABLE "CardStatement" (
     "userId" TEXT NOT NULL,
     "extractionId" TEXT NOT NULL,
     "objectPath" TEXT NOT NULL,
-    "issuerName" TEXT,
+    "date" TIMESTAMP(3) NOT NULL,
+    "issuerName" TEXT NOT NULL,
+    "totalAmountDue" DOUBLE PRECISION NOT NULL,
     "issuerAddress" TEXT,
     "recipientName" TEXT,
     "recipientAddress" TEXT,
     "creditCardName" TEXT,
     "creditCardHolder" TEXT,
     "creditCardNumber" TEXT,
-    "date" TIMESTAMP(3),
     "currency" TEXT,
-    "totalAmountDue" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -115,15 +131,18 @@ CREATE TABLE "CardStatement" (
 CREATE TABLE "CardTransaction" (
     "id" TEXT NOT NULL,
     "cardStatementId" TEXT NOT NULL,
-    "description" TEXT,
-    "category" TEXT,
-    "amount" DOUBLE PRECISION,
+    "category" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT "CardTransaction_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+CREATE UNIQUE INDEX "User_name_key" ON "User"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Preferences_userId_key" ON "Preferences"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Receipt_extractionId_key" ON "Receipt"("extractionId");
@@ -133,6 +152,9 @@ CREATE UNIQUE INDEX "Invoice_extractionId_key" ON "Invoice"("extractionId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CardStatement_extractionId_key" ON "CardStatement"("extractionId");
+
+-- AddForeignKey
+ALTER TABLE "Preferences" ADD CONSTRAINT "Preferences_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Extraction" ADD CONSTRAINT "Extraction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

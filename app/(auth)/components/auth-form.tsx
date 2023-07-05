@@ -56,7 +56,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
 
     const res = await minDelay(
       signIn("credentials", {
-        username: data.username.toLowerCase(),
+        name: data.name.toLowerCase(),
         password: data.password,
         redirect: false,
       }),
@@ -82,21 +82,19 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-6">
           <div className="grid gap-1.5">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="name">Username</Label>
             <Input
-              id="username"
+              id="name"
               placeholder="johndoe"
               type="text"
               autoCapitalize="none"
               autoComplete="text"
               autoCorrect="off"
               disabled={isLoading}
-              {...register("username")}
+              {...register("name")}
             />
-            {errors?.username && (
-              <p className="px-1 text-xs text-red-600">
-                {errors.username.message}
-              </p>
+            {errors?.name && (
+              <p className="px-1 text-xs text-red-600">{errors.name.message}</p>
             )}
           </div>
           <div className="grid gap-1.5">
