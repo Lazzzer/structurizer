@@ -11,3 +11,8 @@ export type NavSectionItems = {
   icon: keyof typeof Icons;
   items: NavItem[];
 };
+
+export type UploadInfo = {
+  nbFiles: number;
+  success: [string, string][]; // [filename, uuid][]
+};

@@ -1,16 +1,16 @@
 "use client";
 
+import { Icons } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import { HelpTooltip } from "@/components/ui/help-tooltip";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { useStepStore } from "@/lib/store";
+import { cn, formatBytes } from "@/lib/utils";
 import { useCallback, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
-import { Switch } from "./ui/switch";
-import { Label } from "./ui/label";
-import { HelpTooltip } from "./ui/help-tooltip";
+import { UploadInfo } from "types";
 import Balancer from "react-wrap-balancer";
-import { cn, formatBytes } from "@/lib/utils";
-import { Icons } from "./icons";
-import { Button } from "./ui/button";
-import { UploadInfo } from "./upload-pipeline";
-import { useStepStore } from "@/lib/store";
 
 type SettledResult = {
   status: "fulfilled" | "rejected";

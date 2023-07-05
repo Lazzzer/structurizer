@@ -1,16 +1,13 @@
 "use client";
-import { useState } from "react";
-import { buttonVariants } from "./ui/button";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Dropzone } from "./dropzone";
-import { Icons } from "./icons";
-import { useStepStore } from "@/lib/store";
 
-export type UploadInfo = {
-  nbFiles: number;
-  success: [string, string][]; // [filename, uuid][]
-};
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { useStepStore } from "@/lib/store";
+import { UploadInfo } from "types";
+import { Dropzone } from "./dropzone";
+import { Icons } from "@/components/icons";
+import { buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function UploadPipeline() {
   const [uploadInfos, setUploadInfos] = useState<UploadInfo>({
@@ -44,6 +41,7 @@ export default function UploadPipeline() {
                     buttonVariants({ variant: "secondary" }),
                     "w-40"
                   )}
+                  prefetch={false}
                   href={"/dashboard"}
                 >
                   Back
@@ -58,6 +56,7 @@ export default function UploadPipeline() {
             )) || (
               <Link
                 className={cn(buttonVariants(), "w-40")}
+                prefetch={false}
                 href={"/dashboard"}
               >
                 Back to Dashboard

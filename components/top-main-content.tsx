@@ -8,15 +8,17 @@ import { Icons } from "./icons";
 import MultiSteps from "./multi-steps";
 import { useStepStore } from "@/lib/store";
 
+interface TopMainContentProps {
+  title: string;
+  displayUploadButton?: boolean;
+  step?: number;
+}
+
 export function TopMainContent({
   title,
   displayUploadButton = false,
   step = undefined,
-}: {
-  title: string;
-  displayUploadButton?: boolean;
-  step?: number;
-}) {
+}: TopMainContentProps) {
   useEffect(() => {
     useStepStore.setState(() => ({
       current: step ?? 0,
