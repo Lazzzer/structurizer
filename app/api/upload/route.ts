@@ -1,16 +1,13 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "crypto";
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getUser } from "@/lib/session";
+import { uploadFile } from "@/lib/s3";
 
-export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function POST(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const contentType = req.headers.get("content-type");
@@ -31,40 +28,12 @@ export async function POST(req: Request) {
 
     const blob = file as Blob;
     const buffer = Buffer.from(await blob.arrayBuffer());
+    const fileId = randomUUID();
+    const key = `${user.id}/${fileId}`;
 
-    const s3 = new S3Client({
-      region: process.env.S3_REGION,
-      endpoint: process.env.S3_ENDPOINT,
-      credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
-        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
-      },
-      forcePathStyle: true,
-    });
-
-    const userUUID = session?.user.id;
-    const fileUUID = randomUUID();
-
-    const s3Params = {
-      Bucket: process.env.S3_BUCKET as string,
-      Key: `${userUUID}/${fileUUID}`,
-      Body: buffer,
-      ContentType: blob.type,
-    };
-
-    const signedUrl = await getSignedUrl(s3, new PutObjectCommand(s3Params), {
-      expiresIn: 60,
-    });
-
-    const res = await fetch(signedUrl, {
-      method: "PUT",
-      body: buffer,
-      headers: {
-        "Content-Type": "application/pdf",
-      },
-    });
-
-    if (!res.ok) {
+    try {
+      await uploadFile(buffer, key, blob.type);
+    } catch (e) {
       return NextResponse.json(
         { error: "Could not upload file" },
         { status: 500 }
@@ -74,9 +43,9 @@ export async function POST(req: Request) {
     const extraction = await prisma.extraction.create({
       data: {
         filename: blob.name,
-        objectPath: s3Params.Key,
+        objectPath: key,
         user: {
-          connect: { id: userUUID },
+          connect: { id: user.id },
         },
       },
     });
@@ -92,7 +61,7 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     return NextResponse.json(
-      { error: "Could not parse content as FormData" },
+      { error: "Could not parse formData" },
       { status: 400 }
     );
   }

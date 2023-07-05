@@ -1,8 +1,10 @@
 import {
   DeleteObjectsCommand,
   ListObjectsV2Command,
+  PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
   region: process.env.S3_REGION,
@@ -13,6 +15,35 @@ const s3 = new S3Client({
   },
   forcePathStyle: true,
 });
+
+export async function uploadFile(
+  buffer: Buffer,
+  key: string,
+  contentType: string
+) {
+  const s3Params = {
+    Bucket: process.env.S3_BUCKET as string,
+    Key: key,
+    Body: buffer,
+    ContentType: contentType,
+  };
+
+  const signedUrl = await getSignedUrl(s3, new PutObjectCommand(s3Params), {
+    expiresIn: 60,
+  });
+
+  const res = await fetch(signedUrl, {
+    method: "PUT",
+    body: buffer,
+    headers: {
+      "Content-Type": "application/pdf",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Could not upload file");
+  }
+}
 
 export async function deleteUserFolder(location: string) {
   let count = 0;
