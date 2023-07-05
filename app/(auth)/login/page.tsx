@@ -1,10 +1,11 @@
 import { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
 
 export const metadata: Metadata = {
-  title: "Login",
-  description: "Login to your account",
+  title: "Login - Structurizer",
+  description: "Login to your Structurizer account",
 };
 
 export default function LoginPage() {
@@ -26,6 +27,12 @@ export default function LoginPage() {
           </h1>
         </div>
         <AuthForm />
+        <p className="text-center text-sm text-slate-700">
+          <Link href="/register" className="hover:underline underline-offset-4">
+            Don&apos;t have an account yet?
+            <span className="font-semibold"> Sign Up</span>
+          </Link>
+        </p>
       </div>
     </div>
   );

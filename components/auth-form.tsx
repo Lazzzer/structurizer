@@ -1,14 +1,13 @@
 "use client";
-
-import * as React from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { cn } from "@/lib/utils";
+import { cn, minDelay } from "@/lib/utils";
 import { authSchema } from "@/lib/validations/auth";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
@@ -27,38 +26,28 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
   } = useForm<FormData>({
     resolver: zodResolver(authSchema),
   });
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
   const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
-
-    const [settledResult] = await Promise.allSettled([
+    const res = await minDelay(
       signIn("credentials", {
         username: data.username.toLowerCase(),
         password: data.password,
         redirect: false,
       }),
-      new Promise((resolve) => setTimeout(resolve, 700)),
-    ]);
+      500
+    );
 
-    const signInResult =
-      settledResult.status === "fulfilled" ? settledResult.value : null;
-
-    if (!signInResult?.ok) {
+    if (!res || res.error) {
+      setIsLoading(false);
       return toast({
-        title: "Something went wrong.",
-        description: "Your sign in request failed. Please try again.",
-        variant: "destructive",
-      });
-    }
-
-    setIsLoading(false);
-
-    if (signInResult?.error) {
-      return toast({
-        title: "Something went wrong.",
-        description: signInResult.error,
+        title: "Failed to sign in.",
+        description:
+          res?.error ?? "Your sign in request failed. Please try again.",
         variant: "destructive",
       });
     }
@@ -105,21 +94,12 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
               </p>
             )}
           </div>
-          <button
-            className={cn(
-              "mt-2",
-              buttonVariants({
-                variant: "default",
-                size: "default",
-              })
-            )}
-            disabled={isLoading}
-          >
+          <Button className="mt-2" disabled={isLoading}>
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
             Sign In
-          </button>
+          </Button>
         </div>
       </form>
     </div>

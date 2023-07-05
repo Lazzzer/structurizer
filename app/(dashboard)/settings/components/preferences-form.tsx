@@ -38,11 +38,13 @@ interface PreferencesFormProps {
   extractions: Extraction[];
 }
 
+type FormData = z.infer<typeof preferencesSchema>;
+
 export function PreferencesForm({
   preferences,
   extractions,
 }: PreferencesFormProps) {
-  const form = useForm<z.infer<typeof preferencesSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
       classificationModel: preferences.classificationModel as
@@ -63,16 +65,16 @@ export function PreferencesForm({
     },
   });
 
-  const [isUpdating, setUpdating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  async function onSubmit(values: z.infer<typeof preferencesSchema>) {
-    setUpdating(true);
+  async function onSubmit(values: FormData) {
+    setIsLoading(true);
     const request = fetch("/api/account", {
       method: "PUT",
       body: JSON.stringify(values),
     });
     const res = await minDelay(request, 500);
-    setUpdating(false);
+    setIsLoading(false);
 
     if (!res.ok) {
       toast({
@@ -362,8 +364,8 @@ export function PreferencesForm({
               />
             )}
           </div>
-          <Button disabled={isUpdating} className="w-44 mt-8" type="submit">
-            {isUpdating && (
+          <Button disabled={isLoading} className="w-44 mt-8" type="submit">
+            {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
             Save Preferences

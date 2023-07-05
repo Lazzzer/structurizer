@@ -19,7 +19,7 @@ const calSans = localFont({
 
 const title = "Structurizer";
 const description =
-  "Structurizer is a web application that helps you exctract structured data from unstructured text.";
+  "Structurizer is a web application that helps you extract structured data from PDF files.";
 
 export const metadata: Metadata = {
   title,
