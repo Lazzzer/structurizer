@@ -20,7 +20,7 @@ interface AuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
 
 type FormData = z.infer<typeof authSchema>;
 
-export function AuthForm({ className, ...props }: AuthFormProps) {
+export function AuthForm({ className, type }: AuthFormProps) {
   const {
     register,
     handleSubmit,
@@ -35,7 +35,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
-    if (props.type === "register") {
+    if (type === "register") {
       const res = await minDelay(
         fetch("/api/auth/register", {
           method: "POST",
@@ -78,7 +78,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
   }
 
   return (
-    <div className={cn("grid gap-6", className)} {...props}>
+    <div className={cn("grid gap-6", className)}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-6">
           <div className="grid gap-1.5">
@@ -118,7 +118,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            {props.type === "login" ? "Sign In" : "Sign Up"}
+            {type === "login" ? "Sign In" : "Sign Up"}
           </Button>
         </div>
       </form>

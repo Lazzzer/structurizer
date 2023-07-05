@@ -1,8 +1,9 @@
-import { BottomSection } from "@/components/bottom-section";
-import { NavItem, NavSection, NavSectionItems } from "@/components/nav-section";
 import Image from "next/image";
 import Link from "next/link";
 import { getUser } from "@/lib/session";
+import { BottomSection } from "./components/bottom-section";
+import { NavSection } from "./components/nav-section";
+import type { NavItem, NavSectionItems } from "types";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -78,7 +79,7 @@ export default async function DashboardLayout({
       <div className="fixed inset-y-0 z-50 flex w-72 flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r-2 border-slate-200 bg-white pl-8 pr-6 pb-4">
           {/* Logo */}
-          <Link href="/dashboard">
+          <Link href="/dashboard" prefetch={false}>
             <Image
               className="flex mt-8 shrink-0"
               priority
