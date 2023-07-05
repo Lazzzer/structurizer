@@ -40,6 +40,17 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async jwt({ token }) {
+      const dbUser = await prisma.user.findFirst({
+        where: {
+          id: token.sub,
+        },
+      });
+      if (!dbUser) {
+        throw new Error("Invalid token");
+      }
+      return token;
+    },
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
