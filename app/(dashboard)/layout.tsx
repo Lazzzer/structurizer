@@ -1,9 +1,8 @@
 import { BottomSection } from "@/components/bottom-section";
 import { NavItem, NavSection, NavSectionItems } from "@/components/nav-section";
-import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { getUser } from "@/lib/session";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -69,7 +68,10 @@ const bottomItems: NavItem[] = [
 export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  const session = await getServerSession(authOptions);
+  const user = await getUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
   return (
     <div className="min-h-screen flex">
       {/* Sidenav */}
@@ -94,7 +96,7 @@ export default async function DashboardLayout({
             <div className="flex flex-1 flex-col gap-y-7">
               <BottomSection
                 className="mt-auto"
-                username={session?.user?.username ?? "Default"}
+                username={user.name}
                 items={bottomItems}
               />
             </div>
