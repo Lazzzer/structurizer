@@ -79,9 +79,13 @@ export default async function DashboardLayout({
       <div className="fixed inset-y-0 z-50 flex w-72 flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r-2 border-slate-200 bg-white pl-8 pr-6 pb-4">
           {/* Logo */}
-          <Link href="/dashboard" prefetch={false}>
+          <Link
+            href="/dashboard"
+            prefetch={false}
+            className="mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 focus-visible:rounded-sm"
+          >
             <Image
-              className="flex mt-8 shrink-0"
+              className="flex shrink-0"
               priority
               src="/logo.svg"
               width={205}

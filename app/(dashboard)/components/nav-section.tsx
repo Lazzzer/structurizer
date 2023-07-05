@@ -33,7 +33,7 @@ export function NavSection({ className, section }: NavSectionProps) {
             const Icon = Icons[item.icon];
             return (
               <Link
-                className="flex items-center ml-4 my-3"
+                className="flex items-center ml-4 my-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 focus-visible:rounded-sm  "
                 key={index}
                 href={item.href}
                 prefetch={false}
