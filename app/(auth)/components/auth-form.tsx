@@ -47,8 +47,8 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
       if (res.status !== 201) {
         setIsLoading(false);
         return toast({
-          title: "Failed to sign up.",
-          description: "Your sign up request failed. Please try again.",
+          title: "Failed to sign up",
+          description: "Your sign up request failed.",
           variant: "destructive",
         });
       }
@@ -85,7 +85,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
             <Label htmlFor="name">Username</Label>
             <Input
               id="name"
-              placeholder="johndoe"
+              placeholder="Your username"
               type="text"
               autoCapitalize="none"
               autoComplete="text"
@@ -101,6 +101,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
+              placeholder="Your password"
               type="password"
               autoCapitalize="none"
               autoCorrect="off"
