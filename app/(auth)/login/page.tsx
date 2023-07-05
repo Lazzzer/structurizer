@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AuthForm } from "../components/auth-form";
 
 export const metadata: Metadata = {
-  title: "Login - Structurizer",
+  title: "Login",
   description: "Login to your Structurizer account",
 };
 
