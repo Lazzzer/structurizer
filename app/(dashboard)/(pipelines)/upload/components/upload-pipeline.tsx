@@ -42,10 +42,6 @@ export default function UploadPipeline() {
             viewport={{ once: true }}
             className="flex flex-col items-center justify-center"
           >
-            {/* <Icons.checkCircleInside
-              strokeWidth={1.4}
-              className="text-green-500 w-32 h-32 my-6"
-            /> */}
             <CircleCheckIcon
               strokeWidth={1.5}
               className="text-green-500 w-32 h-32 my-6"

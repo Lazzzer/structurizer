@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useStepStore } from "@/lib/store";
 import { cn, formatBytes } from "@/lib/utils";
-import { useCallback, useState } from "react";
+import { useCallback, useReducer } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { UploadInfo } from "types";
 import { HelpPopover } from "@/components/ui/help-popover";
@@ -14,6 +14,63 @@ import { motion } from "framer-motion";
 
 interface DropzoneProps extends React.HTMLAttributes<HTMLDivElement> {
   updateUploadInfos: (uploadInfos: UploadInfo) => void;
+}
+
+interface State {
+  files: File[];
+  rejectedFiles: FileRejection[];
+  isBulkProcessing: boolean;
+  isLoading: boolean;
+  hasUploadFailed: boolean;
+}
+
+type Action =
+  | {
+      type: "set_files";
+      closeAction: boolean;
+      files: File[];
+      rejectedFiles: FileRejection[];
+    }
+  | { type: "toggle_bulk_processing" }
+  | { type: "set_loading"; isLoading: boolean }
+  | { type: "set_upload_failed"; hasUploadFailed: boolean };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "set_files":
+      if (action.closeAction) {
+        return {
+          ...state,
+          files: action.files,
+          rejectedFiles: state.rejectedFiles,
+        };
+      }
+      return {
+        ...state,
+        files: action.files.length ? action.files : state.files,
+        rejectedFiles: action.rejectedFiles,
+      };
+    case "toggle_bulk_processing":
+      if (state.isBulkProcessing && state.files.length > 1) {
+        return {
+          ...state,
+          isBulkProcessing: !state.isBulkProcessing,
+          files: state.files.slice(0, 1),
+        };
+      }
+      return { ...state, isBulkProcessing: !state.isBulkProcessing };
+    case "set_loading":
+      return {
+        ...state,
+        isLoading: action.isLoading,
+        hasUploadFailed: false,
+        rejectedFiles: [],
+      };
+    case "set_upload_failed":
+      return { ...state, hasUploadFailed: action.hasUploadFailed };
+    default:
+      return state;
+  }
 }
 
 type SettledResult = {
@@ -28,11 +85,13 @@ type SettledResult = {
 };
 
 export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
-  const [files, setFiles] = useState<File[]>([]);
-  const [rejectedFiles, setRejectedFiles] = useState<FileRejection[]>([]);
-  const [isBulkProcessing, setBulkProcessing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasUploadFailed, setUploadFailed] = useState(false);
+  const [state, dispatch] = useReducer(reducer, {
+    files: [],
+    rejectedFiles: [],
+    isBulkProcessing: false,
+    isLoading: false,
+    hasUploadFailed: false,
+  });
 
   async function uploadFile(file: File) {
     const formData = new FormData();
@@ -53,9 +112,8 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
   }
 
   async function uploadFiles(files: File[]) {
-    setUploadFailed(false);
+    dispatch({ type: "set_loading", isLoading: true });
 
-    setIsLoading(true);
     const results = await Promise.allSettled([
       ...files.map(uploadFile),
       new Promise((resolve) => setTimeout(resolve, 500)),
@@ -69,7 +127,7 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
       (result) => result.status === "rejected"
     ) as SettledResult[];
 
-    setIsLoading(false);
+    dispatch({ type: "set_loading", isLoading: false });
 
     updateUploadInfos({
       nbFiles: files.length,
@@ -82,7 +140,7 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
     });
 
     if (failed.length) {
-      setUploadFailed(true);
+      dispatch({ type: "set_upload_failed", hasUploadFailed: true });
     } else {
       useStepStore.setState({ status: "complete" });
     }
@@ -90,10 +148,12 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-      if (acceptedFiles.length) {
-        setFiles(acceptedFiles);
-      }
-      setRejectedFiles(rejectedFiles);
+      dispatch({
+        type: "set_files",
+        closeAction: false,
+        files: acceptedFiles,
+        rejectedFiles,
+      });
     },
     []
   );
@@ -102,8 +162,8 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
     accept: {
       "application/octet-stream": [".pdf"],
     },
-    maxFiles: isBulkProcessing ? 10 : 1,
-    multiple: isBulkProcessing,
+    maxFiles: state.isBulkProcessing ? 10 : 1,
+    multiple: state.isBulkProcessing,
     maxSize: 5 * 1024 * 1024, // 5MB
     onDrop,
   });
@@ -120,10 +180,8 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
       <div className="flex items-center gap-2 mb-4">
         <Switch
           id="bulk-processing"
-          onCheckedChange={() =>
-            setBulkProcessing((previousState) => !previousState)
-          }
-          checked={isBulkProcessing}
+          onCheckedChange={() => dispatch({ type: "toggle_bulk_processing" })}
+          checked={state.isBulkProcessing}
         />
         <Label htmlFor="bulk-processing">Bulk Processing</Label>
         <HelpPopover contentClassName="w-[500px] overflow-scroll">
@@ -133,14 +191,14 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
           </div>
 
           <p className="mb-2 text-slate-700 text-sm">
-            Bulk processing allows you to upload multiple files at once. The
-            current limit allows you to upload up to 10 files at once.
+            Bulk processing allows to upload multiple files at once. The current
+            limit is to 10 files at once.
           </p>
           <p className="text-slate-700 text-sm">
             Bulk processing automatically triggers the structuring of all
             uploaded PDF files. Each structuring process will stop at its
-            current pipeline if it encounters an error. Structured files will be
-            waiting for a verification in the corresponding pipeline.
+            current pipeline if it encounters an error. Structured files still
+            need to be validated in the Verification pipeline.
           </p>
         </HelpPopover>
       </div>
@@ -161,7 +219,7 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
               Drag & drop or <span className="font-semibold">browse files</span>
             </p>
             <em className="text-xs text-slate-500">
-              {isBulkProcessing ? (
+              {state.isBulkProcessing ? (
                 <>PDF files only (max 10), </>
               ) : (
                 <>One PDF file only, </>
@@ -171,14 +229,14 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
           </div>
         </div>
       </div>
-      {rejectedFiles.length > 0 && (
+      {state.rejectedFiles.length > 0 && (
         <section className="mt-2 w-full flex items-center gap-1">
           <h4 className="font-medium text-red-500 text-sm">Rejected files</h4>
           <HelpPopover
             iconClassName="w-3.5 text-red-500 hover:text-red-700"
             contentClassName="w-full"
           >
-            {rejectedFiles.map(({ file, errors }) => (
+            {state.rejectedFiles.map(({ file, errors }) => (
               <div key={file.name}>
                 <div className="flex items-center gap-1 text-slate-600 text-xs w-[402px] 2xl:w-[466px]">
                   <Icons.file className="flex-none" width={12} height={12} />
@@ -202,9 +260,9 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
           </HelpPopover>
         </section>
       )}
-      {files.length > 0 && (
+      {state.files.length > 0 && (
         <section className="mt-2 w-full">
-          {files.map((file, index) => (
+          {state.files.map((file, index) => (
             <div
               title={file.name}
               key={file.name}
@@ -218,10 +276,11 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
                 ({formatBytes(file.size)})
                 <Icons.close
                   onClick={() => {
-                    setFiles((previousState) => {
-                      const newState = [...previousState];
-                      newState.splice(index, 1);
-                      return newState;
+                    dispatch({
+                      type: "set_files",
+                      closeAction: true,
+                      files: state.files.filter((_, i) => i !== index),
+                      rejectedFiles: [],
                     });
                   }}
                   width={12}
@@ -232,16 +291,16 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
             </div>
           ))}
           <Button
-            disabled={isLoading}
+            disabled={state.isLoading}
             className="mt-3 w-full"
-            onClick={() => uploadFiles(files)}
+            onClick={() => uploadFiles(state.files)}
           >
-            {isLoading && (
+            {state.isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
             Upload
           </Button>
-          {hasUploadFailed && (
+          {state.hasUploadFailed && (
             <p className="mt-2 text-red-500 text-xs">
               The upload failed. Please try again.
             </p>
