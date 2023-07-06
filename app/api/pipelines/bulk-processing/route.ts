@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     if (text === "") {
       throw new Error("Empty text");
     }
-    return await prisma.extraction.updateMany({
+    return await prisma.extraction.update({
       where: {
         id: id,
         userId: user.id,
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
       throw new Error("Cannot extract data");
     }
     const { output } = await dataExtractionResponse.json();
-    return await prisma.extraction.updateMany({
+    return await prisma.extraction.update({
       where: {
         id: id,
         userId: user.id,

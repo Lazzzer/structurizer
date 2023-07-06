@@ -23,18 +23,16 @@ export default function TextRecognitionPipeline({
   filename,
 }: TextRecognitionPipelineProps) {
   async function sendText(text: string) {
-    setUpdating(true);
-    const res = await fetch("/api/text-recognition", {
+    setIsLoading(true);
+
+    const res = await fetch("/api/pipelines/text-recognition", {
       method: "PUT",
-      body: JSON.stringify({
-        uuid: id,
-        text,
-      }),
+      body: JSON.stringify({ id, text }),
     });
 
     const data = await res.json();
 
-    setUpdating(false);
+    setIsLoading(false);
 
     if (res.status !== 200) {
       throw new Error(data.message);
@@ -42,7 +40,7 @@ export default function TextRecognitionPipeline({
   }
 
   const router = useRouter();
-  const [isUpdating, setUpdating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [verifiedText, setVerifiedText] = useState(text);
   const [errorMsg, setErrorMsg] = useState(
     text === "" ? "No text found in the PDF" : ""
@@ -105,7 +103,7 @@ export default function TextRecognitionPipeline({
               Cancel
             </Link>
             <Button
-              disabled={isUpdating}
+              disabled={isLoading}
               className="w-48"
               onClick={() => {
                 if (verifiedText.trim() === "") {
@@ -116,11 +114,11 @@ export default function TextRecognitionPipeline({
                   .then(() => router.push(`/data-extraction/${id}`))
                   .catch(() => {
                     setErrorMsg("Something went wrong, please try again");
-                    setUpdating(false);
+                    setIsLoading(false);
                   });
               }}
             >
-              {isUpdating && (
+              {isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
               Confirm & Continue
