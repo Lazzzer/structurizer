@@ -11,9 +11,16 @@ import { cn, minDelay } from "@/lib/utils";
 import { authSchema } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { Icons } from "@/components/icons";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 interface AuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type: "login" | "register";
@@ -22,12 +29,12 @@ interface AuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
 type FormData = z.infer<typeof authSchema>;
 
 export function AuthForm({ className, type }: AuthFormProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
+  const form = useForm<FormData>({
     resolver: zodResolver(authSchema),
+    defaultValues: {
+      name: "",
+      password: "",
+    },
   });
 
   const router = useRouter();
@@ -79,50 +86,65 @@ export function AuthForm({ className, type }: AuthFormProps) {
   }
 
   return (
-    <div className={cn("grid gap-6", className)}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid gap-6">
-          <div className="grid gap-1.5">
-            <Label htmlFor="name">Username</Label>
-            <Input
-              id="name"
-              placeholder="Your username"
-              type="text"
-              autoCapitalize="none"
-              autoComplete="text"
-              autoCorrect="off"
-              disabled={isLoading}
-              {...register("name")}
-            />
-            {errors?.name && (
-              <p className="px-1 text-xs text-red-600">{errors.name.message}</p>
-            )}
+    <div className={cn(className)}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="grid">
+            <div className="mt-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Your username"
+                        type="text"
+                        autoCapitalize="none"
+                        autoComplete="text"
+                        autoCorrect="off"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="mt-4">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Your password"
+                        type="password"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button disabled={isLoading} type="submit" className="mt-8">
+              {isLoading && (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {type === "login" ? "Sign In" : "Sign Up"}
+            </Button>
           </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              placeholder="Your password"
-              type="password"
-              autoCapitalize="none"
-              autoCorrect="off"
-              disabled={isLoading}
-              {...register("password")}
-            />
-            {errors?.password && (
-              <p className="px-1 text-xs text-red-600">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-          <Button className="mt-2" disabled={isLoading}>
-            {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            {type === "login" ? "Sign In" : "Sign Up"}
-          </Button>
-        </div>
-      </form>
+        </form>
+      </Form>
     </div>
   );
 }
