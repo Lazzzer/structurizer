@@ -9,23 +9,25 @@ import { Icons } from "./icons";
 import { Balancer } from "react-wrap-balancer";
 import { useRouter } from "next/navigation";
 
-export default function TextRecognitionPipeline({
-  uuid,
-  url,
-  text,
-  filename,
-}: {
-  uuid: string;
+interface TextRecognitionPipelineProps {
+  id: string;
   url: string;
   text: string;
   filename: string;
-}) {
+}
+
+export default function TextRecognitionPipeline({
+  id,
+  url,
+  text,
+  filename,
+}: TextRecognitionPipelineProps) {
   async function sendText(text: string) {
     setUpdating(true);
     const res = await fetch("/api/text-recognition", {
       method: "PUT",
       body: JSON.stringify({
-        uuid,
+        uuid: id,
         text,
       }),
     });
@@ -47,7 +49,7 @@ export default function TextRecognitionPipeline({
   );
 
   return (
-    <div className="mx-4 mb-4 flex flex-col flex-grow">
+    <div className="mx-8 mb-8 flex flex-col flex-grow">
       <div className="flex flex-1 items-center justify-center gap-x-10">
         <object
           data={`${url}#toolbar=1&navpanes=0&statusbar=0&scrollbar=1&view=fitH`}
@@ -111,7 +113,7 @@ export default function TextRecognitionPipeline({
                   return;
                 }
                 sendText(verifiedText)
-                  .then(() => router.push(`/data-extraction/${uuid}`))
+                  .then(() => router.push(`/data-extraction/${id}`))
                   .catch(() => {
                     setErrorMsg("Something went wrong, please try again");
                     setUpdating(false);

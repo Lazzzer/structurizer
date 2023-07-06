@@ -31,7 +31,7 @@ export function TopMainContent({
       <h1
         className={cn(
           step !== undefined ? "lg:text-3xl " : "lg:text-4xl",
-          "hidden lg:block mb-6 ml-10 absolute font-cal left-0 bottom-0"
+          "hidden lg:block mb-6 ml-8 absolute font-cal left-0 bottom-0"
         )}
       >
         {title}
@@ -42,7 +42,7 @@ export function TopMainContent({
         <Link
           className={cn(
             buttonVariants(),
-            "mb-6 mr-4 absolute right-0 bottom-0"
+            "mb-6 mr-8 absolute right-0 bottom-0"
           )}
           href={"/upload"}
         >
