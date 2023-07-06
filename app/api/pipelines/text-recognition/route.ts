@@ -4,6 +4,7 @@ import { Status } from "@prisma/client";
 import { getUser } from "@/lib/session";
 import * as z from "zod";
 import { validateBody } from "@/lib/validations/request";
+import { textRecognitionSchema } from "@/lib/validations/text-recognition";
 
 export async function PUT(req: Request) {
   const user = await getUser();
@@ -11,14 +12,9 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const schema = z.object({
-    id: z.string().uuid(),
-    text: z.string().nonempty(),
-  });
+  const body = (await req.json()) as z.infer<typeof textRecognitionSchema>;
 
-  const body = (await req.json()) as z.infer<typeof schema>;
-
-  if (!validateBody(body, schema)) {
+  if (!validateBody(body, textRecognitionSchema)) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 

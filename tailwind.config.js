@@ -24,15 +24,7 @@ module.exports = {
       cal: ["var(--font-cal-sans)", ...fontFamily.sans],
     },
     extend: {
-      width: {
-        "3/8": "37%",
-        "3/10": "30%",
-      },
-      height: {
-        "6/7": "85%",
-      },
       dropShadow: {
-        // custom: "0 4px 12px rgba(0, 0, 0, 0.1)",
         custom: "0 -6px 12px rgba(0,0,0,0.1)",
       },
       keyframes: {
