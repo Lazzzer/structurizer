@@ -1,3 +1,16 @@
+export function getSchema(category: string) {
+  switch (category) {
+    case "receipts":
+      return receiptsSchema;
+    case "invoices":
+      return invoicesSchema;
+    case "credit card statements":
+      return cardStatementsSchema;
+    default:
+      throw new Error("Invalid category provided");
+  }
+}
+
 export const receiptsSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
   title: "receipts schema",
@@ -22,7 +35,7 @@ export const receiptsSchema = {
     time: {
       type: "string",
       format: "time",
-      description: "Time of the receipt. Muste be in the format of HH:MM:SS.",
+      description: "Time of the receipt. Must be in the format of HH:MM:SS.",
     },
     from: {
       type: "string",

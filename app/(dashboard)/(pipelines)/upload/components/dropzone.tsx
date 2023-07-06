@@ -67,7 +67,11 @@ function reducer(state: State, action: Action): State {
         rejectedFiles: [],
       };
     case "set_upload_failed":
-      return { ...state, hasUploadFailed: action.hasUploadFailed };
+      return {
+        ...state,
+        hasUploadFailed: action.hasUploadFailed,
+        isLoading: false,
+      };
     default:
       return state;
   }
@@ -97,7 +101,7 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/api/upload", {
+    const res = await fetch("/api/pipelines/upload", {
       method: "POST",
       body: formData,
     });
@@ -127,8 +131,6 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
       (result) => result.status === "rejected"
     ) as SettledResult[];
 
-    dispatch({ type: "set_loading", isLoading: false });
-
     updateUploadInfos({
       nbFiles: files.length,
       success: success
@@ -142,6 +144,17 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
     if (failed.length) {
       dispatch({ type: "set_upload_failed", hasUploadFailed: true });
     } else {
+      if (state.isBulkProcessing) {
+        const successIds = success
+          .filter((result) => result.value)
+          .map((result) => result.value!.message.id);
+
+        fetch("/api/pipelines/bulk-processing", {
+          method: "POST",
+          body: JSON.stringify({ ids: successIds }),
+        }).catch((err) => console.error(err));
+      }
+      dispatch({ type: "set_loading", isLoading: false });
       useStepStore.setState({ status: "complete" });
     }
   }
