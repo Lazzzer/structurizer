@@ -183,10 +183,19 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
 
   return (
     <motion.div
+      key="dropzone"
       layout="position"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
+      initial="hidden"
+      animate="show"
+      exit="hidden"
+      variants={{
+        hidden: { opacity: 0, y: 10 },
+        show: {
+          opacity: 1,
+          y: 0,
+          transition: { type: "spring" },
+        },
+      }}
       transition={{ duration: 0.3 }}
       className={cn(className, "flex flex-col items-center justify-center")}
     >

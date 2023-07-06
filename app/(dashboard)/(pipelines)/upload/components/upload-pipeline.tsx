@@ -26,62 +26,66 @@ export default function UploadPipeline() {
             <Dropzone updateUploadInfos={setUploadInfos} />
           )}
         </AnimatePresence>
-        {status === "complete" && (
-          <motion.div
-            layout="position"
-            initial="hidden"
-            animate="show"
-            variants={{
-              hidden: { opacity: 0, y: 10 },
-              show: {
-                opacity: 1,
-                y: 0,
-                transition: { type: "spring", delay: 0.4 },
-              },
-            }}
-            viewport={{ once: true }}
-            className="flex flex-col items-center justify-center"
-          >
-            <CircleCheckIcon
-              strokeWidth={1.5}
-              className="text-green-500 w-32 h-32 my-6"
-            />
-            <p className="text-slate-500 mb-6">
-              Your file{uploadInfos.success.length > 1 && "s"} have been
-              uploaded successfully
-              {uploadInfos.nbFiles > 1 && " and will be processed shortly"}
-            </p>
-            {(uploadInfos.nbFiles === 1 && (
-              <div className="flex gap-4">
+        <AnimatePresence mode="wait">
+          {status === "complete" && (
+            <motion.div
+              key="success"
+              layout="position"
+              initial="hidden"
+              animate="show"
+              exit="hidden"
+              variants={{
+                hidden: { opacity: 0, y: 10 },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { type: "spring", delay: 0.4 },
+                },
+              }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center justify-center"
+            >
+              <CircleCheckIcon
+                strokeWidth={1.5}
+                className="text-green-500 w-32 h-32 my-6"
+              />
+              <p className="text-slate-500 mb-6">
+                Your file{uploadInfos.success.length > 1 && "s"} have been
+                uploaded successfully
+                {uploadInfos.nbFiles > 1 && " and will be processed shortly"}
+              </p>
+              {(uploadInfos.nbFiles === 1 && (
+                <div className="flex gap-4">
+                  <Link
+                    className={cn(
+                      buttonVariants({ variant: "secondary" }),
+                      "w-40"
+                    )}
+                    prefetch={false}
+                    href={"/dashboard"}
+                  >
+                    Back
+                  </Link>
+                  <Link
+                    className={cn(buttonVariants(), "w-40")}
+                    href={`/text-recognition/${uploadInfos.success[0][1]}`}
+                    replace
+                  >
+                    Continue
+                  </Link>
+                </div>
+              )) || (
                 <Link
-                  className={cn(
-                    buttonVariants({ variant: "secondary" }),
-                    "w-40"
-                  )}
+                  className={cn(buttonVariants(), "w-40")}
                   prefetch={false}
                   href={"/dashboard"}
                 >
-                  Back
+                  Back to Dashboard
                 </Link>
-                <Link
-                  className={cn(buttonVariants(), "w-40")}
-                  href={`/text-recognition/${uploadInfos.success[0][1]}`}
-                  replace
-                >
-                  Continue
-                </Link>
-              </div>
-            )) || (
-              <Link
-                className={cn(buttonVariants(), "w-40")}
-                prefetch={false}
-                href={"/dashboard"}
-              >
-                Back to Dashboard
-              </Link>
-            )}
-          </motion.div>
-        )}
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
