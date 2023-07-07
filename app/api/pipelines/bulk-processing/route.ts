@@ -22,6 +22,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
+  const preferences = await prisma.preferences.findFirst({
+    where: {
+      userId: user.id,
+    },
+  });
+
   const textRecognitionPromises = body.ids.map(async (id) => {
     const data = await getS3ObjectUrl(id);
     const text = await getText(data.url);
@@ -65,7 +71,6 @@ export async function POST(req: NextRequest) {
       throw new Error("Extraction not found");
     }
 
-    // TODO: Add model from user preferences
     const classificationResponse = await fetch(
       `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/classification`,
       {
@@ -77,7 +82,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           model: {
             apiKey: process.env.OPENAI_API_KEY as string,
-            name: "gpt-3.5-turbo-16k",
+            name: preferences?.classificationModel ?? "gpt-3.5-turbo-16k",
           },
           categories: Array.from(categories.keys()),
           text: extraction.text,
@@ -98,7 +103,6 @@ export async function POST(req: NextRequest) {
       throw new Error("No classification found");
     }
 
-    // TODO: Add model from user preferences
     const dataExtractionResponse = await fetch(
       `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/schema`,
       {
@@ -110,7 +114,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           model: {
             apiKey: process.env.OPENAI_API_KEY as string,
-            name: "gpt-3.5-turbo-16k",
+            name: preferences?.extractionModel ?? "gpt-3.5-turbo-16k",
           },
           jsonSchema: JSON.stringify(
             categories.get(classification.classification)!.schema

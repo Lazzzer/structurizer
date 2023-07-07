@@ -23,7 +23,7 @@ export default function DataExtractionPipeline({
   const [llmCall, setLlmCall] = useState(true);
 
   useEffect(() => {
-    if (category !== "other") {
+    if (categories.has(category)) {
       setStep("extraction");
     }
   }, [category]);

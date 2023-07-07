@@ -29,28 +29,6 @@ interface ClassificationResult {
 
 type State = "active" | "failed" | "complete" | "confirmed";
 
-async function getClassification(text: string) {
-  const res = await fetch("/api/pipelines/data-extraction/classification", {
-    method: "POST",
-    body: JSON.stringify({
-      text,
-    }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to classify text");
-  }
-
-  const { classification, confidence } =
-    (await res.json()) as ClassificationResult;
-
-  if (confidence < 60 || !categories.has(classification)) {
-    return "other";
-  }
-
-  return classification;
-}
-
 export function ClassificationStep({
   text,
   updateCategory,
@@ -58,6 +36,28 @@ export function ClassificationStep({
 }: ClassificationStepProps) {
   const [status, setStatus] = useState<State>("active");
   const [classification, setClassification] = useState("other");
+
+  async function getClassification(text: string) {
+    const res = await fetch("/api/pipelines/data-extraction/classification", {
+      method: "POST",
+      body: JSON.stringify({
+        text,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to classify text");
+    }
+
+    const { classification, confidence } =
+      (await res.json()) as ClassificationResult;
+
+    if (confidence < 60 || !categories.has(classification)) {
+      return "other";
+    }
+
+    return classification;
+  }
 
   useEffect(() => {
     async function classify() {
@@ -199,8 +199,10 @@ export function ClassificationStep({
             disabled={categories.get(classification) === undefined}
             className={cn("w-full")}
             onClick={() => {
-              updateCategory(classification);
-              setStatus("confirmed");
+              if (categories.has(classification)) {
+                updateCategory(classification);
+                setStatus("confirmed");
+              }
             }}
           >
             Confirm
