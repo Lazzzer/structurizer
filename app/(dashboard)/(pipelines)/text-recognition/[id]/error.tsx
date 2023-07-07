@@ -10,7 +10,7 @@ export default function Error({ reset }: { reset: () => void }) {
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Text Recognition" step={0} />
-      <div className="m-4 flex flex-col flex-grow items-center justify-center">
+      <div className="m-8 flex flex-col flex-grow items-center justify-center">
         <Icons.frown
           strokeWidth={1.8}
           className="w-24 h-24 mb-2 text-slate-900"

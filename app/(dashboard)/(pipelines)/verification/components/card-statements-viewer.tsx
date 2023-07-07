@@ -1,11 +1,13 @@
-import { Input } from "./ui/input";
+"use client";
+
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
   Collapsible,
@@ -13,11 +15,11 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Icons } from "./icons";
-import { Label } from "./ui/label";
+import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
+import { Label } from "@/components/ui/label";
 import { AnimatePresence, motion } from "framer-motion";
-import { CorrectionTooltip } from "./ui/correction-tooltip";
+import { CorrectionTooltip } from "@/components/ui/correction-tooltip";
 import { cardStatementsSchema } from "@/lib/llm/schema";
 
 export function CardStatementsViewer({

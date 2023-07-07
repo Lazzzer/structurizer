@@ -1,3 +1,5 @@
+"use client";
+
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ReceiptsViewer } from "./receipts-viewer";
 import { cn } from "@/lib/utils";

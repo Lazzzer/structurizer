@@ -1,6 +1,13 @@
-// TODO : Use zod to json schema to generate each schema
+type JsonSchema = {
+  $schema: string;
+  title: string;
+  type: string;
+  additionalProperties: boolean;
+  properties: any;
+  required: string[];
+};
 
-export const receiptsSchema = {
+export const receiptsSchema: JsonSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
   title: "receipts schema",
   type: "object",
@@ -90,7 +97,7 @@ export const receiptsSchema = {
   ],
 };
 
-export const invoicesSchema = {
+export const invoicesSchema: JsonSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
   title: "invoices schema",
   type: "object",
@@ -188,7 +195,7 @@ export const invoicesSchema = {
   ],
 };
 
-export const cardStatementsSchema = {
+export const cardStatementsSchema: JsonSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
   title: "credit_card_statement schema",
   type: "object",
@@ -316,7 +323,7 @@ export const cardStatementsSchema = {
 export interface Category {
   value: string;
   name: string;
-  schema: any; // ideally replace 'any' with the actual type of your schemas
+  schema: JsonSchema;
 }
 
 export const categories = new Map<string, Category>([

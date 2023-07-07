@@ -1,44 +1,47 @@
 "use client";
+
 import Link from "next/link";
-import { Icons, SparklesIcon } from "./icons";
-import { Button, buttonVariants } from "./ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Icons, SparklesIcon } from "@/components/icons";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { ObjectViewer } from "./object-viewer";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useStepStore } from "@/lib/store";
+import { ObjectViewer } from "./object-viewer";
 
-export default function VerificationPipeline({
-  uuid,
-  url,
-  text,
-  category,
-  json,
-}: {
-  uuid: string;
+interface VerificationPipelineProps {
+  id: string;
   url: string;
   text: string;
   category: string;
   json: any;
-}) {
-  async function sendJson(json: any) {
-    const res = await fetch("/api/verification", {
-      method: "POST",
-      body: JSON.stringify({
-        uuid,
-        json: JSON.stringify(verifiedJson),
-      }),
-    });
-    const data = await res.json();
-    if (res.status !== 200) {
-      throw new Error(data.message);
-    }
-  }
+}
+
+export default function VerificationPipeline({
+  id,
+  url,
+  text,
+  category,
+  json,
+}: VerificationPipelineProps) {
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isUpdating, setUpdating] = useState(false);
+  const [isProcessed, setIsProcessed] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [analysisResult, setAnalysisResult] = useState<{
+    corrections: any[];
+    textAnalysis: string;
+  } | null>(null);
+  const [verifiedJson, setVerifiedJson] = useState(JSON.parse(json));
 
   async function analyze() {
-    const res = await fetch("/api/analysis", {
+    const res = await fetch("/api/pipelines/verification", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -56,17 +59,22 @@ export default function VerificationPipeline({
     return data;
   }
 
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isUpdating, setUpdating] = useState(false);
-  const [isProcessed, setIsProcessed] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [analysisResult, setAnalysisResult] = useState<{
-    corrections: any[];
-    textAnalysis: string;
-  } | null>(null);
-  const [verifiedJson, setVerifiedJson] = useState(JSON.parse(json));
+  async function sendJson(json: any) {
+    const res = await fetch("/api/pipelines/verification", {
+      method: "PUT",
+      body: JSON.stringify({
+        uuid: id,
+        json: JSON.stringify(verifiedJson),
+      }),
+    });
+    const data = await res.json();
+    if (res.status !== 200) {
+      throw new Error(data.message);
+    }
+  }
+
   return (
-    <div className="mx-4 mb-4 flex flex-col flex-grow">
+    <div className="m-8 flex flex-col flex-grow">
       <div className="flex flex-1 flex-col justify-center">
         {isProcessed ? (
           <div className="w-full h-full flex flex-col justify-center items-center">

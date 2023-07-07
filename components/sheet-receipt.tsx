@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
-import { ReceiptsViewer } from "./receipts-viewer";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +20,7 @@ import {
 import { deleteExtraction, updateReceipt } from "@/lib/client-requests";
 import { Icons } from "./icons";
 import { useRouter } from "next/navigation";
+import { ReceiptsViewer } from "@/app/(dashboard)/(pipelines)/verification/components/receipts-viewer";
 
 type ReceiptWithItems = Receipt & {
   items: ReceiptItem[];
