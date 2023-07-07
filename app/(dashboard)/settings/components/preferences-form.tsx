@@ -69,7 +69,7 @@ export function PreferencesForm({
 
   async function onSubmit(values: FormData) {
     setIsLoading(true);
-    const request = fetch("/api/account", {
+    const request = fetch("/api/dashboard/settings", {
       method: "PUT",
       body: JSON.stringify(values),
     });

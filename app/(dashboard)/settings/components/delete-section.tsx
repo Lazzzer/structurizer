@@ -17,7 +17,7 @@ import { signOut } from "next-auth/react";
 
 export function DeleteSection() {
   async function deleteAccount() {
-    const res = await fetch("/api/account", {
+    const res = await fetch("/api/dashboard/settings", {
       method: "DELETE",
     });
     if (res.ok) {

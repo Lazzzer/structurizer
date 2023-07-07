@@ -3,26 +3,16 @@ import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { Status } from "@prisma/client";
+import { getUser } from "./session";
 
-export async function getUserPreferences() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    throw new Error("Cannot authenticate user");
-  }
-  const userUUID = session?.user.id;
-
+export async function getPreferences() {
+  const user = await getUser();
   const preferences = await prisma.preferences.findFirst({
     where: {
-      userId: userUUID,
+      userId: user!.id,
     },
   });
-
-  if (!preferences) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return preferences;
+  return preferences!;
 }
 
 export async function getS3ObjectUrl(uuid: string) {

@@ -1,11 +1,11 @@
 import { TopMainContent } from "@/components/top-main-content";
 import { PreferencesForm } from "./components/preferences-form";
-import { getExtractions, getUserPreferences } from "@/lib/requests";
 import { Status } from "@prisma/client";
 import { DeleteSection } from "./components/delete-section";
+import { getExtractions, getPreferences } from "@/lib/requests";
 
 export default async function SettingsPage() {
-  const preferences = await getUserPreferences();
+  const preferences = await getPreferences();
   const extractions = await getExtractions(Status.PROCESSED);
   return (
     <div className="h-full">
