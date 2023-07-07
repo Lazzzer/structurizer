@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   }
 
   const schema = z.object({
-    ids: z.array(z.string()),
+    ids: z.array(z.string().min(1)),
   });
 
   const body = (await req.json()) as z.infer<typeof schema>;

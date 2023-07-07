@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { Icons } from "./icons";
+import { Icons } from "@/components/icons";
 import Balancer from "react-wrap-balancer";
 import Link from "next/link";
-import { Button, buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
@@ -31,7 +31,7 @@ export function ExtractionStep({
     setTimeout(() => {
       setLlmCall(true);
     }, 500);
-    const res = await fetch("/api/data-extraction", {
+    const res = await fetch("/api/pipelines/data-extraction", {
       method: "POST",
       body: JSON.stringify({
         text,
@@ -49,7 +49,7 @@ export function ExtractionStep({
   }
 
   async function sendJson(json: any) {
-    const res = await fetch("/api/data-extraction/save", {
+    const res = await fetch("/api/pipelines/data-extraction", {
       method: "PUT",
       body: JSON.stringify({
         uuid,

@@ -56,7 +56,11 @@ export default function TextRecognitionPipeline({
     setIsLoading(false);
 
     if (res.status !== 200) {
-      throw new Error("Failed to send text to the server");
+      form.setError("text", {
+        type: "manual",
+        message: "Something went wrong. Please try again.",
+      });
+      return;
     }
     router.refresh();
     router.push(`/data-extraction/${id}`);
@@ -69,7 +73,7 @@ export default function TextRecognitionPipeline({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
           className="flex flex-1 items-center justify-center gap-x-10"
         >
           <object

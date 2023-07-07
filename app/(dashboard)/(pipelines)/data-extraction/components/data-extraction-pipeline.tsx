@@ -1,9 +1,10 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { ClassificationStep } from "./classification-step";
 import { ExtractionStep } from "./extraction-step";
-import { SparklesIcon } from "./icons";
 import { cn } from "@/lib/utils";
+import { SparklesIcon } from "@/components/icons";
 
 export default function DataExtractionPipeline({
   data,

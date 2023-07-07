@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { Icons } from "./icons";
 import Balancer from "react-wrap-balancer";
 import {
   Select,
@@ -8,10 +7,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
 import Link from "next/link";
-import { Button, buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { Icons } from "@/components/icons";
 
 export function ClassificationStep({
   categories,
@@ -26,12 +26,7 @@ export function ClassificationStep({
 }) {
   async function getClassification() {
     setLlmCall(true);
-
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-    // setLlmCall(false);
-    // return "receipts";
-
-    const res = await fetch("/api/classification", {
+    const res = await fetch("/api/pipelines/data-extraction/classification", {
       method: "POST",
       body: JSON.stringify({
         text,

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Status } from "@prisma/client";
 import { getUser } from "@/lib/session";
@@ -6,7 +6,7 @@ import * as z from "zod";
 import { validateBody } from "@/lib/validations/request";
 import { textRecognitionSchema } from "@/lib/validations/text-recognition";
 
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
   const user = await getUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });

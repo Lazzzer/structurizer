@@ -6,13 +6,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export default function Error({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) {
+export default function Error({ reset }: { reset: () => void }) {
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Text Recognition" step={0} />
@@ -21,18 +15,20 @@ export default function Error({
           strokeWidth={1.8}
           className="w-24 h-24 mb-2 text-slate-900"
         />
-        <h1 className="text-2xl font-bold text-slate-900">
+        <h1 className="text-xl font-semibold mb-4 text-slate-900">
           Oops! Something went wrong...
         </h1>
-        <p className="text-slate-700 text-sm mt-2 mb-4">
-          <span className="font-semibold">Error</span> : {error.message}
-        </p>
         <div className="flex gap-2">
-          <Button variant={"secondary"} onClick={reset}>
+          <Button variant={"secondary"} onClick={() => reset}>
             Try again
           </Button>
-          <Link className={cn(buttonVariants())} href="/dashboard">
-            Back to dashboard
+          <Link
+            className={cn(buttonVariants())}
+            href="/dashboard"
+            prefetch={false}
+            replace
+          >
+            Back to Dashboard
           </Link>
         </div>
       </div>
