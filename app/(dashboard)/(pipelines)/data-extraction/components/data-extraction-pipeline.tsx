@@ -5,43 +5,31 @@ import { ClassificationStep } from "./classification-step";
 import { ExtractionStep } from "./extraction-step";
 import { cn } from "@/lib/utils";
 import { SparklesIcon } from "@/components/icons";
+import { categories } from "@/lib/data-categories";
+
+interface DataExtractionPipelineProps {
+  id: string;
+  text: string;
+}
+
+type Step = "classification" | "extraction";
 
 export default function DataExtractionPipeline({
-  data,
-}: {
-  data: {
-    uuid: string;
-    filename: string;
-    text: string;
-  };
-}) {
-  const categories = [
-    {
-      value: "receipts",
-      name: "Receipt",
-    },
-    {
-      value: "invoices",
-      name: "Invoice",
-    },
-    {
-      value: "credit card statements",
-      name: "Card Statement",
-    },
-  ];
-
-  const [step, setStep] = useState(1);
+  id,
+  text,
+}: DataExtractionPipelineProps) {
+  const [step, setStep] = useState<Step>("classification");
   const [category, setCategory] = useState("other");
   const [llmCall, setLlmCall] = useState(true);
 
   useEffect(() => {
     if (category !== "other") {
-      setStep(2);
+      setStep("extraction");
     }
   }, [category]);
 
   return (
-    <div className="mx-4 flex flex-col flex-grow items-center justify-center">
+    <div className="m-8 flex flex-col flex-grow items-center justify-center">
       <SparklesIcon
         className={cn(
           llmCall ? "opacity-100" : "opacity-0",
@@ -49,17 +37,16 @@ export default function DataExtractionPipeline({
         )}
       />
       <ClassificationStep
-        setLlmCall={setLlmCall}
-        categories={categories}
+        text={text}
         updateCategory={setCategory}
-        text={data.text}
+        setLlmCall={setLlmCall}
       />
-      {step === 2 && (
+      {step === "extraction" && (
         <ExtractionStep
+          id={id}
+          text={text}
+          category={categories.get(category)!}
           setLlmCall={setLlmCall}
-          category={categories.find((c) => c.value === category)!}
-          text={data.text}
-          uuid={data.uuid}
         />
       )}
     </div>

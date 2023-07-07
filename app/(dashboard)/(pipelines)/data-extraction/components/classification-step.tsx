@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import Balancer from "react-wrap-balancer";
@@ -12,56 +14,62 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Icons } from "@/components/icons";
+import { categories } from "@/lib/data-categories";
 
-export function ClassificationStep({
-  categories,
-  text,
-  updateCategory,
-  setLlmCall,
-}: {
-  categories: { value: string; name: string }[];
+interface ClassificationStepProps {
   text: string;
   updateCategory: (category: string) => void;
   setLlmCall: (llmCall: boolean) => void;
-}) {
-  async function getClassification() {
-    setLlmCall(true);
-    const res = await fetch("/api/pipelines/data-extraction/classification", {
-      method: "POST",
-      body: JSON.stringify({
-        text,
-      }),
-    });
+}
 
-    if (!res.ok) {
-      throw new Error("Failed to classify text");
-    }
+interface ClassificationResult {
+  classification: string;
+  confidence: number;
+}
 
-    const { classification, confidence } = (await res.json()) as {
-      classification: string;
-      confidence: number;
-    };
+type State = "active" | "failed" | "complete" | "confirmed";
 
-    setLlmCall(false);
-    if (confidence < 60) return "other";
-    return classification;
+async function getClassification(text: string) {
+  const res = await fetch("/api/pipelines/data-extraction/classification", {
+    method: "POST",
+    body: JSON.stringify({
+      text,
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to classify text");
   }
 
-  const [status, setStatus] = useState<
-    "active" | "failed" | "complete" | "confirmed"
-  >("active");
+  const { classification, confidence } =
+    (await res.json()) as ClassificationResult;
+
+  if (confidence < 60 || !categories.has(classification)) {
+    return "other";
+  }
+
+  return classification;
+}
+
+export function ClassificationStep({
+  text,
+  updateCategory,
+  setLlmCall,
+}: ClassificationStepProps) {
+  const [status, setStatus] = useState<State>("active");
   const [classification, setClassification] = useState("other");
 
   useEffect(() => {
-    const classify = async () => {
+    async function classify() {
       try {
-        const category = await getClassification();
+        const category = await getClassification(text);
         setClassification(category);
         setStatus("complete");
       } catch (e) {
         setStatus("failed");
       }
-    };
+      setLlmCall(false);
+    }
     classify();
   }, []);
 
@@ -112,9 +120,7 @@ export function ClassificationStep({
               <Balancer>
                 Text classified as
                 <span className="font-semibold ml-1 text-slate-700">
-                  {categories.find((c) => c.value === classification)?.name ??
-                    "Other"}
-                  .
+                  {categories.get(classification)?.name ?? "Other"}.
                 </span>
               </Balancer>
             </p>
@@ -137,9 +143,7 @@ export function ClassificationStep({
               <Balancer>
                 Text classified as
                 <span className="font-semibold ml-1 text-slate-700">
-                  {categories.find((c) => c.value === classification)?.name ??
-                    "Other"}
-                  .
+                  {categories.get(classification)!.name}.
                 </span>
               </Balancer>
             </p>
@@ -156,7 +160,9 @@ export function ClassificationStep({
         {status !== "active" && status !== "confirmed" && (
           <Select
             onValueChange={(value) => {
-              if (status === "failed") setStatus("complete");
+              if (status === "failed") {
+                setStatus("complete");
+              }
               setClassification(value);
             }}
             defaultValue={
@@ -167,8 +173,8 @@ export function ClassificationStep({
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.value} value={category.value}>
+              {Array.from(categories.entries()).map(([key, category]) => (
+                <SelectItem key={key} value={key}>
                   {category.name}
                 </SelectItem>
               ))}
@@ -183,15 +189,14 @@ export function ClassificationStep({
           <Link
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
             href={`/dashboard`}
+            prefetch={false}
           >
             Cancel
           </Link>
         )}
         {status !== "active" && status !== "confirmed" && (
           <Button
-            disabled={
-              categories.find((c) => c.value === classification) === undefined
-            }
+            disabled={categories.get(classification) === undefined}
             className={cn("w-full")}
             onClick={() => {
               updateCategory(classification);

@@ -6,18 +6,21 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { Category } from "@/lib/data-categories";
+
+interface ExtractionStepProps {
+  id: string;
+  text: string;
+  category: Category;
+  setLlmCall: (llmCall: boolean) => void;
+}
 
 export function ExtractionStep({
+  id,
   text,
-  uuid,
   category,
   setLlmCall,
-}: {
-  text: string;
-  uuid: string;
-  category: { value: string; name: string };
-  setLlmCall: (llmCall: boolean) => void;
-}) {
+}: ExtractionStepProps) {
   const router = useRouter();
 
   const [status, setStatus] = useState<"active" | "failed" | "complete">(
@@ -52,7 +55,7 @@ export function ExtractionStep({
     const res = await fetch("/api/pipelines/data-extraction", {
       method: "PUT",
       body: JSON.stringify({
-        uuid,
+        id,
         json,
         category: category.value,
       }),
@@ -176,7 +179,7 @@ export function ExtractionStep({
               setUpdating(true);
               setErrorMsg("");
               sendJson(json)
-                .then(() => router.push(`/verification/${uuid}`))
+                .then(() => router.push(`/verification/${id}`))
                 .catch(() => {
                   setErrorMsg("Something went wrong, please try again");
                   setUpdating(false);

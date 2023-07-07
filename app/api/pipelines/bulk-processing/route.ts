@@ -5,7 +5,7 @@ import * as z from "zod";
 import prisma from "@/lib/prisma";
 import { getS3ObjectUrl, getText } from "@/lib/requests";
 import { Status } from "@prisma/client";
-import { getSchema } from "@/lib/llm/schema";
+import { categories } from "@/lib/data-categories";
 
 export async function POST(req: NextRequest) {
   const user = await getUser();
@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
       throw new Error("Extraction not found");
     }
 
+    // TODO: Add model from user preferences
     const classificationResponse = await fetch(
       `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/classification`,
       {
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
             apiKey: process.env.OPENAI_API_KEY as string,
             name: "gpt-3.5-turbo-16k",
           },
-          categories: ["receipts", "credit card statements", "invoices"],
+          categories: Array.from(categories.keys()),
           text: extraction.text,
         }),
       }
@@ -89,13 +90,15 @@ export async function POST(req: NextRequest) {
     }
 
     const { classification } = await classificationResponse.json();
+
     if (
       !classification.classification ||
-      classification.classification === "other"
+      !categories.has(classification.classification)
     ) {
       throw new Error("No classification found");
     }
 
+    // TODO: Add model from user preferences
     const dataExtractionResponse = await fetch(
       `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/schema`,
       {
@@ -109,7 +112,9 @@ export async function POST(req: NextRequest) {
             apiKey: process.env.OPENAI_API_KEY as string,
             name: "gpt-3.5-turbo-16k",
           },
-          jsonSchema: JSON.stringify(getSchema(classification.classification)),
+          jsonSchema: JSON.stringify(
+            categories.get(classification.classification)!.schema
+          ),
           text: extraction.text,
         }),
       }

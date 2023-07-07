@@ -1,4 +1,4 @@
-import DataExtractionPipeline from "@/app/(dashboard)/(pipelines)/data-extraction/components/data-extraction-pipeline";
+import DataExtractionPipeline from "../components/data-extraction-pipeline";
 import { TopMainContent } from "@/components/top-main-content";
 import { getExtractionData } from "@/lib/requests";
 import { Status } from "@prisma/client";
@@ -22,13 +22,7 @@ export default async function DataExtractionPipelinePage({
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Data Extraction" step={3} />
-      <DataExtractionPipeline
-        data={{
-          uuid: params.id,
-          filename: data.filename,
-          text: data.text as string,
-        }}
-      />
+      <DataExtractionPipeline id={params.id} text={data.text as string} />
     </div>
   );
 }
