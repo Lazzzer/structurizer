@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, minDelay } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Icons } from "@/components/icons";
 import Balancer from "react-wrap-balancer";
@@ -15,6 +15,8 @@ interface ExtractionStepProps {
   setLlmCall: (llmCall: boolean) => void;
 }
 
+type State = "active" | "failed" | "complete";
+
 export function ExtractionStep({
   id,
   text,
@@ -23,17 +25,16 @@ export function ExtractionStep({
 }: ExtractionStepProps) {
   const router = useRouter();
 
-  const [status, setStatus] = useState<"active" | "failed" | "complete">(
-    "active"
-  );
-  const [isUpdating, setUpdating] = useState(false);
+  const [status, setStatus] = useState<State>("active");
+  const [isLoading, setIsLoading] = useState(false);
   const [json, setJson] = useState({});
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function getStructuredData(category: string, text: string) {
     setTimeout(() => {
       setLlmCall(true);
     }, 500);
+
     const res = await fetch("/api/pipelines/data-extraction", {
       method: "POST",
       body: JSON.stringify({
@@ -44,6 +45,7 @@ export function ExtractionStep({
 
     setLlmCall(false);
     if (!res.ok) {
+      setErrorMessage("Something went wrong. Data could not be structured.");
       throw new Error("Failed to classify text");
     }
 
@@ -63,6 +65,7 @@ export function ExtractionStep({
 
     const data = await res.json();
     if (res.status !== 200) {
+      setErrorMessage("Something went wrong. Data could not be saved.");
       throw new Error(data.message);
     }
   }
@@ -77,6 +80,7 @@ export function ExtractionStep({
       }
     };
     extract();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -161,32 +165,34 @@ export function ExtractionStep({
         )}
       </div>
       {/* Step Actions */}
-      {errorMsg !== "" && (
-        <p className="mt-1 text-sm text-red-500">{errorMsg}</p>
+      {errorMessage !== "" && (
+        <p className="mt-1 text-sm text-red-500">{errorMessage}</p>
       )}
       <div className="flex gap-2 mt-3">
         <Link
           className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           href={`/dashboard`}
+          prefetch={false}
         >
           Cancel
         </Link>
         {status === "complete" && (
           <Button
-            disabled={isUpdating}
+            disabled={isLoading}
             className={cn("w-full")}
-            onClick={() => {
-              setUpdating(true);
-              setErrorMsg("");
-              sendJson(json)
-                .then(() => router.push(`/verification/${id}`))
-                .catch(() => {
-                  setErrorMsg("Something went wrong, please try again");
-                  setUpdating(false);
-                });
+            onClick={async () => {
+              setIsLoading(true);
+              try {
+                await minDelay(sendJson(json), 400);
+                router.refresh();
+                router.push(`/verification/${id}`);
+              } catch (e) {
+                setStatus("failed");
+                setIsLoading(false);
+              }
             }}
           >
-            {isUpdating && (
+            {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
             Continue
@@ -196,7 +202,8 @@ export function ExtractionStep({
           <Button
             className={cn("w-full")}
             onClick={async () => {
-              setUpdating(true);
+              setIsLoading(true);
+              setErrorMessage("");
               setStatus("active");
               try {
                 await getStructuredData(category.value, text);
@@ -204,7 +211,7 @@ export function ExtractionStep({
               } catch (e) {
                 setStatus("failed");
               }
-              setUpdating(false);
+              setIsLoading(false);
             }}
           >
             Retry
