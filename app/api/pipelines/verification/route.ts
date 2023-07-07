@@ -1,40 +1,45 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Status } from "@prisma/client";
+import { getUser } from "@/lib/session";
+import * as z from "zod";
+import { validateBody } from "@/lib/validations/request";
+import { categories } from "@/lib/data-categories";
 
-export async function PUT(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function PUT(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const userUUID = session?.user.id;
+  const schema = z.object({
+    id: z.string().uuid(),
+    category: z.string().refine((category) => categories.has(category)),
+    json: z.object({}).nonstrict(),
+  });
 
-  const { uuid, json } = await req.json();
+  const body = (await req.json()) as z.infer<typeof schema>;
 
-  if (!uuid || !json) {
-    return NextResponse.json(
-      { error: "No UUID or JSON provided" },
-      { status: 400 }
-    );
+  if (!validateBody(body, schema)) {
+    return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
-  let jsonObj = null;
-  try {
-    jsonObj = JSON.parse(json);
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Invalid JSON provided" },
-      { status: 400 }
-    );
-  }
+  const jsonObj = body.json as any;
+
+  // try {
+  //   const schema = categories.get(body.category)!.zodSchema;
+  //   schema!.parse(body.json);
+  // } catch (error) {
+  //   console.log(error);
+  //   return NextResponse.json(
+  //     { error: "Invalid JSON provided" },
+  //     { status: 400 }
+  //   );
+  // }
 
   const extraction = await prisma.extraction.findUnique({
     where: {
-      id: uuid,
+      id: body.id,
     },
   });
 
@@ -44,8 +49,8 @@ export async function PUT(req: Request) {
       try {
         data = await prisma.receipt.create({
           data: {
-            extractionId: uuid,
-            userId: userUUID,
+            extractionId: body.id,
+            userId: user.id,
             objectPath: extraction.objectPath,
             number: jsonObj.number,
             category: jsonObj.category,
@@ -79,8 +84,8 @@ export async function PUT(req: Request) {
       try {
         data = await prisma.invoice.create({
           data: {
-            userId: userUUID,
-            extractionId: uuid,
+            extractionId: body.id,
+            userId: user.id,
             objectPath: extraction.objectPath,
             invoiceNumber: jsonObj.invoice_number,
             date: new Date(jsonObj.date).toISOString(),
@@ -112,8 +117,8 @@ export async function PUT(req: Request) {
       try {
         data = await prisma.cardStatement.create({
           data: {
-            userId: userUUID,
-            extractionId: uuid,
+            extractionId: body.id,
+            userId: user.id,
             objectPath: extraction.objectPath,
             issuerName: jsonObj.issuer.name,
             issuerAddress: jsonObj.issuer.address,
@@ -155,22 +160,22 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Data not created" }, { status: 400 });
   }
 
-  const updatedExtraction = await prisma.extraction.updateMany({
-    where: {
-      id: uuid,
-      userId: userUUID,
-      status: Status.TO_VERIFY,
-    },
-    data: {
-      json,
-      status: Status.PROCESSED,
-    },
-  });
-
-  if (!updatedExtraction.count) {
+  try {
+    await prisma.extraction.updateMany({
+      where: {
+        id: body.id,
+        userId: user.id,
+        status: Status.TO_VERIFY,
+      },
+      data: {
+        json: jsonObj,
+        status: Status.PROCESSED,
+      },
+    });
+  } catch (error) {
     return NextResponse.json(
-      { error: "Extraction not found or not updated" },
-      { status: 404 }
+      { error: "Extraction not updated" },
+      { status: 400 }
     );
   }
 
@@ -178,40 +183,21 @@ export async function PUT(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const { text, category, json } = await req.json();
+  const schema = z.object({
+    text: z.string().min(1),
+    category: z.string().refine((category) => categories.has(category)),
+    json: z.object({}).nonstrict(),
+  });
 
-  if (!text || !category || !json) {
-    return NextResponse.json(
-      { error: "No text, category or json provided" },
-      { status: 400 }
-    );
-  }
+  const body = (await req.json()) as z.infer<typeof schema>;
 
-  let schema = {};
-  switch (category) {
-    case "receipts": {
-      schema = receiptsSchema;
-      break;
-    }
-    case "invoices": {
-      schema = invoicesSchema;
-      break;
-    }
-    case "credit card statements": {
-      schema = cardStatementsSchema;
-      break;
-    }
-    default:
-      return NextResponse.json(
-        { error: "Invalid category provided" },
-        { status: 400 }
-      );
+  if (!validateBody(body, schema)) {
+    return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
   const res = await fetch(
@@ -227,12 +213,13 @@ export async function POST(req: Request) {
           apiKey: process.env.OPENAI_API_KEY as string,
           name: "gpt-4",
         },
-        jsonSchema: JSON.stringify(schema),
-        originalText: text,
-        jsonOutput: json,
+        jsonSchema: JSON.stringify(categories.get(body.category)!.schema),
+        originalText: body.text,
+        jsonOutput: JSON.stringify(body.json),
       }),
     }
   );
+
   if (!res.ok) {
     return NextResponse.json({ error: res.statusText }, { status: res.status });
   }

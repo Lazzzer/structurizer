@@ -49,7 +49,7 @@ export default function VerificationPipeline({
       body: JSON.stringify({
         text,
         category,
-        json: JSON.stringify(verifiedJson),
+        json: verifiedJson,
       }),
     });
     if (!res.ok) {
@@ -63,8 +63,9 @@ export default function VerificationPipeline({
     const res = await fetch("/api/pipelines/verification", {
       method: "PUT",
       body: JSON.stringify({
-        uuid: id,
-        json: JSON.stringify(verifiedJson),
+        id: id,
+        category: category,
+        json: verifiedJson,
       }),
     });
     const data = await res.json();
