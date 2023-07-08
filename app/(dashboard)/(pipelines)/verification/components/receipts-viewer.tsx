@@ -358,7 +358,10 @@ export function ReceiptsViewer({
               Subtotal <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("subtotal") && (
-              <CorrectionPopover correction={corrections.get("subtotal")!} />
+              <CorrectionPopover
+                align="end"
+                correction={corrections.get("subtotal")!}
+              />
             )}
           </div>
           <Input
@@ -388,7 +391,10 @@ export function ReceiptsViewer({
               Tax <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("tax") && (
-              <CorrectionPopover correction={corrections.get("tax")!} />
+              <CorrectionPopover
+                align="end"
+                correction={corrections.get("tax")!}
+              />
             )}
           </div>
 
@@ -419,7 +425,10 @@ export function ReceiptsViewer({
               Tip <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("tip") && (
-              <CorrectionPopover correction={corrections.get("tip")!} />
+              <CorrectionPopover
+                align="end"
+                correction={corrections.get("tip")!}
+              />
             )}
           </div>
 
@@ -450,7 +459,10 @@ export function ReceiptsViewer({
               Total
             </Label>
             {corrections.has("total") && (
-              <CorrectionPopover correction={corrections.get("total")!} />
+              <CorrectionPopover
+                align="end"
+                correction={corrections.get("total")!}
+              />
             )}
           </div>
 

@@ -13,12 +13,14 @@ interface CorrectionPopoverProps {
   iconClassName?: string;
   contentClassName?: string;
   correction: Correction;
+  align?: "start" | "end" | "center";
 }
 
 export function CorrectionPopover({
   iconClassName,
   contentClassName,
   correction,
+  align = "center",
 }: CorrectionPopoverProps) {
   return (
     <Popover>
@@ -31,7 +33,8 @@ export function CorrectionPopover({
         />
       </PopoverTrigger>
       <PopoverContent
-        align="center"
+        side="right"
+        align={align}
         hideWhenDetached
         className={cn(
           "p-2 w-80 text-slate-800 max-h-[500px] h-full overflow-scroll",

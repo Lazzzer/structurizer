@@ -205,7 +205,7 @@ export default function VerificationPipeline({
                         <PopoverContent
                           style={{
                             width: "400px",
-                            maxHeight: "600px",
+                            maxHeight: "550px",
                           }}
                           className="p-4 h-auto overflow-scroll"
                         >

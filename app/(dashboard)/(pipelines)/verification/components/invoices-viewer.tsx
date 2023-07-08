@@ -14,49 +14,47 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@radix-ui/react-collapsible";
+} from "@/components/ui/collapsible";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { Label } from "@/components/ui/label";
 import { AnimatePresence, motion } from "framer-motion";
 import { CorrectionPopover } from "./correction-popover";
+import { Correction } from "types";
+
+interface InvoicesViewerProps {
+  verifiedInvoice: any;
+  setVerifiedInvoice: (receipt: any) => void;
+  corrections: Map<string, Correction>;
+}
 
 export function InvoicesViewer({
   verifiedInvoice,
   setVerifiedInvoice,
   corrections,
-}: {
-  verifiedInvoice: any;
-  setVerifiedInvoice: (receipt: any) => void;
-  corrections: Map<any, any>;
-}) {
-  const [isItemsOpen, setIsItemsOpen] = useState(true);
+}: InvoicesViewerProps) {
+  const [areItemsOpen, setAreItemsOpen] = useState(true);
   return (
     <div className="w-full min-h-full h-20 p-2 overflow-scroll">
       <div className=" grid grid-rows-3 gap-2.5">
         {/* Invoice number */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections.has("invoice_number")
-                ? "text-red-500"
-                : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
-              htmlFor="from"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("invoice_number") && "text-red-500"
+              )}
+              htmlFor="invoice_number"
             >
-              Invoice Number
+              Invoice Number{" "}
+              <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("invoice_number") && (
               <CorrectionPopover
-                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80"
-                correction={corrections.get("invoice_number")}
-              ></CorrectionPopover>
+                correction={corrections.get("invoice_number")!}
+              />
             )}
           </div>
           <Input
@@ -75,24 +73,18 @@ export function InvoicesViewer({
         </div>
         {/* Category */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections.has("category") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("category") && "text-red-500"
+              )}
               htmlFor="category"
             >
               Category
             </Label>
             {corrections.has("category") && (
-              <CorrectionPopover
-                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80"
-                correction={corrections.get("category")}
-              ></CorrectionPopover>
+              <CorrectionPopover correction={corrections.get("category")!} />
             )}
           </div>
           <Select
@@ -115,24 +107,18 @@ export function InvoicesViewer({
         </div>
         {/* Date */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections.has("date") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
-              htmlFor="from"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("date") && "text-red-500"
+              )}
+              htmlFor="date"
             >
               Date
             </Label>
             {corrections.has("date") && (
-              <CorrectionPopover
-                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80"
-                correction={corrections.get("date")}
-              ></CorrectionPopover>
+              <CorrectionPopover correction={corrections.get("date")!} />
             )}
           </div>
           <Input
@@ -151,7 +137,7 @@ export function InvoicesViewer({
       <div>
         <h4
           className={cn(
-            corrections.has("from") ? "text-red-500" : "text-slate-800",
+            corrections.has("from") ? "text-red-500" : "text-slate-900",
             "font-semibold flex items-center mt-3 mb-2.5"
           )}
         >
@@ -159,9 +145,7 @@ export function InvoicesViewer({
           <Icons.braces strokeWidth={3} className="h-4 w-4 ml-1 inline-block" />
           {corrections.has("from") && (
             <CorrectionPopover
-              iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-              contentClassName="w-80 font-normal"
-              correction={corrections.get("from")}
+              correction={corrections.get("from")!}
             ></CorrectionPopover>
           )}
         </h4>
@@ -171,7 +155,7 @@ export function InvoicesViewer({
               className={cn(
                 corrections.has("from.name")
                   ? "text-red-500"
-                  : "text-slate-800",
+                  : "text-slate-900",
                 "-mt-0.5"
               )}
               htmlFor="from-name"
@@ -180,9 +164,8 @@ export function InvoicesViewer({
             </Label>
             {corrections.has("from.name") && (
               <CorrectionPopover
-                iconClassName="h-4 w-4 p-0 -mt-0.5  text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("from.name")}
+                iconClassName="h-4 w-4 p-0 -mt-0.5"
+                correction={corrections.get("from.name")!}
               ></CorrectionPopover>
             )}
           </div>
@@ -205,17 +188,16 @@ export function InvoicesViewer({
               className={cn(
                 corrections.has("from.address")
                   ? "text-red-500"
-                  : "text-slate-800"
+                  : "text-slate-900"
               )}
               htmlFor="from-address"
             >
-              Address
+              Address <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("from.address") && (
               <CorrectionPopover
-                iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("from.address")}
+                iconClassName="h-4 w-4 p-0"
+                correction={corrections.get("from.address")!}
               ></CorrectionPopover>
             )}
           </div>
@@ -238,7 +220,7 @@ export function InvoicesViewer({
       <div>
         <h4
           className={cn(
-            corrections.has("to") ? "text-red-500" : "text-slate-800",
+            corrections.has("to") ? "text-red-500" : "text-slate-900",
             "font-semibold flex items-center mt-3 mb-2.5"
           )}
         >
@@ -246,9 +228,7 @@ export function InvoicesViewer({
           <Icons.braces strokeWidth={3} className="h-4 w-4 ml-1 inline-block" />
           {corrections.has("to") && (
             <CorrectionPopover
-              iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-              contentClassName="w-80 font-normal"
-              correction={corrections.get("to")}
+              correction={corrections.get("to")!}
             ></CorrectionPopover>
           )}
         </h4>
@@ -256,17 +236,16 @@ export function InvoicesViewer({
           <div className="flex items-center gap-1 mb-1">
             <Label
               className={cn(
-                corrections.has("to.name") ? "text-red-500" : "text-slate-800"
+                corrections.has("to.name") ? "text-red-500" : "text-slate-900"
               )}
               htmlFor="to-name"
             >
-              Name
+              Name <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("to.name") && (
               <CorrectionPopover
-                iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("to.name")}
+                iconClassName="h-4 w-4 p-0"
+                correction={corrections.get("to.name")!}
               ></CorrectionPopover>
             )}
           </div>
@@ -288,17 +267,16 @@ export function InvoicesViewer({
               className={cn(
                 corrections.has("to.address")
                   ? "text-red-500"
-                  : "text-slate-800"
+                  : "text-slate-900"
               )}
               htmlFor="to-address"
             >
-              Address
+              Address <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("to.address") && (
               <CorrectionPopover
-                iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("to.address")}
+                iconClassName="h-4 w-4 p-0"
+                correction={corrections.get("to.address")!}
               ></CorrectionPopover>
             )}
           </div>
@@ -320,11 +298,11 @@ export function InvoicesViewer({
       </div>
       {/* Items */}
       <div className="my-4">
-        <Collapsible open={isItemsOpen} onOpenChange={setIsItemsOpen}>
+        <Collapsible open={areItemsOpen} onOpenChange={setAreItemsOpen}>
           <div className="flex items-center justify-between">
             <h4
               className={cn(
-                corrections.has("items") ? "text-red-500" : "text-slate-800",
+                corrections.has("items") ? "text-red-500" : "text-slate-900",
                 "font-semibold flex items-center"
               )}
             >
@@ -335,9 +313,7 @@ export function InvoicesViewer({
               />
               {corrections.has("items") && (
                 <CorrectionPopover
-                  iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                  contentClassName="w-80 font-normal"
-                  correction={corrections.get("items")}
+                  correction={corrections.get("items")!}
                 ></CorrectionPopover>
               )}
               <Button
@@ -354,7 +330,7 @@ export function InvoicesViewer({
                   });
                 }}
                 variant="ghost"
-                className="h-8 ml-2 text-slate-800"
+                className="h-8 ml-2 text-slate-900"
               >
                 <Icons.plusCircle className="h-3 w-3 mr-1" />
                 <span className="text-xs">Add Item</span>
@@ -406,7 +382,12 @@ export function InvoicesViewer({
                     <div className="flex w-full mt-2 justify-between">
                       <div className="w-1/2 flex gap-1.5">
                         <div className="w-full">
-                          <Label htmlFor={`item-${index}-amount`}>Amount</Label>
+                          <Label htmlFor={`item-${index}-amount`}>
+                            Amount{" "}
+                            <span className="text-xs font-medium">
+                              (optional)
+                            </span>
+                          </Label>
                           <Input
                             id={`item-${index}-amount`}
                             placeholder="null"
@@ -440,7 +421,7 @@ export function InvoicesViewer({
                       >
                         <Icons.trash
                           strokeWidth={2.5}
-                          className="h-4 w-4 text-slate-800"
+                          className="h-4 w-4 text-slate-900"
                         />
                         <span className="sr-only">Delete</span>
                       </Button>
@@ -455,24 +436,21 @@ export function InvoicesViewer({
       <div className=" grid grid-rows-2 gap-2.5">
         {/* Currency */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections.has("currency") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("currency") && "text-red-500"
+              )}
               htmlFor="currency"
             >
-              Currency
+              Currency <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("currency") && (
               <CorrectionPopover
-                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80"
-                correction={corrections.get("currency")}
-              ></CorrectionPopover>
+                align="end"
+                correction={corrections.get("currency")!}
+              />
             )}
           </div>
 
@@ -492,29 +470,23 @@ export function InvoicesViewer({
         </div>
         {/* Total Amount Due */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections.has("total_amount_due")
-                ? "text-red-500"
-                : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("total_amount_due") && "text-red-500"
+              )}
               htmlFor="total_amount_due"
             >
               Total Amount Due
             </Label>
             {corrections.has("total_amount_due") && (
               <CorrectionPopover
-                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80"
-                correction={corrections.get("total_amount_due")}
-              ></CorrectionPopover>
+                align="end"
+                correction={corrections.get("total_amount_due")!}
+              />
             )}
           </div>
-
           <Input
             id="total_amount_due"
             placeholder="null"
