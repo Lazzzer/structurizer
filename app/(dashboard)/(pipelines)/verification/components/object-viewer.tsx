@@ -6,19 +6,20 @@ import { cn } from "@/lib/utils";
 import { InvoicesViewer } from "./invoices-viewer";
 import { CardStatementsViewer } from "./card-statements-viewer";
 
+interface ObjectViewerProps extends React.HTMLAttributes<HTMLDivElement> {
+  category: string;
+  json: any;
+  corrections: any[];
+  setVerifiedJson: (json: any) => void;
+}
+
 export function ObjectViewer({
   className,
   category,
   json,
   corrections,
   setVerifiedJson,
-}: {
-  className?: string;
-  category: string;
-  json: any;
-  corrections: any[];
-  setVerifiedJson: (json: any) => void;
-}) {
+}: ObjectViewerProps) {
   const correctionsMap = new Map();
   corrections.forEach((correction) => {
     correctionsMap.set(correction.field.replace(/\[.*\]/g, ""), correction);

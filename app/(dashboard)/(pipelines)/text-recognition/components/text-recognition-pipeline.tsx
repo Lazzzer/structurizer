@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, minDelay } from "@/lib/utils";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -49,10 +49,13 @@ export default function TextRecognitionPipeline({
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
-    const res = await fetch("/api/pipelines/text-recognition", {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
+    const res = await minDelay(
+      fetch("/api/pipelines/text-recognition", {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+      400
+    );
     setIsLoading(false);
 
     if (res.status !== 200) {
@@ -68,12 +71,23 @@ export default function TextRecognitionPipeline({
 
   return (
     <div className="mx-8 mb-8 flex flex-col flex-grow">
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
+          key="text-recognition"
+          layout="position"
+          initial="hidden"
+          animate="show"
+          exit="hidden"
+          variants={{
+            hidden: { opacity: 0, y: 10 },
+            show: {
+              opacity: 1,
+              y: 0,
+              transition: { type: "spring", delay: 0.3 },
+            },
+          }}
           transition={{ duration: 0.3 }}
+          viewport={{ once: true }}
           className="flex flex-1 items-center justify-center gap-x-10"
         >
           <object

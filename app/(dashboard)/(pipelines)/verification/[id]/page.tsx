@@ -29,7 +29,7 @@ export default async function VerificationPipelinePage({
         url={url}
         category={category as string}
         text={text as string}
-        json={json}
+        json={json as string}
       />
     </div>
   );
