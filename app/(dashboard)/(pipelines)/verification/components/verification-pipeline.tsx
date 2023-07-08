@@ -167,7 +167,7 @@ export default function VerificationPipeline({
                 >
                   <div
                     style={{
-                      maxHeight: "57vh", // preformatted elements really don't like height: 100%, so here we are...
+                      maxHeight: "53vh", // preformatted elements really don't like height: 100%, so here we are...
                     }}
                     className="w-full text-sm text-slate-700 whitespace-break-spaces overflow-auto"
                   >

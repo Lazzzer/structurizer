@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { invoicesSchema } from "@/lib/llm/schema";
 import {
   Collapsible,
   CollapsibleContent,
@@ -22,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { AnimatePresence, motion } from "framer-motion";
 import { CorrectionPopover } from "./correction-popover";
 import { Correction } from "types";
+import { invoicesSchema } from "@/lib/data-categories";
 
 interface InvoicesViewerProps {
   verifiedInvoice: any;
@@ -97,7 +97,7 @@ export function InvoicesViewer({
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              {invoicesSchema.properties.category.enum.map((category) => (
+              {invoicesSchema.properties.category.enum.map((category: any) => (
                 <SelectItem key={category} value={category}>
                   {category}
                 </SelectItem>

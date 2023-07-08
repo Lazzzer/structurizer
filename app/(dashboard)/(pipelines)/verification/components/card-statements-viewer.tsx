@@ -9,52 +9,49 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@radix-ui/react-collapsible";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { Label } from "@/components/ui/label";
 import { AnimatePresence, motion } from "framer-motion";
-import { cardStatementsSchema } from "@/lib/llm/schema";
 import { CorrectionPopover } from "./correction-popover";
+import { Correction } from "types";
+import { cardStatementsSchema } from "@/lib/data-categories";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
+interface CardStatementsViewerProps {
+  verifiedCardStatement: any;
+  setVerifiedCardStatement: (receipt: any) => void;
+  corrections: Map<string, Correction>;
+}
 
 export function CardStatementsViewer({
   verifiedCardStatement,
   setVerifiedCardStatement,
   corrections,
-}: {
-  verifiedCardStatement: any;
-  setVerifiedCardStatement: (receipt: any) => void;
-  corrections: Map<any, any>;
-}) {
+}: CardStatementsViewerProps) {
   const [isItemsOpen, setIsItemsOpen] = useState(true);
   return (
     <div className="w-full min-h-full h-20 p-2 overflow-scroll">
       <div>
         {/* Date */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections.has("date") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
-              htmlFor="from"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("date") && "text-red-500"
+              )}
+              htmlFor="date"
             >
               Date
             </Label>
             {corrections.has("date") && (
-              <CorrectionPopover
-                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80"
-                correction={corrections.get("date")}
-              ></CorrectionPopover>
+              <CorrectionPopover correction={corrections.get("date")!} />
             )}
           </div>
           <Input
@@ -76,18 +73,14 @@ export function CardStatementsViewer({
       <div>
         <h4
           className={cn(
-            corrections.has("issuer") ? "text-red-500" : "text-slate-800",
+            corrections.has("issuer") ? "text-red-500" : "text-slate-900",
             "font-semibold flex items-center mt-3 mb-2.5"
           )}
         >
           Issuer
           <Icons.braces strokeWidth={3} className="h-4 w-4 ml-1 inline-block" />
           {corrections.has("issuer") && (
-            <CorrectionPopover
-              iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-              contentClassName="w-80 font-normal"
-              correction={corrections.get("issuer")}
-            ></CorrectionPopover>
+            <CorrectionPopover correction={corrections.get("issuer")!} />
           )}
         </h4>
         <div className="rounded-md border border-slate-200 px-4 py-3">
@@ -96,7 +89,7 @@ export function CardStatementsViewer({
               className={cn(
                 corrections.has("issuer.name")
                   ? "text-red-500"
-                  : "text-slate-800",
+                  : "text-slate-900",
                 "-mt-0.5"
               )}
               htmlFor="issuer-name"
@@ -106,9 +99,8 @@ export function CardStatementsViewer({
             {corrections.has("issuer.name") && (
               <CorrectionPopover
                 iconClassName="h-4 w-4 p-0 -mt-0.5  text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("issuer.name")}
-              ></CorrectionPopover>
+                correction={corrections.get("issuer.name")!}
+              />
             )}
           </div>
 
@@ -133,18 +125,17 @@ export function CardStatementsViewer({
               className={cn(
                 corrections.has("issuer.address")
                   ? "text-red-500"
-                  : "text-slate-800"
+                  : "text-slate-900"
               )}
               htmlFor="issuer-address"
             >
-              Address
+              Address <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("issuer.address") && (
               <CorrectionPopover
                 iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("issuer.address")}
-              ></CorrectionPopover>
+                correction={corrections.get("issuer.address")!}
+              />
             )}
           </div>
           <Input
@@ -169,18 +160,14 @@ export function CardStatementsViewer({
       <div>
         <h4
           className={cn(
-            corrections.has("recipient") ? "text-red-500" : "text-slate-800",
+            corrections.has("recipient") ? "text-red-500" : "text-slate-900",
             "font-semibold flex items-center mt-3 mb-2.5"
           )}
         >
           Recipient
           <Icons.braces strokeWidth={3} className="h-4 w-4 ml-1 inline-block" />
           {corrections.has("recipient") && (
-            <CorrectionPopover
-              iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-              contentClassName="w-80 font-normal"
-              correction={corrections.get("recipient")}
-            ></CorrectionPopover>
+            <CorrectionPopover correction={corrections.get("recipient")!} />
           )}
         </h4>
         <div className="rounded-md border border-slate-200 px-4 py-3">
@@ -189,18 +176,17 @@ export function CardStatementsViewer({
               className={cn(
                 corrections.has("recipient.name")
                   ? "text-red-500"
-                  : "text-slate-800"
+                  : "text-slate-900"
               )}
               htmlFor="recipient-name"
             >
-              Name
+              Name <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("recipient.name") && (
               <CorrectionPopover
                 iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("recipient.name")}
-              ></CorrectionPopover>
+                correction={corrections.get("recipient.name")!}
+              />
             )}
           </div>
           <Input
@@ -224,18 +210,17 @@ export function CardStatementsViewer({
               className={cn(
                 corrections.has("recipient.address")
                   ? "text-red-500"
-                  : "text-slate-800"
+                  : "text-slate-900"
               )}
               htmlFor="recipient-address"
             >
-              Address
+              Address <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("recipient.address") && (
               <CorrectionPopover
                 iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("recipient.address")}
-              ></CorrectionPopover>
+                correction={corrections.get("recipient.address")!}
+              />
             )}
           </div>
 
@@ -261,18 +246,14 @@ export function CardStatementsViewer({
       <div>
         <h4
           className={cn(
-            corrections.has("credit_card") ? "text-red-500" : "text-slate-800",
+            corrections.has("credit_card") ? "text-red-500" : "text-slate-900",
             "font-semibold flex items-center mt-3 mb-2.5"
           )}
         >
           Credit Card
           <Icons.braces strokeWidth={3} className="h-4 w-4 ml-1 inline-block" />
           {corrections.has("credit_card") && (
-            <CorrectionPopover
-              iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-              contentClassName="w-80 font-normal"
-              correction={corrections.get("credit_card")}
-            ></CorrectionPopover>
+            <CorrectionPopover correction={corrections.get("credit_card")!} />
           )}
         </h4>
         <div className="rounded-md border border-slate-200 px-4 py-3">
@@ -281,18 +262,17 @@ export function CardStatementsViewer({
               className={cn(
                 corrections.has("credit_card.name")
                   ? "text-red-500"
-                  : "text-slate-800"
+                  : "text-slate-900"
               )}
               htmlFor="credit_card-name"
             >
-              Name
+              Name <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("credit_card.name") && (
               <CorrectionPopover
                 iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("credit_card.name")}
-              ></CorrectionPopover>
+                correction={corrections.get("credit_card.name")!}
+              />
             )}
           </div>
           <Input
@@ -316,18 +296,17 @@ export function CardStatementsViewer({
               className={cn(
                 corrections.has("credit_card.holder")
                   ? "text-red-500"
-                  : "text-slate-800"
+                  : "text-slate-900"
               )}
               htmlFor="credit_card-holder"
             >
-              Holder
+              Holder <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("credit_card.holder") && (
               <CorrectionPopover
                 iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("credit_card.holder")}
-              ></CorrectionPopover>
+                correction={corrections.get("credit_card.holder")!}
+              />
             )}
           </div>
 
@@ -353,18 +332,17 @@ export function CardStatementsViewer({
               className={cn(
                 corrections.has("credit_card.number")
                   ? "text-red-500"
-                  : "text-slate-800"
+                  : "text-slate-900"
               )}
               htmlFor="credit_card-number"
             >
-              Number
+              Number <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("credit_card.number") && (
               <CorrectionPopover
                 iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80 font-normal"
-                correction={corrections.get("credit_card.number")}
-              ></CorrectionPopover>
+                correction={corrections.get("credit_card.number")!}
+              />
             )}
           </div>
 
@@ -394,7 +372,7 @@ export function CardStatementsViewer({
               className={cn(
                 corrections.has("transactions")
                   ? "text-red-500"
-                  : "text-slate-800",
+                  : "text-slate-900",
                 "font-semibold flex items-center"
               )}
             >
@@ -405,10 +383,8 @@ export function CardStatementsViewer({
               />
               {corrections.has("transactions") && (
                 <CorrectionPopover
-                  iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                  contentClassName="w-80 font-normal"
-                  correction={corrections.get("transactions")}
-                ></CorrectionPopover>
+                  correction={corrections.get("transactions")!}
+                />
               )}
               <Button
                 onClick={() => {
@@ -425,7 +401,7 @@ export function CardStatementsViewer({
                   });
                 }}
                 variant="ghost"
-                className="h-8 ml-2 text-slate-800"
+                className="h-8 ml-2 text-slate-900"
               >
                 <Icons.plusCircle className="h-3 w-3 mr-1" />
                 <span className="text-xs">Add Transaction</span>
@@ -501,7 +477,7 @@ export function CardStatementsViewer({
                               </SelectTrigger>
                               <SelectContent>
                                 {cardStatementsSchema.properties.transactions.items.properties.category.enum.map(
-                                  (category) => (
+                                  (category: any) => (
                                     <SelectItem key={category} value={category}>
                                       {category}
                                     </SelectItem>
@@ -551,7 +527,7 @@ export function CardStatementsViewer({
                         >
                           <Icons.trash
                             strokeWidth={2.5}
-                            className="h-4 w-4 text-slate-800"
+                            className="h-4 w-4 text-slate-900"
                           />
                           <span className="sr-only">Delete</span>
                         </Button>
@@ -567,24 +543,21 @@ export function CardStatementsViewer({
       <div className=" grid grid-rows-2 gap-2.5">
         {/* Currency */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections.has("currency") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("currency") && "text-red-500"
+              )}
               htmlFor="currency"
             >
-              Currency
+              Currency <span className="text-xs font-medium">(optional)</span>
             </Label>
             {corrections.has("currency") && (
               <CorrectionPopover
-                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80"
-                correction={corrections.get("currency")}
-              ></CorrectionPopover>
+                align="end"
+                correction={corrections.get("currency")!}
+              />
             )}
           </div>
 
@@ -604,29 +577,23 @@ export function CardStatementsViewer({
         </div>
         {/* Total Amount Due */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections.has("total_amount_due")
-                ? "text-red-500"
-                : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("total_amount_due") && "text-red-500"
+              )}
               htmlFor="total_amount_due"
             >
               Total Amount Due
             </Label>
             {corrections.has("total_amount_due") && (
               <CorrectionPopover
-                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                contentClassName="w-80"
-                correction={corrections.get("total_amount_due")}
-              ></CorrectionPopover>
+                align="end"
+                correction={corrections.get("total_amount_due")!}
+              />
             )}
           </div>
-
           <Input
             id="total_amount_due"
             placeholder="null"
