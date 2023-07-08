@@ -6,7 +6,7 @@ import { useStepStore } from "@/lib/store";
 import { UploadInfo } from "types";
 import { Dropzone } from "./dropzone";
 import { CircleCheckIcon } from "@/components/icons";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -21,7 +21,7 @@ export default function UploadPipeline() {
   return (
     <div className="m-8 flex flex-col flex-grow 2xl:-mt-48 -mt-10">
       <div className="flex flex-col flex-1 items-center justify-center">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence>
           {status === "active" && (
             <Dropzone updateUploadInfos={setUploadInfos} />
           )}
@@ -56,16 +56,16 @@ export default function UploadPipeline() {
               </p>
               {(uploadInfos.nbFiles === 1 && (
                 <div className="flex gap-4">
-                  <Link
-                    className={cn(
-                      buttonVariants({ variant: "secondary" }),
-                      "w-40"
-                    )}
-                    prefetch={false}
-                    href={"/dashboard"}
+                  <Button
+                    type="button"
+                    variant={"secondary"}
+                    className="w-40"
+                    onClick={() => {
+                      window.location.href = "/dashboard";
+                    }}
                   >
                     Back
-                  </Link>
+                  </Button>
                   <Link
                     className={cn(buttonVariants(), "w-40")}
                     href={`/text-recognition/${uploadInfos.success[0][1]}`}
@@ -75,13 +75,15 @@ export default function UploadPipeline() {
                   </Link>
                 </div>
               )) || (
-                <Link
-                  className={cn(buttonVariants(), "w-40")}
-                  prefetch={false}
-                  href={"/dashboard"}
+                <Button
+                  type="button"
+                  className="w-40"
+                  onClick={() => {
+                    window.location.href = "/dashboard";
+                  }}
                 >
                   Back to Dashboard
-                </Link>
+                </Button>
               )}
             </motion.div>
           )}

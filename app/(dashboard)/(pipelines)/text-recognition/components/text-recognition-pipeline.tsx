@@ -1,12 +1,11 @@
 "use client";
 
-import { cn, minDelay } from "@/lib/utils";
-import Link from "next/link";
+import { minDelay } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { Icons } from "@/components/icons";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { textRecognitionSchema } from "@/lib/validations/text-recognition";
@@ -129,17 +128,15 @@ export default function TextRecognitionPipeline({
                 />
               </div>
               <div className="flex gap-2 justify-end">
-                <Link
-                  className={cn(
-                    buttonVariants({
-                      variant: "secondary",
-                    })
-                  )}
-                  href="/dashboard"
-                  prefetch={false}
+                <Button
+                  type="button"
+                  variant={"secondary"}
+                  onClick={() => {
+                    window.location.href = "/text-recognition";
+                  }}
                 >
                   Cancel
-                </Link>
+                </Button>
                 <Button type="submit" disabled={isLoading} className="w-48">
                   {isLoading && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

@@ -2,10 +2,7 @@
 
 import { Icons } from "@/components/icons";
 import { TopMainContent } from "@/components/top-main-content";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-
+import { Button } from "@/components/ui/button";
 export default function Error({ reset }: { reset: () => void }) {
   return (
     <div className="flex flex-col h-full">
@@ -22,14 +19,14 @@ export default function Error({ reset }: { reset: () => void }) {
           <Button variant={"secondary"} onClick={() => reset}>
             Try again
           </Button>
-          <Link
-            className={cn(buttonVariants())}
-            href="/dashboard"
-            prefetch={false}
-            replace
+          <Button
+            type="button"
+            onClick={() => {
+              window.location.href = "/dashboard";
+            }}
           >
             Back to Dashboard
-          </Link>
+          </Button>
         </div>
       </div>
     </div>

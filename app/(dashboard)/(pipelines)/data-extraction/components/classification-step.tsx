@@ -10,8 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Icons } from "@/components/icons";
 import { categories } from "@/lib/data-categories";
@@ -204,13 +203,16 @@ export function ClassificationStep({
       {/* Step Actions */}
       <div className="flex gap-2 mt-3">
         {status !== "confirmed" && (
-          <Link
-            className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
-            href={`/dashboard`}
-            prefetch={false}
+          <Button
+            type="button"
+            variant={"secondary"}
+            className="w-full"
+            onClick={() => {
+              window.location.href = "/data-extraction";
+            }}
           >
             Cancel
-          </Link>
+          </Button>
         )}
         {status !== "active" && status !== "confirmed" && (
           <Button

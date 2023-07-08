@@ -1,9 +1,10 @@
+"use client";
+
 import { cn, minDelay } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Icons } from "@/components/icons";
 import Balancer from "react-wrap-balancer";
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Category } from "@/lib/data-categories";
@@ -169,13 +170,16 @@ export function ExtractionStep({
         <p className="mt-1 text-sm text-red-500">{errorMessage}</p>
       )}
       <div className="flex gap-2 mt-3">
-        <Link
-          className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
-          href={`/dashboard`}
-          prefetch={false}
+        <Button
+          type="button"
+          variant={"secondary"}
+          className="w-full"
+          onClick={() => {
+            window.location.href = "/data-extraction";
+          }}
         >
           Cancel
-        </Link>
+        </Button>
         {status === "complete" && (
           <Button
             disabled={isLoading}
