@@ -10,7 +10,10 @@ export function validateBody(
 
 export function validateRequiredOrEmptyFields(jsonObj: any, fields: string[]) {
   return fields.every((field) => {
-    if (!jsonObj[field] || jsonObj[field].trim() === "") {
+    if (
+      !jsonObj[field] ||
+      (typeof jsonObj[field] === "string" && jsonObj[field].trim() === "")
+    ) {
       throw new Error(`Field ${field} is required`);
     }
   });

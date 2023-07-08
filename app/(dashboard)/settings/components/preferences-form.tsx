@@ -200,13 +200,13 @@ export function PreferencesForm({
               </FormItem>
             )}
           />
-          {/* Analysis */}
+          {/* Verification */}
           <FormField
             control={form.control}
             name="analysisModel"
             render={({ field }) => (
               <FormItem className="mt-4">
-                <FormLabel>Analysis</FormLabel>
+                <FormLabel>Verification</FormLabel>
                 <Select
                   onValueChange={field.onChange as (value: string) => void}
                   defaultValue={field.value}
@@ -228,7 +228,7 @@ export function PreferencesForm({
                 </Select>
                 <FormDescription className="text-slate-500 text-xs w-3/5">
                   <Balancer>
-                    The model analyzes the extracted data to find errors by
+                    The model verifies the extracted data to find errors by
                     comparing it to the schema and the original text. This task
                     should be handled by the most capable models to ensure the
                     best results and reduce inaccuracies.
