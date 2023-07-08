@@ -62,6 +62,7 @@ export function ClassificationStep({
   useEffect(() => {
     async function classify() {
       try {
+        setLlmCall(true);
         const category = await getClassification(text);
         setClassification(category);
         setStatus("complete");
@@ -75,7 +76,23 @@ export function ClassificationStep({
   }, []);
 
   return (
-    <motion.div>
+    <motion.div
+      key="classification-step"
+      layout="position"
+      initial="hidden"
+      animate="show"
+      exit="hidden"
+      variants={{
+        hidden: { opacity: 0, y: 10 },
+        show: {
+          opacity: 1,
+          y: 0,
+          transition: { type: "spring" },
+        },
+      }}
+      transition={{ duration: 0.4 }}
+      viewport={{ once: true }}
+    >
       <motion.div
         layout="position"
         className="border rounded-lg border-slate-200 px-5 py-3 bg-white"

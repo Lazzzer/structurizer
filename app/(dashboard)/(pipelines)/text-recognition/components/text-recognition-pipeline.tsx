@@ -65,7 +65,6 @@ export default function TextRecognitionPipeline({
       });
       return;
     }
-    router.refresh();
     router.push(`/data-extraction/${id}`);
   }
 

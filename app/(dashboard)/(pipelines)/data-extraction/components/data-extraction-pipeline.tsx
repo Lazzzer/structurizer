@@ -20,7 +20,7 @@ export default function DataExtractionPipeline({
 }: DataExtractionPipelineProps) {
   const [step, setStep] = useState<Step>("classification");
   const [category, setCategory] = useState("other");
-  const [llmCall, setLlmCall] = useState(true);
+  const [llmCall, setLlmCall] = useState(false);
 
   useEffect(() => {
     if (categories.has(category)) {

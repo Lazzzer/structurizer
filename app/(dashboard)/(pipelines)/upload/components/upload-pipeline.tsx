@@ -21,7 +21,7 @@ export default function UploadPipeline() {
   return (
     <div className="m-8 flex flex-col flex-grow 2xl:-mt-48 -mt-10">
       <div className="flex flex-col flex-1 items-center justify-center">
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {status === "active" && (
             <Dropzone updateUploadInfos={setUploadInfos} />
           )}

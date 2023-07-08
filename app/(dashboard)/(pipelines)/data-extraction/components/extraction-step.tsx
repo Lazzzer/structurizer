@@ -184,7 +184,6 @@ export function ExtractionStep({
               setIsLoading(true);
               try {
                 await minDelay(sendJson(json), 400);
-                router.refresh();
                 router.push(`/verification/${id}`);
               } catch (e) {
                 setStatus("failed");

@@ -121,7 +121,7 @@ export default function VerificationPipeline({
             </motion.div>
           )}
         </AnimatePresence>
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {!isCompleted && (
             <motion.div
               key="verification"
