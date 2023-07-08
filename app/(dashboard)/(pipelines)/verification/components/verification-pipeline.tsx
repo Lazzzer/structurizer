@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { CircleCheckIcon, Icons, SparklesIcon } from "@/components/icons";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, minDelay } from "@/lib/utils";
 import { useState } from "react";
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/popover";
 import { useStepStore } from "@/lib/store";
 import { ObjectViewer } from "./object-viewer";
+import { Correction } from "types";
 
 interface VerificationPipelineProps {
   id: string;
@@ -24,12 +24,7 @@ interface VerificationPipelineProps {
 }
 
 interface VerificationResult {
-  corrections: {
-    field: string;
-    issue: string;
-    description: string;
-    suggestion: string;
-  }[];
+  corrections: Correction[];
   textAnalysis: string;
 }
 
@@ -111,13 +106,15 @@ export default function VerificationPipeline({
               <p className="text-center text-slate-500 mb-6">
                 Your file has been processed successfully!
               </p>
-              <Link
-                className={cn(buttonVariants(), "w-40")}
-                href={"/dashboard"}
-                prefetch={false}
+              <Button
+                type="button"
+                className="w-40"
+                onClick={() => {
+                  window.location.href = "/dashboard";
+                }}
               >
                 Back to Dashboard
-              </Link>
+              </Button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -172,7 +169,7 @@ export default function VerificationPipeline({
                     style={{
                       maxHeight: "57vh", // preformatted elements really don't like height: 100%, so here we are...
                     }}
-                    className="w-full text-xs text-slate-700 whitespace-break-spaces overflow-auto"
+                    className="w-full text-sm text-slate-700 whitespace-break-spaces overflow-auto"
                   >
                     {text}
                   </div>
@@ -180,7 +177,7 @@ export default function VerificationPipeline({
               </Tabs>
               <div className="w-2/5 h-full flex flex-col justify-center relative">
                 <div className="mb-2 flex justify-between">
-                  <h1 className="text-2xl mb-2 font-bold text-slate-800">
+                  <h1 className="text-2xl mb-1 mt-1 font-bold text-slate-800">
                     Structured Data
                   </h1>
                   <SparklesIcon
@@ -208,13 +205,17 @@ export default function VerificationPipeline({
                         <PopoverContent
                           style={{
                             width: "400px",
-                            maxHeight: "550px",
+                            maxHeight: "600px",
                           }}
-                          className="px-4 py-2 h-auto mr-20 overflow-scroll"
+                          className="p-4 h-auto overflow-scroll"
                         >
-                          <h1 className="text-lg font-bold text-slate-800 mb-2">
-                            Verification Breakdown
-                          </h1>
+                          <div className="flex items-center gap-2  mb-3">
+                            <Icons.sparkles width={24} height={24} />
+                            <h1 className="text-lg font-bold text-slate-800">
+                              Verification Breakdown
+                            </h1>
+                          </div>
+
                           <p className="w-full text-sm whitespace-pre-wrap text-justify text-slate-600 mb-2 leading-snug">
                             {verificationResult.textAnalysis}
                           </p>
@@ -237,7 +238,16 @@ export default function VerificationPipeline({
                     category={category}
                     json={verifiedJson}
                     setVerifiedJson={setVerifiedJson}
-                    corrections={verificationResult?.corrections ?? []}
+                    corrections={
+                      verificationResult?.corrections
+                        ? new Map(
+                            verificationResult.corrections.map((correction) => [
+                              correction.field.replace(/\[.*\]/g, ""),
+                              correction,
+                            ])
+                          )
+                        : new Map<string, Correction>()
+                    }
                   />
                 </div>
 
@@ -245,17 +255,15 @@ export default function VerificationPipeline({
                   {errorMessage !== "" && (
                     <div className="text-sm text-red-500">{errorMessage}</div>
                   )}
-                  <Link
-                    className={cn(
-                      buttonVariants({
-                        variant: "secondary",
-                      })
-                    )}
-                    href="/dashboard"
-                    prefetch={false}
+                  <Button
+                    type="button"
+                    variant={"secondary"}
+                    onClick={() => {
+                      window.location.href = "/verification";
+                    }}
                   >
                     Cancel
-                  </Link>
+                  </Button>
                   {verificationResult === null && (
                     <Button
                       disabled={isVerifying}

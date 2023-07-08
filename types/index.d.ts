@@ -21,3 +21,10 @@ export type UploadInfo = {
   nbFiles: number;
   success: [string, string][]; // [filename, uuid][]
 };
+
+export type Correction = {
+  field: string;
+  issue: string;
+  description: string;
+  suggestion: string;
+};

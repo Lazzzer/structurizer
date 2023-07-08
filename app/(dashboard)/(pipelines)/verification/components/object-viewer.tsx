@@ -1,53 +1,45 @@
 "use client";
 
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ReceiptsViewer } from "./receipts-viewer";
-import { cn } from "@/lib/utils";
 import { InvoicesViewer } from "./invoices-viewer";
 import { CardStatementsViewer } from "./card-statements-viewer";
+import { Correction } from "types";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 interface ObjectViewerProps extends React.HTMLAttributes<HTMLDivElement> {
   category: string;
   json: any;
-  corrections: any[];
+  corrections: Map<string, Correction>;
   setVerifiedJson: (json: any) => void;
 }
 
 export function ObjectViewer({
-  className,
   category,
   json,
   corrections,
   setVerifiedJson,
 }: ObjectViewerProps) {
-  const correctionsMap = new Map();
-  corrections.forEach((correction) => {
-    correctionsMap.set(correction.field.replace(/\[.*\]/g, ""), correction);
-  });
-
   return (
-    <ScrollArea
-      className={cn(className, "w-full h-full bg-white rounded-lg p-2")}
-    >
+    <ScrollArea className="w-full h-full bg-white rounded-lg p-2">
       {category === "receipts" && (
         <ReceiptsViewer
           verifiedReceipt={json}
           setVerifiedReceipt={setVerifiedJson}
-          corrections={correctionsMap}
+          corrections={corrections}
         />
       )}
       {category === "invoices" && (
         <InvoicesViewer
           verifiedInvoice={json}
           setVerifiedInvoice={setVerifiedJson}
-          corrections={correctionsMap}
+          corrections={corrections}
         />
       )}
       {category === "credit card statements" && (
         <CardStatementsViewer
           verifiedCardStatement={json}
           setVerifiedCardStatement={setVerifiedJson}
-          corrections={correctionsMap}
+          corrections={corrections}
         />
       )}
     </ScrollArea>

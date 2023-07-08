@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { Label } from "@/components/ui/label";
 import { AnimatePresence, motion } from "framer-motion";
-import { CorrectionTooltip } from "@/components/ui/correction-tooltip";
+import { CorrectionPopover } from "./correction-popover";
 
 export function InvoicesViewer({
   verifiedInvoice,
@@ -52,11 +52,11 @@ export function InvoicesViewer({
               Invoice Number
             </Label>
             {corrections.has("invoice_number") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
+              <CorrectionPopover
+                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
+                contentClassName="w-80"
                 correction={corrections.get("invoice_number")}
-              ></CorrectionTooltip>
+              ></CorrectionPopover>
             )}
           </div>
           <Input
@@ -88,11 +88,11 @@ export function InvoicesViewer({
               Category
             </Label>
             {corrections.has("category") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
+              <CorrectionPopover
+                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
+                contentClassName="w-80"
                 correction={corrections.get("category")}
-              ></CorrectionTooltip>
+              ></CorrectionPopover>
             )}
           </div>
           <Select
@@ -128,11 +128,11 @@ export function InvoicesViewer({
               Date
             </Label>
             {corrections.has("date") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
+              <CorrectionPopover
+                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
+                contentClassName="w-80"
                 correction={corrections.get("date")}
-              ></CorrectionTooltip>
+              ></CorrectionPopover>
             )}
           </div>
           <Input
@@ -158,11 +158,11 @@ export function InvoicesViewer({
           From
           <Icons.braces strokeWidth={3} className="h-4 w-4 ml-1 inline-block" />
           {corrections.has("from") && (
-            <CorrectionTooltip
-              classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-              classNameContent="w-80 font-normal"
+            <CorrectionPopover
+              iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
+              contentClassName="w-80 font-normal"
               correction={corrections.get("from")}
-            ></CorrectionTooltip>
+            ></CorrectionPopover>
           )}
         </h4>
         <div className="rounded-md border border-slate-200 px-4 py-3">
@@ -179,11 +179,11 @@ export function InvoicesViewer({
               Name
             </Label>
             {corrections.has("from.name") && (
-              <CorrectionTooltip
-                classNameTrigger="h-4 w-4 p-0 -mt-0.5  text-red-500 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80 font-normal"
+              <CorrectionPopover
+                iconClassName="h-4 w-4 p-0 -mt-0.5  text-red-500 hover:bg-red-100 hover:text-red-600"
+                contentClassName="w-80 font-normal"
                 correction={corrections.get("from.name")}
-              ></CorrectionTooltip>
+              ></CorrectionPopover>
             )}
           </div>
 
@@ -212,11 +212,11 @@ export function InvoicesViewer({
               Address
             </Label>
             {corrections.has("from.address") && (
-              <CorrectionTooltip
-                classNameTrigger="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80 font-normal"
+              <CorrectionPopover
+                iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
+                contentClassName="w-80 font-normal"
                 correction={corrections.get("from.address")}
-              ></CorrectionTooltip>
+              ></CorrectionPopover>
             )}
           </div>
           <Input
@@ -245,11 +245,11 @@ export function InvoicesViewer({
           To
           <Icons.braces strokeWidth={3} className="h-4 w-4 ml-1 inline-block" />
           {corrections.has("to") && (
-            <CorrectionTooltip
-              classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-              classNameContent="w-80 font-normal"
+            <CorrectionPopover
+              iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
+              contentClassName="w-80 font-normal"
               correction={corrections.get("to")}
-            ></CorrectionTooltip>
+            ></CorrectionPopover>
           )}
         </h4>
         <div className="rounded-md border border-slate-200 px-4 py-3">
@@ -263,11 +263,11 @@ export function InvoicesViewer({
               Name
             </Label>
             {corrections.has("to.name") && (
-              <CorrectionTooltip
-                classNameTrigger="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80 font-normal"
+              <CorrectionPopover
+                iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
+                contentClassName="w-80 font-normal"
                 correction={corrections.get("to.name")}
-              ></CorrectionTooltip>
+              ></CorrectionPopover>
             )}
           </div>
           <Input
@@ -295,11 +295,11 @@ export function InvoicesViewer({
               Address
             </Label>
             {corrections.has("to.address") && (
-              <CorrectionTooltip
-                classNameTrigger="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80 font-normal"
+              <CorrectionPopover
+                iconClassName="h-4 w-4 p-0 text-red-500 hover:bg-red-100 hover:text-red-600"
+                contentClassName="w-80 font-normal"
                 correction={corrections.get("to.address")}
-              ></CorrectionTooltip>
+              ></CorrectionPopover>
             )}
           </div>
 
@@ -334,11 +334,11 @@ export function InvoicesViewer({
                 className="h-4 w-4 ml-1 inline-block"
               />
               {corrections.has("items") && (
-                <CorrectionTooltip
-                  classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                  classNameContent="w-80 font-normal"
+                <CorrectionPopover
+                  iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
+                  contentClassName="w-80 font-normal"
                   correction={corrections.get("items")}
-                ></CorrectionTooltip>
+                ></CorrectionPopover>
               )}
               <Button
                 onClick={() => {
@@ -468,11 +468,11 @@ export function InvoicesViewer({
               Currency
             </Label>
             {corrections.has("currency") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
+              <CorrectionPopover
+                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
+                contentClassName="w-80"
                 correction={corrections.get("currency")}
-              ></CorrectionTooltip>
+              ></CorrectionPopover>
             )}
           </div>
 
@@ -507,11 +507,11 @@ export function InvoicesViewer({
               Total Amount Due
             </Label>
             {corrections.has("total_amount_due") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
+              <CorrectionPopover
+                iconClassName="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
+                contentClassName="w-80"
                 correction={corrections.get("total_amount_due")}
-              ></CorrectionTooltip>
+              ></CorrectionPopover>
             )}
           </div>
 

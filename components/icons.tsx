@@ -19,6 +19,7 @@ import {
   Trash,
   PlusCircle,
   Inbox,
+  AlertCircle,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -43,6 +44,7 @@ export const Icons = {
   trash: Trash,
   plusCircle: PlusCircle,
   empty: Inbox,
+  alertCircle: AlertCircle,
   receipt: ({ ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

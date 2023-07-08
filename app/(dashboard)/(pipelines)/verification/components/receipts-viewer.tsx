@@ -9,52 +9,50 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { receiptsSchema } from "@/lib/llm/schema";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@radix-ui/react-collapsible";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { Label } from "@/components/ui/label";
 import { AnimatePresence, motion } from "framer-motion";
-import { CorrectionTooltip } from "@/components/ui/correction-tooltip";
+import { Correction } from "types";
+import { CorrectionPopover } from "./correction-popover";
+import { receiptsSchema } from "@/lib/data-categories";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
+interface ReceiptsViewerProps {
+  verifiedReceipt: any;
+  setVerifiedReceipt: (receipt: any) => void;
+  corrections: Map<string, Correction>;
+}
 
 export function ReceiptsViewer({
   verifiedReceipt,
   setVerifiedReceipt,
   corrections,
-}: {
-  verifiedReceipt: any;
-  setVerifiedReceipt: (receipt: any) => void;
-  corrections?: Map<any, any>;
-}) {
-  const [isItemsOpen, setIsItemsOpen] = useState(true);
+}: ReceiptsViewerProps) {
+  const [areItemsOpen, setAreItemsOpen] = useState(true);
   return (
     <div className="w-full min-h-full h-20 p-2 overflow-scroll">
       <div className=" grid grid-rows-4 gap-2.5">
         {/* From */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections?.has("from") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("from") && "text-red-500"
+              )}
               htmlFor="from"
             >
               From
             </Label>
-            {corrections?.has("from") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
-                correction={corrections?.get("from")}
-              ></CorrectionTooltip>
+            {corrections.has("from") && (
+              <CorrectionPopover correction={corrections.get("from")!} />
             )}
           </div>
           <Input
@@ -70,27 +68,22 @@ export function ReceiptsViewer({
         </div>
         {/* Category */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections?.has("category") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("category") && "text-red-500"
+              )}
               htmlFor="category"
             >
               Category
             </Label>
-            {corrections?.has("category") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
-                correction={corrections?.get("category")}
-              ></CorrectionTooltip>
+            {corrections.has("category") && (
+              <CorrectionPopover correction={corrections.get("category")!} />
             )}
           </div>
           <Select
+            name="category"
             onValueChange={(value) => {
               setVerifiedReceipt({ ...verifiedReceipt, category: value });
             }}
@@ -100,34 +93,30 @@ export function ReceiptsViewer({
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              {receiptsSchema.properties.category.enum.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
+              {receiptsSchema.properties.category.enum.map(
+                (category: string) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                )
+              )}
             </SelectContent>
           </Select>
         </div>
         {/* Number */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections?.has("number") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("number") && "text-red-500"
+              )}
               htmlFor="number"
             >
-              Number
+              Number <span className="text-xs font-medium">(optional)</span>
             </Label>
-            {corrections?.has("number") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
-                correction={corrections?.get("number")}
-              ></CorrectionTooltip>
+            {corrections.has("number") && (
+              <CorrectionPopover correction={corrections.get("number")!} />
             )}
           </div>
           <Input
@@ -149,38 +138,30 @@ export function ReceiptsViewer({
           <div className="flex items-center gap-1">
             <Label
               className={cn(
-                corrections?.has("date") ? "text-red-500" : "text-slate-800",
-                "font-semibold self-center text-base"
+                "font-semibold text-base self-center",
+                corrections.has("date") && "text-red-500"
               )}
               htmlFor="date"
             >
               Date
             </Label>
-            {corrections?.has("date") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 text-red-500 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80 font-normal"
-                correction={corrections?.get("date")}
-              ></CorrectionTooltip>
+            {corrections.has("date") && (
+              <CorrectionPopover correction={corrections.get("date")!} />
             )}
-            <span className="font-semibold text-slate-800 mx-1 self-center text-base">
+            <span className="font-semibold text-slate-800 self-center text-base">
               /
             </span>
             <Label
               className={cn(
-                corrections?.has("time") ? "text-red-500" : "text-slate-800",
-                "font-semibold self-center text-base"
+                "font-semibold text-base self-center",
+                corrections.has("time") && "text-red-500"
               )}
               htmlFor="time"
             >
-              Time
+              Time <span className="text-xs font-medium">(optional)</span>
             </Label>
-            {corrections?.has("time") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 text-red-500 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80 font-normal"
-                correction={corrections?.get("time")}
-              ></CorrectionTooltip>
+            {corrections.has("time") && (
+              <CorrectionPopover correction={corrections.get("time")!} />
             )}
           </div>
           <div className="flex gap-1.5">
@@ -214,11 +195,11 @@ export function ReceiptsViewer({
       </div>
       {/* Items */}
       <div className="my-4">
-        <Collapsible open={isItemsOpen} onOpenChange={setIsItemsOpen}>
+        <Collapsible open={areItemsOpen} onOpenChange={setAreItemsOpen}>
           <div className="flex items-center justify-between">
             <h4
               className={cn(
-                corrections?.has("items") ? "text-red-500" : "text-slate-800",
+                corrections.has("items") ? "text-red-500" : "text-slate-900",
                 "font-semibold flex items-center"
               )}
             >
@@ -227,12 +208,8 @@ export function ReceiptsViewer({
                 strokeWidth={3}
                 className="h-4 w-4 ml-1 inline-block"
               />
-              {corrections?.has("items") && (
-                <CorrectionTooltip
-                  classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                  classNameContent="w-80 font-normal"
-                  correction={corrections?.get("items")}
-                ></CorrectionTooltip>
+              {corrections.has("items") && (
+                <CorrectionPopover correction={corrections.get("items")!} />
               )}
               <Button
                 onClick={() => {
@@ -370,27 +347,20 @@ export function ReceiptsViewer({
       <div className=" grid grid-rows-4 gap-2.5">
         {/* Subtotal */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections?.has("subtotal") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("subtotal") && "text-red-500"
+              )}
               htmlFor="subtotal"
             >
-              Subtotal
+              Subtotal <span className="text-xs font-medium">(optional)</span>
             </Label>
-            {corrections?.has("subtotal") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
-                correction={corrections?.get("subtotal")}
-              ></CorrectionTooltip>
+            {corrections.has("subtotal") && (
+              <CorrectionPopover correction={corrections.get("subtotal")!} />
             )}
           </div>
-
           <Input
             id="subtotal"
             placeholder="null"
@@ -407,24 +377,18 @@ export function ReceiptsViewer({
         </div>
         {/* Tax */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections?.has("tax") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("tax") && "text-red-500"
+              )}
               htmlFor="tax"
             >
-              Tax
+              Tax <span className="text-xs font-medium">(optional)</span>
             </Label>
-            {corrections?.has("tax") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
-                correction={corrections?.get("tax")}
-              ></CorrectionTooltip>
+            {corrections.has("tax") && (
+              <CorrectionPopover correction={corrections.get("tax")!} />
             )}
           </div>
 
@@ -444,24 +408,18 @@ export function ReceiptsViewer({
         </div>
         {/* Tip */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections?.has("tip") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("tip") && "text-red-500"
+              )}
               htmlFor="tip"
             >
-              Tip
+              Tip <span className="text-xs font-medium">(optional)</span>
             </Label>
-            {corrections?.has("tip") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
-                correction={corrections?.get("tip")}
-              ></CorrectionTooltip>
+            {corrections.has("tip") && (
+              <CorrectionPopover correction={corrections.get("tip")!} />
             )}
           </div>
 
@@ -481,24 +439,18 @@ export function ReceiptsViewer({
         </div>
         {/* Total */}
         <div className="grid grid-cols-2">
-          <div
-            className={cn(
-              corrections?.has("total") ? "text-red-500" : "text-slate-800",
-              "flex items-center gap-1"
-            )}
-          >
+          <div className="flex items-center gap-1">
             <Label
-              className="font-semibold text-base self-center"
+              className={cn(
+                "font-semibold text-base self-center",
+                corrections.has("total") && "text-red-500"
+              )}
               htmlFor="total"
             >
               Total
             </Label>
-            {corrections?.has("total") && (
-              <CorrectionTooltip
-                classNameTrigger="h-6 w-6 p-1 hover:bg-red-100 hover:text-red-600"
-                classNameContent="w-80"
-                correction={corrections?.get("total")}
-              ></CorrectionTooltip>
+            {corrections.has("total") && (
+              <CorrectionPopover correction={corrections.get("total")!} />
             )}
           </div>
 
