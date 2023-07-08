@@ -15,7 +15,7 @@ export async function PUT(req: NextRequest) {
   const schema = z.object({
     id: z.string().uuid(),
     category: z.string().refine((category) => categories.has(category)),
-    json: z.object({}).nonstrict(),
+    json: z.any(),
   });
 
   const body = (await req.json()) as z.infer<typeof schema>;
@@ -24,45 +24,40 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
-  const jsonObj = body.json as any;
-
-  // try {
-  //   const schema = categories.get(body.category)!.zodSchema;
-  //   schema!.parse(body.json);
-  // } catch (error) {
-  //   console.log(error);
-  //   return NextResponse.json(
-  //     { error: "Invalid JSON provided" },
-  //     { status: 400 }
-  //   );
-  // }
-
-  const extraction = await prisma.extraction.findUnique({
+  const extraction = await prisma.extraction.findFirst({
     where: {
       id: body.id,
+      userId: user.id,
+      status: Status.TO_VERIFY,
     },
   });
 
-  let data = null;
-  switch (extraction?.category) {
-    case "receipts": {
-      try {
-        data = await prisma.receipt.create({
+  if (!extraction) {
+    return NextResponse.json(
+      { error: "Extraction not found" },
+      { status: 404 }
+    );
+  }
+
+  try {
+    switch (extraction.category) {
+      case "receipts": {
+        await prisma.receipt.create({
           data: {
-            extractionId: body.id,
             userId: user.id,
+            extractionId: extraction.id,
             objectPath: extraction.objectPath,
-            number: jsonObj.number,
-            category: jsonObj.category,
-            date: new Date(jsonObj.date).toISOString(),
-            time: jsonObj.time,
-            from: jsonObj.from,
-            subtotal: parseFloat(jsonObj.subtotal),
-            tax: parseFloat(jsonObj.tax),
-            tip: parseFloat(jsonObj.tip),
-            total: parseFloat(jsonObj.total),
+            number: body.json.number,
+            category: body.json.category,
+            date: new Date(body.json.date).toISOString(),
+            time: body.json.time,
+            from: body.json.from,
+            subtotal: parseFloat(body.json.subtotal),
+            tax: parseFloat(body.json.tax),
+            tip: parseFloat(body.json.tip),
+            total: parseFloat(body.json.total),
             items: {
-              create: jsonObj.items?.map((item: any) => ({
+              create: body.json.items?.map((item: any) => ({
                 description: item.description,
                 quantity: parseFloat(item.quantity),
                 amount: parseFloat(item.amount),
@@ -70,68 +65,51 @@ export async function PUT(req: NextRequest) {
             },
           },
         });
-      } catch (error) {
-        console.log(error);
-        return NextResponse.json(
-          { error: "Receipt not created, bad data" },
-          { status: 400 }
-        );
+        break;
       }
-
-      break;
-    }
-    case "invoices": {
-      try {
-        data = await prisma.invoice.create({
+      case "invoices": {
+        await prisma.invoice.create({
           data: {
-            extractionId: body.id,
             userId: user.id,
+            extractionId: extraction.id,
             objectPath: extraction.objectPath,
-            invoiceNumber: jsonObj.invoice_number,
-            date: new Date(jsonObj.date).toISOString(),
-            category: jsonObj.category,
-            fromName: jsonObj.from.name,
-            fromAddress: jsonObj.from.address,
-            toName: jsonObj.to.name,
-            toAddress: jsonObj.to.address,
-            currency: jsonObj.currency,
-            totalAmountDue: parseFloat(jsonObj.total_amount_due),
+            invoiceNumber: body.json.invoice_number,
+            date: new Date(body.json.date).toISOString(),
+            category: body.json.category,
+            fromName: body.json.from.name,
+            fromAddress: body.json.from.address,
+            toName: body.json.to.name,
+            toAddress: body.json.to.address,
+            currency: body.json.currency,
+            totalAmountDue: parseFloat(body.json.total_amount_due),
             items: {
-              create: jsonObj.items?.map((item: any) => ({
+              create: body.json.items?.map((item: any) => ({
                 description: item.description,
                 amount: parseFloat(item.amount),
               })),
             },
           },
         });
-      } catch (error) {
-        console.log(error);
-        return NextResponse.json(
-          { error: "Invoice not created, bad data" },
-          { status: 400 }
-        );
+        break;
       }
-      break;
-    }
-    case "credit card statements": {
-      try {
-        data = await prisma.cardStatement.create({
+      case "credit card statements": {
+        await prisma.cardStatement.create({
           data: {
-            extractionId: body.id,
             userId: user.id,
+            extractionId: extraction.id,
             objectPath: extraction.objectPath,
-            issuerName: jsonObj.issuer.name,
-            issuerAddress: jsonObj.issuer.address,
-            recipientName: jsonObj.recipient.name,
-            recipientAddress: jsonObj.recipient.address,
-            creditCardName: jsonObj.credit_card.name,
-            creditCardNumber: jsonObj.credit_card.number,
-            creditCardHolder: jsonObj.credit_card.holder,
-            date: new Date(jsonObj.date).toISOString(),
-            currency: jsonObj.currency,
-            totalAmountDue: parseFloat(jsonObj.total_amount_due),
+            issuerName: body.json.issuer.name,
+            issuerAddress: body.json.issuer.address,
+            recipientName: body.json.recipient.name,
+            recipientAddress: body.json.recipient.address,
+            creditCardName: body.json.credit_card.name,
+            creditCardNumber: body.json.credit_card.number,
+            creditCardHolder: body.json.credit_card.holder,
+            date: new Date(body.json.date).toISOString(),
+            currency: body.json.currency,
+            totalAmountDue: parseFloat(body.json.total_amount_due),
             transactions: {
-              create: jsonObj.transactions?.map((transaction: any) => ({
+              create: body.json.transactions?.map((transaction: any) => ({
                 description: transaction.description,
                 category: transaction.category,
                 amount: parseFloat(transaction.amount),
@@ -139,47 +117,42 @@ export async function PUT(req: NextRequest) {
             },
           },
         });
-      } catch (error) {
-        console.log(error);
-        return NextResponse.json(
-          { error: "Card Statement not created, bad data" },
-          { status: 400 }
-        );
+        break;
       }
-
-      break;
+      default:
+        return NextResponse.json(
+          { error: "Invalid category provided" },
+          { status: 500 }
+        );
     }
-    default:
-      return NextResponse.json(
-        { error: "Invalid category provided" },
-        { status: 500 }
-      );
-  }
-
-  if (!data) {
-    return NextResponse.json({ error: "Data not created" }, { status: 400 });
+  } catch (e) {
+    console.log(e);
+    return NextResponse.json(
+      { error: "Data provided cannot be saved." },
+      { status: 400 }
+    );
   }
 
   try {
-    await prisma.extraction.updateMany({
+    await prisma.extraction.update({
       where: {
         id: body.id,
         userId: user.id,
         status: Status.TO_VERIFY,
       },
       data: {
-        json: jsonObj,
+        json: body.json,
         status: Status.PROCESSED,
       },
     });
   } catch (error) {
     return NextResponse.json(
       { error: "Extraction not updated" },
-      { status: 400 }
+      { status: 500 }
     );
   }
 
-  return NextResponse.json({ message: "Process finished" }, { status: 200 });
+  return NextResponse.json({ message: "Data saved" }, { status: 200 });
 }
 
 export async function POST(req: Request) {
@@ -200,6 +173,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
+  const preferences = await prisma.preferences.findFirst({
+    where: {
+      userId: user.id,
+    },
+  });
+
   const res = await fetch(
     `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/analysis`,
     {
@@ -211,7 +190,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         model: {
           apiKey: process.env.OPENAI_API_KEY as string,
-          name: "gpt-4",
+          name: preferences?.analysisModel ?? "gpt-4",
         },
         jsonSchema: JSON.stringify(categories.get(body.category)!.schema),
         originalText: body.text,

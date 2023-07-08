@@ -1,10 +1,3 @@
-import {
-  CardStatementWithRelationsSchema,
-  InvoiceWithRelationsSchema,
-  ReceiptWithRelationsSchema,
-} from "prisma/generated/zod";
-import * as z from "zod";
-
 type JsonSchema = {
   $schema: string;
   title: string;
@@ -331,7 +324,6 @@ export interface Category {
   value: string;
   name: string;
   schema: JsonSchema;
-  zodSchema?: z.ZodSchema<any>;
 }
 
 export const categories = new Map<string, Category>([
@@ -341,7 +333,6 @@ export const categories = new Map<string, Category>([
       value: "receipts",
       name: "Receipt",
       schema: receiptsSchema,
-      zodSchema: ReceiptWithRelationsSchema,
     },
   ],
   [
@@ -350,7 +341,6 @@ export const categories = new Map<string, Category>([
       value: "invoices",
       name: "Invoice",
       schema: invoicesSchema,
-      zodSchema: InvoiceWithRelationsSchema,
     },
   ],
   [
@@ -359,7 +349,6 @@ export const categories = new Map<string, Category>([
       value: "credit card statements",
       name: "Card Statement",
       schema: cardStatementsSchema,
-      zodSchema: CardStatementWithRelationsSchema,
     },
   ],
 ]);
