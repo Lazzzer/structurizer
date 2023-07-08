@@ -3,7 +3,10 @@ import prisma from "@/lib/prisma";
 import { Status } from "@prisma/client";
 import { getUser } from "@/lib/session";
 import * as z from "zod";
-import { validateBody } from "@/lib/validations/request";
+import {
+  validateBody,
+  validateRequiredOrEmptyFields,
+} from "@/lib/validations/request";
 import { categories } from "@/lib/data-categories";
 
 export async function PUT(req: NextRequest) {
@@ -42,6 +45,12 @@ export async function PUT(req: NextRequest) {
   try {
     switch (extraction.category) {
       case "receipts": {
+        validateRequiredOrEmptyFields(body.json, [
+          "from",
+          "category",
+          "date",
+          "total",
+        ]);
         await prisma.receipt.create({
           data: {
             userId: user.id,
@@ -57,17 +66,30 @@ export async function PUT(req: NextRequest) {
             tip: parseFloat(body.json.tip),
             total: parseFloat(body.json.total),
             items: {
-              create: body.json.items?.map((item: any) => ({
-                description: item.description,
-                quantity: parseFloat(item.quantity),
-                amount: parseFloat(item.amount),
-              })),
+              create: body.json.items?.map((item: any) => {
+                validateRequiredOrEmptyFields(item, [
+                  "description",
+                  "quantity",
+                  "amount",
+                ]);
+                return {
+                  description: item.description,
+                  quantity: parseFloat(item.quantity),
+                  amount: parseFloat(item.amount),
+                };
+              }),
             },
           },
         });
         break;
       }
       case "invoices": {
+        validateRequiredOrEmptyFields(body.json, [
+          "category",
+          "date",
+          "total_amount_due",
+        ]);
+        validateRequiredOrEmptyFields(body.json.from, ["name"]);
         await prisma.invoice.create({
           data: {
             userId: user.id,
@@ -83,16 +105,21 @@ export async function PUT(req: NextRequest) {
             currency: body.json.currency,
             totalAmountDue: parseFloat(body.json.total_amount_due),
             items: {
-              create: body.json.items?.map((item: any) => ({
-                description: item.description,
-                amount: parseFloat(item.amount),
-              })),
+              create: body.json.items?.map((item: any) => {
+                validateRequiredOrEmptyFields(item, ["description"]);
+                return {
+                  description: item.description,
+                  amount: parseFloat(item.amount),
+                };
+              }),
             },
           },
         });
         break;
       }
       case "credit card statements": {
+        validateRequiredOrEmptyFields(body.json, ["total_amount_due", "date"]);
+        validateRequiredOrEmptyFields(body.json.issuer, ["name"]);
         await prisma.cardStatement.create({
           data: {
             userId: user.id,
@@ -109,11 +136,18 @@ export async function PUT(req: NextRequest) {
             currency: body.json.currency,
             totalAmountDue: parseFloat(body.json.total_amount_due),
             transactions: {
-              create: body.json.transactions?.map((transaction: any) => ({
-                description: transaction.description,
-                category: transaction.category,
-                amount: parseFloat(transaction.amount),
-              })),
+              create: body.json.transactions?.map((transaction: any) => {
+                validateRequiredOrEmptyFields(transaction, [
+                  "description",
+                  "category",
+                  "amount",
+                ]);
+                return {
+                  description: transaction.description,
+                  category: transaction.category,
+                  amount: parseFloat(transaction.amount),
+                };
+              }),
             },
           },
         });
@@ -129,7 +163,7 @@ export async function PUT(req: NextRequest) {
     console.log(e);
     return NextResponse.json(
       { error: "Data provided cannot be saved." },
-      { status: 400 }
+      { status: 422 }
     );
   }
 

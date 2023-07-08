@@ -7,3 +7,11 @@ export function validateBody(
   const { success } = schema.safeParse(body);
   return success;
 }
+
+export function validateRequiredOrEmptyFields(jsonObj: any, fields: string[]) {
+  return fields.every((field) => {
+    if (!jsonObj[field] || jsonObj[field].trim() === "") {
+      throw new Error(`Field ${field} is required`);
+    }
+  });
+}

@@ -56,7 +56,7 @@ export default function VerificationPipeline({
       }),
     });
     if (!res.ok) {
-      throw new Error("An error occurred while analyzing the JSON object");
+      throw new Error("An error occurred while verifying the JSON object");
     }
     const data = (await res.json()) as VerificationResult;
     return data;
@@ -71,9 +71,17 @@ export default function VerificationPipeline({
         json: verifiedJson,
       }),
     });
-    const data = await res.json();
-    if (res.status !== 200) {
-      throw new Error(data.message);
+    if (!res.ok) {
+      if (res.status === 422) {
+        setErrorMessage(
+          "Please make sure all the field values are valid and try again."
+        );
+      } else {
+        setErrorMessage(
+          "Something went wrong during verification. Please try again."
+        );
+      }
+      throw new Error("An error occurred while sending the JSON object");
     }
   }
 
@@ -312,13 +320,7 @@ export default function VerificationPipeline({
                         await minDelay(sendJson(), 400);
                         setIsCompleted(true);
                         useStepStore.setState({ status: "complete" });
-                      } catch (e) {
-                        setErrorMessage(
-                          e instanceof Error
-                            ? e.message
-                            : "Something went wrong, please try again"
-                        );
-                      }
+                      } catch (_) {}
                       setIsLoading(false);
                     }}
                   >
