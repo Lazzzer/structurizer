@@ -1,11 +1,7 @@
 import { TopMainContent } from "@/components/top-main-content";
 import { DataTable } from "@/components/ui/data-table";
 import { CardStatement, categories, columns } from "./columns";
-import { MonthlyExpensesBarChart } from "@/components/monthly-expenses-bar-chart";
 import { getMonthNames } from "@/lib/utils";
-import { CategoryDistributionChart } from "@/components/pie-chart";
-import { Statistics } from "@/components/statistics";
-import { EmptyDataDisplay } from "@/components/empty-data-display";
 import { getUser } from "@/lib/session";
 import prisma from "@/lib/prisma";
 import { Metadata } from "next";
@@ -13,6 +9,10 @@ import type {
   AverageMonthlyExpensesResult,
   FormattedAverageMonthlyExpensesResult,
 } from "types";
+import { MonthlyExpensesBarChart } from "../components/bar-chart";
+import { CategoryDistributionChart } from "../components/pie-chart";
+import { Statistics } from "../components/statistics";
+import { EmptyDataDisplay } from "../components/empty-data-display";
 
 export const metadata: Metadata = {
   title: "Card Statements",
@@ -166,7 +166,10 @@ export default async function CardStatementsPage() {
                   Average Monthly Expenses
                 </h3>
                 <div className="w-full h-[228px] 2xl:h-[356px] border border-slate-200 rounded-md pr-3 pt-6 pb-2 2xl:pt-10 2xl:pb-4">
-                  <MonthlyExpensesBarChart data={data.averageMonthlyExpenses} />
+                  <MonthlyExpensesBarChart
+                    data={data.averageMonthlyExpenses}
+                    color="#14b8a6"
+                  />
                 </div>
               </div>
               <div className="w-full h-[228px] 2xl:h-[356px] col-span-3">

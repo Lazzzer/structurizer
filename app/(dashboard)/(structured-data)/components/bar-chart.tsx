@@ -8,15 +8,20 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type { FormattedAverageMonthlyExpensesResult } from "types";
 
-const CustomTooltip = ({
-  active,
-  payload,
-}: {
+interface MonthlyExpensesBarChartProps {
+  data: FormattedAverageMonthlyExpensesResult[];
+  color: string;
+}
+
+interface CustomTooltipProps {
   active?: boolean;
   payload?: any[];
   label?: string;
-}) => {
+}
+
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="rounded shadow p-2 border border-slate-200 bg-white">
@@ -25,19 +30,13 @@ const CustomTooltip = ({
       </div>
     );
   }
-
   return null;
 };
 
 export function MonthlyExpensesBarChart({
   data,
-}: {
-  data: {
-    name: string;
-    fullName: string;
-    value: number;
-  }[];
-}) {
+  color,
+}: MonthlyExpensesBarChartProps) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
@@ -57,7 +56,7 @@ export function MonthlyExpensesBarChart({
           axisLine={false}
         />
         <Tooltip content={<CustomTooltip />} cursor={false} />
-        <Bar dataKey="value" fill="#00E1F0" radius={[3, 3, 3, 3]} />
+        <Bar dataKey="value" fill={color} radius={[3, 3, 3, 3]} />
       </BarChart>
     </ResponsiveContainer>
   );

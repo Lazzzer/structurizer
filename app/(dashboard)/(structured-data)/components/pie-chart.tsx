@@ -3,14 +3,13 @@
 import { cn } from "@/lib/utils";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-const CustomTooltip = ({
-  active,
-  payload,
-}: {
+interface CustomTooltipProps {
   active?: boolean;
   payload?: any[];
   label?: string;
-}) => {
+}
+
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="rounded shadow p-2 border border-slate-200 bg-white">
@@ -19,7 +18,6 @@ const CustomTooltip = ({
       </div>
     );
   }
-
   return null;
 };
 

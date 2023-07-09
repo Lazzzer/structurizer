@@ -1,6 +1,6 @@
 "use client";
 
-import { Icons } from "./icons";
+import { Icons } from "@/components/icons";
 
 export function EmptyDataDisplay() {
   return (
