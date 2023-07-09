@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import {
   Braces,
@@ -21,6 +23,8 @@ import {
   Inbox,
   AlertCircle,
   PieChart,
+  RefreshCw,
+  PanelRightOpen,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -47,6 +51,8 @@ export const Icons = {
   empty: Inbox,
   alertCircle: AlertCircle,
   pieChart: PieChart,
+  refresh: RefreshCw,
+  sheetOpen: PanelRightOpen,
   receipt: ({ ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -10,6 +10,12 @@ import {
   statuses,
 } from "./columns";
 import { getUser } from "@/lib/session";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Main page to view current and processed extractions",
+};
 
 async function getExtractions() {
   const user = await getUser();
@@ -37,6 +43,23 @@ async function getExtractions() {
       },
       status: Status.PROCESSED,
     },
+    include: {
+      receipt: {
+        select: {
+          id: true,
+        },
+      },
+      invoice: {
+        select: {
+          id: true,
+        },
+      },
+      cardStatement: {
+        select: {
+          id: true,
+        },
+      },
+    },
   });
 
   return {
@@ -47,6 +70,7 @@ async function getExtractions() {
 
 export default async function DashboardPage() {
   const { currentExtractions, finishedExtractions } = await getExtractions();
+  console.log(finishedExtractions);
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Dashboard" displayUploadButton />
