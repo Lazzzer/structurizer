@@ -1,4 +1,5 @@
 import {
+  DeleteObjectCommand,
   DeleteObjectsCommand,
   ListObjectsV2Command,
   PutObjectCommand,
@@ -43,6 +44,15 @@ export async function uploadFile(
   if (!res.ok) {
     throw new Error("Could not upload file");
   }
+}
+
+export async function deleteObject(key: string) {
+  const command = new DeleteObjectCommand({
+    Bucket: process.env.S3_BUCKET as string,
+    Key: key,
+  });
+
+  await s3.send(command);
 }
 
 export async function deleteUserFolder(location: string) {

@@ -16,12 +16,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { deleteExtraction, updateInvoice } from "@/lib/client-requests";
 import { Icons } from "./icons";
 import { useRouter } from "next/navigation";
 import { categories } from "@/app/(dashboard)/(structured-data)/invoices/columns";
 import { mapCurrency } from "@/lib/utils";
 import { EditInvoiceViewer } from "@/app/(dashboard)/(structured-data)/invoices/edit-invoice-viewer";
+import { deleteExtraction, updateStructuredData } from "@/lib/client-requests";
 
 type InvoiceWithItems = Invoice & {
   items: InvoiceItem[];
@@ -40,7 +40,7 @@ export function SheetInvoice({ uuid }: { uuid: string }) {
   );
 
   async function fetchInvoice(uuid: string) {
-    const res = await fetch(`/api/invoices?uuid=${uuid}`, {
+    const res = await fetch(`/api/dashboard/invoices?uuid=${uuid}`, {
       method: "GET",
     });
     if (!res.ok) {
@@ -177,7 +177,7 @@ export function SheetInvoice({ uuid }: { uuid: string }) {
               disabled={isUpdating}
               onClick={async () => {
                 setIsUpdating(true);
-                await updateInvoice(editedInvoice);
+                await updateStructuredData(editedInvoice, "invoices");
                 const newInvoice = await fetchInvoice(uuid);
                 setInvoice(newInvoice);
                 setEditedInvoice(newInvoice);

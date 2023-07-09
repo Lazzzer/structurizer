@@ -16,11 +16,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { deleteExtraction, updateCardStatement } from "@/lib/client-requests";
 import { Icons } from "./icons";
 import { useRouter } from "next/navigation";
 import { mapCurrency } from "@/lib/utils";
 import { EditCardStatementViewer } from "@/app/(dashboard)/(structured-data)/card-statements/edit-card-statement-viewer";
+import { deleteExtraction, updateStructuredData } from "@/lib/client-requests";
 
 type CardStatementWithTransactions = CardStatement & {
   transactions: CardTransaction[];
@@ -39,11 +39,11 @@ export function SheetCardStatement({ uuid }: { uuid: string }) {
     useState<CardStatementWithTransactions | null>(null);
 
   async function fetchCardStatement(uuid: string) {
-    const res = await fetch(`/api/card-statements?uuid=${uuid}`, {
+    const res = await fetch(`/api/dashboard/card-statements?uuid=${uuid}`, {
       method: "GET",
     });
     if (!res.ok) {
-      throw new Error("No card statenebt found");
+      throw new Error("No card statement found");
     }
     const cardStatement = await res.json();
     cardStatement.date = cardStatement?.date
@@ -184,7 +184,10 @@ export function SheetCardStatement({ uuid }: { uuid: string }) {
               disabled={isUpdating}
               onClick={async () => {
                 setIsUpdating(true);
-                await updateCardStatement(editedCardStatement);
+                await updateStructuredData(
+                  editedCardStatement,
+                  "card-statements"
+                );
                 const newCardStatement = await fetchCardStatement(uuid);
                 setCardStatement(newCardStatement);
                 setEditedCardStatement(newCardStatement);

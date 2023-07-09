@@ -1,37 +1,17 @@
-export async function deleteExtraction(uuid: string) {
-  const res = await fetch(`/api/delete/extraction?uuid=${uuid}`, {
+export async function deleteExtraction(id: string) {
+  const res = await fetch(`/api/dashboard/extraction?id=${id}`, {
     method: "DELETE",
   });
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
+  if (!res.ok) {
+    console.error(res.statusText, res.status);
+  }
 }
 
-export async function updateReceipt(receipt: any) {
-  const res = await fetch(`/api/receipts/update`, {
+export async function updateStructuredData(data: any, endpoint: string) {
+  const res = await fetch(`/api/dashboard/${endpoint}`, {
     method: "PUT",
-    body: JSON.stringify(receipt),
+    body: JSON.stringify(data),
   });
-  console.log(res.statusText, res.status);
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
-}
-
-export async function updateInvoice(invoice: any) {
-  const res = await fetch(`/api/invoices/update`, {
-    method: "PUT",
-    body: JSON.stringify(invoice),
-  });
-  console.log(res.statusText, res.status);
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
-}
-
-export async function updateCardStatement(cardStatement: any) {
-  const res = await fetch(`/api/card-statements/update`, {
-    method: "PUT",
-    body: JSON.stringify(cardStatement),
-  });
-  console.log(res.statusText, res.status);
   if (!res.ok) throw new Error("Network response was not ok");
   return res.json();
 }

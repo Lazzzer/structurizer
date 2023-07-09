@@ -17,10 +17,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { deleteExtraction, updateReceipt } from "@/lib/client-requests";
 import { Icons } from "./icons";
 import { useRouter } from "next/navigation";
 import { ReceiptsViewer } from "@/app/(dashboard)/(pipelines)/verification/components/receipts-viewer";
+import { deleteExtraction, updateStructuredData } from "@/lib/client-requests";
 
 type ReceiptWithItems = Receipt & {
   items: ReceiptItem[];
@@ -39,7 +39,7 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
   );
 
   async function fetchReceipt(uuid: string) {
-    const res = await fetch(`/api/receipts?uuid=${uuid}`, {
+    const res = await fetch(`/api/dashboard/receipts?uuid=${uuid}`, {
       method: "GET",
     });
     if (!res.ok) {
@@ -194,7 +194,7 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
               disabled={isUpdating}
               onClick={async () => {
                 setIsUpdating(true);
-                await updateReceipt(editedReceipt);
+                await updateStructuredData(editedReceipt, "receipts");
                 const newReceipt = await fetchReceipt(uuid);
                 setReceipt(newReceipt);
                 setEditedReceipt(newReceipt);
