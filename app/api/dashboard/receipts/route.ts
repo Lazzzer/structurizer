@@ -1,27 +1,31 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getUser } from "@/lib/session";
+import * as z from "zod";
 
-export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-
   const { searchParams } = new URL(req.url);
-  const receiptUUID = searchParams.get("uuid");
-  const userUUID = session?.user.id;
+  const receiptId = searchParams.get("id");
 
-  if (!receiptUUID) {
-    return NextResponse.json({ error: "No UUID provided" }, { status: 400 });
+  const schema = z.object({
+    id: z.string().uuid(),
+  });
+
+  const { success } = schema.safeParse({ id: receiptId });
+  if (!success) {
+    return NextResponse.json(
+      { error: "Invalid Extraction id" },
+      { status: 400 }
+    );
   }
-
   const receipt = await prisma.receipt.findFirst({
     where: {
-      id: receiptUUID,
-      userId: userUUID,
+      id: receiptId!,
+      userId: user.id,
     },
     include: {
       items: true,
@@ -31,18 +35,14 @@ export async function GET(req: Request) {
   if (!receipt) {
     return NextResponse.json({ error: "Receipt not found" }, { status: 404 });
   }
-
   return NextResponse.json(receipt, { status: 200 });
 }
 
-export async function PUT(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function PUT(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-
-  const userUUID = session?.user.id;
 
   const jsonObj = await req.json();
 
@@ -54,7 +54,7 @@ export async function PUT(req: Request) {
     await prisma.receipt.updateMany({
       where: {
         id: jsonObj.id,
-        userId: userUUID,
+        userId: user.id,
       },
       data: {
         number: jsonObj.number,

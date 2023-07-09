@@ -40,7 +40,6 @@ export function EditInvoiceViewer({
   setEditInvoice,
 }: EditInvoiceViewerProps): React.JSX.Element {
   const [isItemsOpen, setIsItemsOpen] = useState(true);
-  console.log(editInvoice);
   return (
     <div className="w-full min-h-full h-20 p-2 overflow-scroll">
       <div className=" grid grid-rows-3 gap-2.5">

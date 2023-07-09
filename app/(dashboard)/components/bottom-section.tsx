@@ -68,7 +68,7 @@ export function BottomSection({
             {`${username.slice(0, 1).toUpperCase()}${username.slice(1, 2)}`}
           </span>
         </div>
-        <span className="ml-2 text-slate-800 text-ellipsis overflow-hidden">
+        <span className="ml-2 text-slate-800 truncate overflow-hidden">
           {username}
         </span>
         <div

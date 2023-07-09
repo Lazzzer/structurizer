@@ -19,14 +19,14 @@ import {
 } from "./ui/alert-dialog";
 import { Icons } from "./icons";
 import { useRouter } from "next/navigation";
-import { ReceiptsViewer } from "@/app/(dashboard)/(pipelines)/verification/components/receipts-viewer";
 import { deleteExtraction, updateStructuredData } from "@/lib/client-requests";
+import { EditReceiptViewer } from "@/app/(dashboard)/(structured-data)/receipts/edit-receipt-viewer";
 
 type ReceiptWithItems = Receipt & {
   items: ReceiptItem[];
 };
 
-export function SheetReceipt({ uuid }: { uuid: string }) {
+export function SheetReceipt({ id }: { id: string }) {
   const router = useRouter();
   const [receipt, setReceipt] = useState<ReceiptWithItems | null>(null);
 
@@ -38,10 +38,11 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
     null
   );
 
-  async function fetchReceipt(uuid: string) {
-    const res = await fetch(`/api/dashboard/receipts?uuid=${uuid}`, {
+  async function getReceipt(id: string) {
+    const res = await fetch(`/api/dashboard/receipts?id=${id}`, {
       method: "GET",
     });
+
     if (!res.ok) {
       throw new Error("No receipt found");
     }
@@ -53,15 +54,13 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
   }
 
   useEffect(() => {
-    const fetch = async () => {
-      const receipt = await fetchReceipt(uuid);
+    async function get() {
+      const receipt = await getReceipt(id);
       setReceipt(receipt);
       setEditedReceipt(receipt);
-    };
-
-    console.log("fetching");
-
-    fetch();
+    }
+    get();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -176,7 +175,7 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
       {isEditing && receipt && (
         <div className="w-full h-full">
           <div className="w-full h-3/4 p-1 mt-2 border border-slate-200 border-dashed rounded-lg">
-            <ReceiptsViewer
+            <EditReceiptViewer
               verifiedReceipt={editedReceipt}
               setVerifiedReceipt={setEditedReceipt}
             />
@@ -195,7 +194,7 @@ export function SheetReceipt({ uuid }: { uuid: string }) {
               onClick={async () => {
                 setIsUpdating(true);
                 await updateStructuredData(editedReceipt, "receipts");
-                const newReceipt = await fetchReceipt(uuid);
+                const newReceipt = await getReceipt(id);
                 setReceipt(newReceipt);
                 setEditedReceipt(newReceipt);
                 setIsEditing(false);

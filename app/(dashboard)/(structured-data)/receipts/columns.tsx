@@ -242,7 +242,7 @@ export const columns: ColumnDef<Receipt>[] = [
               </AlertDialogContent>
             </AlertDialog>
             <SheetContent className="w-[512px]">
-              <SheetReceipt uuid={row.original.id} />
+              <SheetReceipt id={row.original.id} />
             </SheetContent>
           </Sheet>
         </div>

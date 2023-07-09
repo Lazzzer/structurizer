@@ -310,7 +310,7 @@ export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
             </AlertDialog>
             <SheetContent className="w-[512px]">
               {row.original.receipt && (
-                <SheetReceipt uuid={row.original.receipt.id} />
+                <SheetReceipt id={row.original.receipt.id} />
               )}
               {row.original.invoice && (
                 <SheetInvoice uuid={row.original.invoice.id} />
