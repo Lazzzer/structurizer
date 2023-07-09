@@ -77,6 +77,7 @@ export const statuses = [
 
 export const columns: ColumnDef<Extraction>[] = [
   {
+    id: "id",
     accessorKey: "id",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ID" />
@@ -89,7 +90,6 @@ export const columns: ColumnDef<Extraction>[] = [
         {row.getValue("id")}
       </div>
     ),
-    enableSorting: false,
   },
   {
     id: "category",
@@ -128,7 +128,7 @@ export const columns: ColumnDef<Extraction>[] = [
     cell: ({ row }) => (
       <div
         title={row.getValue("filename")}
-        className="w-32 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
+        className="w-36 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
         {row.getValue("filename")}
       </div>
@@ -242,8 +242,23 @@ export const columns: ColumnDef<Extraction>[] = [
 ];
 
 export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
+  {
+    accessorKey: "id",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="ID" />
+    ),
+    cell: ({ row }) => (
+      <div
+        title={row.getValue("id")}
+        className="w-full truncate overflow-hidden text-slate-900"
+      >
+        {row.getValue("id")}
+      </div>
+    ),
+  },
   ...columns.filter(
-    (column) => column.id !== "status" && column.id !== "actions"
+    (column) =>
+      column.id !== "status" && column.id !== "actions" && column.id !== "id"
   ),
   {
     id: "actions",

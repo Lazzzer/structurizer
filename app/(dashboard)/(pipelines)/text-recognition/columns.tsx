@@ -1,5 +1,6 @@
 "use client";
 
+import { Icons } from "@/components/icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,19 +12,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { deleteExtraction } from "@/lib/client-requests";
+import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Trash, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -48,7 +42,6 @@ export const columns: ColumnDef<Extraction>[] = [
         {row.getValue("id")}
       </div>
     ),
-    enableSorting: false,
   },
   {
     accessorKey: "filename",
@@ -92,60 +85,51 @@ export const columns: ColumnDef<Extraction>[] = [
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const router = useRouter();
       return (
-        <AlertDialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex h-8 w-8 p-0 data-[state=open]:bg-slate-100"
-              >
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
+        <div className="flex gap-1.5 justify-end">
+          <Link
+            className={cn(
+              buttonVariants({
+                variant: "outline",
+                size: "sm",
+              }),
+              "text-slate-900"
+            )}
+            href={`/text-recognition/${row.original.id}`}
+          >
+            <Icons.refresh strokeWidth={2} className="h-4 w-4 mr-1.5" />
+            Process
+          </Link>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant={"outlineDestructive"} size={"iconSm"}>
+                <Icons.trash strokeWidth={2} className="h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuItem>
-                <Link
-                  href={`/text-recognition/${row.original.id}`}
-                  className="flex items-center w-full"
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Delete Extraction in Text Recognition Pipeline
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure? This will permanently delete the current
+                  extraction and remove the associated file. This action cannot
+                  be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    await deleteExtraction(row.original.id);
+                    router.refresh();
+                  }}
                 >
-                  <RefreshCw className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                  Process
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <AlertDialogTrigger asChild>
-                  <div className="flex items-center w-full">
-                    <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                    Delete
-                  </div>
-                </AlertDialogTrigger>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Extraction in Pipeline</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure? This will permanently delete the current
-                extraction and remove the associated file. This action cannot be
-                undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={async () => {
-                  await deleteExtraction(row.original.id);
-                  router.refresh();
-                }}
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       );
     },
   },

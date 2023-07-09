@@ -3,10 +3,16 @@ import { DataTable } from "@/components/ui/data-table";
 import { Status } from "@prisma/client";
 import { Extraction, columns } from "./columns";
 import { getExtractions } from "@/lib/requests";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Data Extraction",
+  description:
+    "Pipeline where LLMs extract structured data from the provided text",
+};
 
 export default async function DataExtractionPage() {
   const extractions = await getExtractions(Status.TO_EXTRACT);
-
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Data Extraction" displayUploadButton />

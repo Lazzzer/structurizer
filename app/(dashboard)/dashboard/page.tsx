@@ -70,7 +70,6 @@ async function getExtractions() {
 
 export default async function DashboardPage() {
   const { currentExtractions, finishedExtractions } = await getExtractions();
-  console.log(finishedExtractions);
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Dashboard" displayUploadButton />
