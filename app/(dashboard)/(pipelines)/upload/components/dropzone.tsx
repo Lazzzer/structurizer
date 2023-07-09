@@ -132,13 +132,10 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
     ) as SettledResult[];
 
     updateUploadInfos({
-      nbFiles: files.length,
-      success: success
+      isBulkProcess: state.isBulkProcessing,
+      successIds: success
         .filter((result) => result.value)
-        .map((result) => [
-          result.value!.message.filename,
-          result.value!.message.id,
-        ]),
+        .map((result) => result.value!.message.id),
     });
 
     if (failed.length) {

@@ -18,8 +18,8 @@ export type StepType = {
 };
 
 export type UploadInfo = {
-  nbFiles: number;
-  success: [string, string][]; // [filename, uuid][]
+  isBulkProcess: boolean;
+  successIds: string[];
 };
 
 export type Correction = {

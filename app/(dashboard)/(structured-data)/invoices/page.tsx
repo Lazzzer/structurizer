@@ -6,6 +6,7 @@ import { MonthlyExpensesBarChart } from "@/components/monthly-expenses-bar-chart
 import { getMonthNames } from "@/lib/utils";
 import { CategoryDistributionChart } from "@/components/pie-chart";
 import { Statistics } from "@/components/statistics";
+import { EmptyDataDisplay } from "@/components/empty-data-display";
 
 export default async function InvoicesPage() {
   const data = await getInvoicesData();
@@ -22,17 +23,9 @@ export default async function InvoicesPage() {
       <TopMainContent title="Invoices" displayUploadButton />
       <div className="m-8 flex flex-col flex-grow space-y-10 2xl:space-y-6">
         <div className="w-full h-72 2xl:h-[450px]">
-          <h2 className="text-2xl font-bold text-slate-800 mb-2 2xl:mb-3">
-            Overview
-          </h2>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">Overview</h2>
           {!data ? (
-            <div className="w-full h-full">
-              <div className="h-64 2xl:h-72 w-full border border-dashed rounded-lg border-slate-200 flex flex-col items-center justify-center">
-                <p className="text-lg mt-1 text-slate-400 text-center">
-                  No data to display.
-                </p>
-              </div>
-            </div>
+            <EmptyDataDisplay />
           ) : (
             <div className="w-full h-full grid grid-cols-8 gap-3">
               <div className="w-full h-full col-span-3">

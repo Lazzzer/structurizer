@@ -41,7 +41,7 @@ export function CategoryDistributionChart({
   }[];
 }) {
   return (
-    <div className="w-full h-4/5 border border-slate-200 rounded-md flex justify-center items-center p-3">
+    <div className="w-full h-full border border-slate-200 rounded-md flex justify-center items-center p-3">
       <ResponsiveContainer width="50%" height="100%">
         <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <Tooltip content={<CustomTooltip />} cursor={false} />

@@ -20,6 +20,7 @@ import {
   PlusCircle,
   Inbox,
   AlertCircle,
+  PieChart,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -45,6 +46,7 @@ export const Icons = {
   plusCircle: PlusCircle,
   empty: Inbox,
   alertCircle: AlertCircle,
+  pieChart: PieChart,
   receipt: ({ ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -71,18 +71,22 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-2 w-full">
+    <div className="space-y-2 w-full h-full">
       {data.length === 0 ? (
-        <div className="w-full">
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">{title}</h2>
-          <div className="h-64 2xl:h-72 w-full border border-dashed rounded-lg border-slate-200 flex flex-col items-center justify-center">
-            <Icons.empty
-              strokeWidth={1.4}
-              className="w-8 h-auto text-slate-400"
-            />
-            <p className="text-lg mt-1 text-slate-400 text-center">
-              {emptyMessage}
-            </p>
+        <div className="w-full h-full flex flex-col">
+          <h2 className="text-xl font-bold text-slate-800 mb-2 mt-0.5 flex-none">
+            {title}
+          </h2>
+          <div className="2xl:h-72 grow border border-dashed rounded-lg border-slate-300 bg-slate-50/75 flex flex-col items-center justify-center">
+            <div className="flex flex-col p-10 items-center">
+              <Icons.empty
+                strokeWidth={1.4}
+                className="w-8 h-auto text-slate-400"
+              />
+              <p className="text-lg mt-1 text-slate-400 text-center">
+                {emptyMessage}
+              </p>
+            </div>
           </div>
         </div>
       ) : (

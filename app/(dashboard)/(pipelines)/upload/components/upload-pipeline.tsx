@@ -12,8 +12,8 @@ import { AnimatePresence, motion } from "framer-motion";
 
 export default function UploadPipeline() {
   const [uploadInfos, setUploadInfos] = useState<UploadInfo>({
-    nbFiles: 0,
-    success: [],
+    isBulkProcess: false,
+    successIds: [],
   });
 
   const { status } = useStepStore();
@@ -50,11 +50,21 @@ export default function UploadPipeline() {
                 className="text-green-500 w-32 h-32 my-6"
               />
               <p className="text-slate-500 mb-6">
-                Your file{uploadInfos.success.length > 1 && "s"} have been
+                Your file{uploadInfos.successIds.length > 1 && "s"} have been
                 uploaded successfully
-                {uploadInfos.nbFiles > 1 && " and will be processed shortly"}
+                {uploadInfos.isBulkProcess && " and will be processed shortly"}
               </p>
-              {(uploadInfos.nbFiles === 1 && (
+              {(uploadInfos.isBulkProcess && (
+                <Button
+                  type="button"
+                  className="w-40"
+                  onClick={() => {
+                    window.location.href = "/dashboard";
+                  }}
+                >
+                  Back to Dashboard
+                </Button>
+              )) || (
                 <div className="flex gap-4">
                   <Button
                     type="button"
@@ -68,22 +78,12 @@ export default function UploadPipeline() {
                   </Button>
                   <Link
                     className={cn(buttonVariants(), "w-40")}
-                    href={`/text-recognition/${uploadInfos.success[0][1]}`}
+                    href={`/text-recognition/${uploadInfos.successIds[0]}`}
                     replace
                   >
                     Continue
                   </Link>
                 </div>
-              )) || (
-                <Button
-                  type="button"
-                  className="w-40"
-                  onClick={() => {
-                    window.location.href = "/dashboard";
-                  }}
-                >
-                  Back to Dashboard
-                </Button>
               )}
             </motion.div>
           )}
