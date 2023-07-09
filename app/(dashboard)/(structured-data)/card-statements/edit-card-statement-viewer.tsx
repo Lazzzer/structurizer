@@ -6,7 +6,6 @@ import {
 } from "@radix-ui/react-collapsible";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { cardStatementsSchema } from "@/lib/llm/schema";
 import { CardStatement } from "@prisma/client";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -19,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cardStatementsSchema } from "@/lib/data-categories";
 
 type CardTransaction = {
   description: string;
@@ -344,7 +344,7 @@ export function EditCardStatementViewer({
                               </SelectTrigger>
                               <SelectContent>
                                 {cardStatementsSchema.properties.transactions.items.properties.category.enum.map(
-                                  (category) => (
+                                  (category: any) => (
                                     <SelectItem key={category} value={category}>
                                       {category}
                                     </SelectItem>

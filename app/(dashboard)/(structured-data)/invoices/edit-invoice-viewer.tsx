@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { invoicesSchema } from "@/lib/llm/schema";
+import { invoicesSchema } from "@/lib/data-categories";
 import { cn } from "@/lib/utils";
 import { Invoice } from "@prisma/client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -87,7 +87,7 @@ export function EditInvoiceViewer({
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              {invoicesSchema.properties.category.enum.map((category) => (
+              {invoicesSchema.properties.category.enum.map((category: any) => (
                 <SelectItem key={category} value={category}>
                   {category}
                 </SelectItem>
