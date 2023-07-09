@@ -1,5 +1,6 @@
 "use client";
 
+import { Icons } from "@/components/icons";
 import { SheetReceipt } from "@/components/sheet-receipt";
 import {
   AlertDialog,
@@ -16,19 +17,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { deleteExtraction } from "@/lib/client-requests";
 
 import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, PanelRightOpen, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export type Receipt = {
@@ -103,7 +96,7 @@ export const columns: ColumnDef<Receipt>[] = [
             value === "None"
               ? "text-slate-400"
               : "2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900",
-            "w-16"
+            "w-14"
           )}
         >
           {value}
@@ -122,7 +115,7 @@ export const columns: ColumnDef<Receipt>[] = [
         (category) => category.value === row.original.category
       );
       return (
-        <div className="w-24">
+        <div className="w-18">
           <Badge
             className={cn("py-1", category?.textClass, category?.borderClass)}
             variant={"outline"}
@@ -144,7 +137,7 @@ export const columns: ColumnDef<Receipt>[] = [
     cell: ({ row }) => (
       <div
         title={row.getValue("from")}
-        className="w-40 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
+        className="w-36 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
         {row.getValue("from")}
       </div>
@@ -156,7 +149,7 @@ export const columns: ColumnDef<Receipt>[] = [
       <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => (
-      <div className="w-32 text-slate-900">
+      <div className="w-24 text-slate-900">
         {row.getValue<Date>("date").toLocaleDateString("en-GB")}
       </div>
     ),
@@ -208,64 +201,51 @@ export const columns: ColumnDef<Receipt>[] = [
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const router = useRouter();
       return (
-        <Sheet>
-          <AlertDialog>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="flex h-8 w-8 p-0 data-[state=open]:bg-slate-100"
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Open menu</span>
+        <div className="flex gap-1.5 justify-end">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant={"outline"}
+                size={"sm"}
+                className="text-slate-900"
+              >
+                <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
+                Show
+              </Button>
+            </SheetTrigger>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant={"outlineDestructive"} size={"iconSm"}>
+                  <Icons.trash strokeWidth={2} className="h-4 w-4" />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem className="cursor-pointer">
-                  <SheetTrigger asChild>
-                    <div className="flex items-center w-full">
-                      <PanelRightOpen className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                      Show
-                    </div>
-                  </SheetTrigger>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
-                  <AlertDialogTrigger asChild>
-                    <div className="flex items-center w-full">
-                      <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                      Delete
-                    </div>
-                  </AlertDialogTrigger>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure? This will permanently delete the current receipt
-                  and remove its associated file and extraction. This action
-                  cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={async () => {
-                    await deleteExtraction(row.original.extractionId);
-                    router.refresh();
-                  }}
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <SheetContent className="w-[512px]">
-            <SheetReceipt uuid={row.original.id} />
-          </SheetContent>
-        </Sheet>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure? This will permanently delete the current
+                    receipt and remove its associated file and extraction. This
+                    action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={async () => {
+                      await deleteExtraction(row.original.extractionId);
+                      router.refresh();
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <SheetContent className="w-[512px]">
+              <SheetReceipt uuid={row.original.id} />
+            </SheetContent>
+          </Sheet>
+        </div>
       );
     },
   },

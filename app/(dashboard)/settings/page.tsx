@@ -3,6 +3,12 @@ import { PreferencesForm } from "./components/preferences-form";
 import { Status } from "@prisma/client";
 import { DeleteSection } from "./components/delete-section";
 import { getExtractions, getPreferences } from "@/lib/requests";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Settings",
+  description: "Main page for user settings",
+};
 
 export default async function SettingsPage() {
   const preferences = await getPreferences();
