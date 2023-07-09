@@ -9,6 +9,10 @@ import { EmptyDataDisplay } from "@/components/empty-data-display";
 import { getUser } from "@/lib/session";
 import prisma from "@/lib/prisma";
 import { Metadata } from "next";
+import type {
+  AverageMonthlyExpensesResult,
+  FormattedAverageMonthlyExpensesResult,
+} from "types";
 
 export const metadata: Metadata = {
   title: "Card Statements",
@@ -19,7 +23,7 @@ async function getData() {
   const user = await getUser();
   const cardStatements = await prisma.cardStatement.findMany({
     orderBy: {
-      createdAt: "desc",
+      updatedAt: "desc",
     },
     where: {
       user: {
@@ -35,24 +39,34 @@ async function getData() {
     return null;
   }
 
-  const avgMonthlyExpenses: { month: number; average: number }[] =
+  const rawAverageMonthlyExpenses: AverageMonthlyExpensesResult[] =
     await prisma.$queryRaw`
     WITH months AS (SELECT generate_series(1,12) AS month),
     cardStatements AS (
-        SELECT
-            COALESCE(EXTRACT(MONTH FROM date), 0) AS month,
-            AVG("totalAmountDue") AS average
-        FROM "CardStatement"
-        WHERE "userId" = ${user!.id}
-        GROUP BY EXTRACT(MONTH FROM date)
+      SELECT
+        COALESCE(EXTRACT(MONTH FROM date), 0) AS month,
+        AVG("totalAmountDue") AS average
+      FROM "CardStatement"
+      WHERE "userId" = ${user!.id}
+      GROUP BY EXTRACT(MONTH FROM date)
     )
     SELECT
-        months.month,
-        COALESCE(cardStatements.average, 0) AS average
+      months.month,
+      COALESCE(cardStatements.average, 0) AS average
     FROM months
     LEFT JOIN cardStatements ON months.month = cardStatements.month
     ORDER BY month
   `;
+
+  const averageMonthlyExpenses: FormattedAverageMonthlyExpensesResult[] =
+    rawAverageMonthlyExpenses.map((m: AverageMonthlyExpensesResult) => {
+      const { shortName, longName } = getMonthNames(m.month);
+      return {
+        name: shortName,
+        fullName: longName,
+        value: m.average,
+      };
+    });
 
   const categoryDistribution: {
     category: string;
@@ -115,7 +129,7 @@ async function getData() {
 
   const response = {
     cardStatements,
-    avgMonthlyExpenses,
+    averageMonthlyExpenses,
     categoryDistribution: categoryDistribution.map((item) => ({
       category: item.category,
       percentage: parseFloat(item.percentage.toFixed(2)),
@@ -137,14 +151,6 @@ async function getData() {
 
 export default async function CardStatementsPage() {
   const data = await getData();
-  const formattedAvgMonthlyExpenses = data?.avgMonthlyExpenses.map((m: any) => {
-    const { shortName, longName } = getMonthNames(m.month);
-    return {
-      name: shortName,
-      fullName: longName,
-      value: m.average,
-    };
-  });
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Card Statements" displayUploadButton />
@@ -160,9 +166,7 @@ export default async function CardStatementsPage() {
                   Average Monthly Expenses
                 </h3>
                 <div className="w-full h-[228px] 2xl:h-[356px] border border-slate-200 rounded-md pr-3 pt-6 pb-2 2xl:pt-10 2xl:pb-4">
-                  <MonthlyExpensesBarChart
-                    data={formattedAvgMonthlyExpenses!}
-                  />
+                  <MonthlyExpensesBarChart data={data.averageMonthlyExpenses} />
                 </div>
               </div>
               <div className="w-full h-[228px] 2xl:h-[356px] col-span-3">

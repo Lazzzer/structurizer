@@ -28,3 +28,14 @@ export type Correction = {
   description: string;
   suggestion: string;
 };
+
+export type AverageMonthlyExpensesResult = {
+  month: number;
+  average: number;
+};
+
+export type FormattedAverageMonthlyExpensesResult = {
+  name: string;
+  fullName: string;
+  value: number;
+};

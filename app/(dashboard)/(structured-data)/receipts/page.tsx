@@ -9,6 +9,10 @@ import { EmptyDataDisplay } from "@/components/empty-data-display";
 import { getUser } from "@/lib/session";
 import prisma from "@/lib/prisma";
 import { Metadata } from "next";
+import type {
+  AverageMonthlyExpensesResult,
+  FormattedAverageMonthlyExpensesResult,
+} from "types";
 
 export const metadata: Metadata = {
   title: "Receipts",
@@ -20,7 +24,7 @@ async function getData() {
 
   const receipts = await prisma.receipt.findMany({
     orderBy: {
-      createdAt: "desc",
+      updatedAt: "desc",
     },
     where: {
       user: {
@@ -36,31 +40,34 @@ async function getData() {
     return null;
   }
 
-  const avgMonthlyExpenses: any = await prisma.$queryRaw`
-WITH months AS (
-    SELECT generate_series(1,12) AS month
-),
-receipts AS (
-    SELECT
+  const rawAverageMonthlyExpenses: AverageMonthlyExpensesResult[] =
+    await prisma.$queryRaw`
+    WITH months AS (SELECT generate_series(1,12) AS month),
+    receipts AS (
+      SELECT
         COALESCE(EXTRACT(MONTH FROM date), 0) AS month,
-        AVG(total) AS average
-    FROM
-        "Receipt"
-    WHERE
-        "userId" = ${user!.id}
-    GROUP BY
-        EXTRACT(MONTH FROM date)
-)
-SELECT
-    months.month,
-    COALESCE(receipts.average, 0) AS average
-FROM
-    months
-LEFT JOIN 
-    receipts ON months.month = receipts.month
-ORDER BY 
-    month
-`;
+        AVG("total") AS average
+      FROM "Receipt"
+      WHERE "userId" = ${user!.id}
+      GROUP BY EXTRACT(MONTH FROM date)
+    )
+    SELECT
+      months.month,
+      COALESCE(receipts.average, 0) AS average
+    FROM months
+    LEFT JOIN receipts ON months.month = receipts.month
+    ORDER BY month
+  `;
+
+  const averageMonthlyExpenses: FormattedAverageMonthlyExpensesResult[] =
+    rawAverageMonthlyExpenses.map((m) => {
+      const { shortName, longName } = getMonthNames(m.month);
+      return {
+        name: shortName,
+        fullName: longName,
+        value: m.average,
+      };
+    });
 
   const categoryCounts = await prisma.receipt.groupBy({
     by: ["category"],
@@ -126,7 +133,7 @@ ORDER BY
 
   const response = {
     receipts,
-    avgMonthlyExpenses,
+    averageMonthlyExpenses,
     categoryDistribution,
     highestTotalAmount: {
       total: highestTotalAmount._max.total,
@@ -145,14 +152,6 @@ ORDER BY
 
 export default async function ReceiptsPage() {
   const data = await getData();
-  const formattedAvgMonthlyExpenses = data?.avgMonthlyExpenses.map((m: any) => {
-    const { shortName, longName } = getMonthNames(m.month);
-    return {
-      name: shortName,
-      fullName: longName,
-      value: m.average,
-    };
-  });
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Receipts" displayUploadButton />
@@ -168,7 +167,7 @@ export default async function ReceiptsPage() {
                   Average Monthly Expenses
                 </h3>
                 <div className="w-full h-[228px] 2xl:h-[356px] border border-slate-200 rounded-md pr-3 pt-6 pb-2 2xl:pt-10 2xl:pb-4">
-                  <MonthlyExpensesBarChart data={formattedAvgMonthlyExpenses} />
+                  <MonthlyExpensesBarChart data={data.averageMonthlyExpenses} />
                 </div>
               </div>
               <div className="w-full h-[228px] 2xl:h-[356px]  col-span-3">

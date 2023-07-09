@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: "Main page to view current and processed extractions",
 };
 
-async function getExtractions() {
+async function getData() {
   const user = await getUser();
   const currentExtractions = await prisma.extraction.findMany({
     orderBy: {
@@ -69,7 +69,7 @@ async function getExtractions() {
 }
 
 export default async function DashboardPage() {
-  const { currentExtractions, finishedExtractions } = await getExtractions();
+  const { currentExtractions, finishedExtractions } = await getData();
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Dashboard" displayUploadButton />
