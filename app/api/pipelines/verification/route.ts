@@ -118,9 +118,9 @@ export async function PUT(req: NextRequest) {
             totalAmountDue: parseFloat(body.json.total_amount_due),
             items: {
               create: body.json.items?.map((item: any) => {
-                validateRequiredOrEmptyFields(item, ["description"]);
                 return {
-                  description: item.description,
+                  description:
+                    item.description.length > 0 ? item.description : null,
                   amount: parseFloat(item.amount),
                 };
               }),

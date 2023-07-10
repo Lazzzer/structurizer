@@ -52,10 +52,10 @@ export async function PUT(req: NextRequest) {
 
   try {
     validateRequiredOrEmptyFields(data, [
+      "fromName",
       "category",
       "date",
       "totalAmountDue",
-      "fromName",
     ]);
     await prisma.invoice.update({
       where: {
