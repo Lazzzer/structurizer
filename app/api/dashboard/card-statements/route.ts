@@ -1,27 +1,34 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getUser } from "@/lib/session";
+import * as z from "zod";
+import { validateRequiredOrEmptyFields } from "@/lib/validations/request";
+import { cardStatementsSchema } from "@/lib/data-categories";
 
-export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-
   const { searchParams } = new URL(req.url);
-  const cardStatementUUID = searchParams.get("uuid");
-  const userUUID = session?.user.id;
+  const cardStatementId = searchParams.get("id");
 
-  if (!cardStatementUUID) {
-    return NextResponse.json({ error: "No UUID provided" }, { status: 400 });
+  const schema = z.object({
+    id: z.string().uuid(),
+  });
+
+  const { success } = schema.safeParse({ id: cardStatementId });
+
+  if (!success) {
+    return NextResponse.json(
+      { error: "Invalid Card Statement id" },
+      { status: 400 }
+    );
   }
-
   const cardStatement = await prisma.cardStatement.findFirst({
     where: {
-      id: cardStatementUUID,
-      userId: userUUID,
+      id: cardStatementId!,
+      userId: user.id,
     },
     include: {
       transactions: true,
@@ -30,7 +37,7 @@ export async function GET(req: Request) {
 
   if (!cardStatement) {
     return NextResponse.json(
-      { error: "cardStatement not found" },
+      { error: "Card Statement not found" },
       { status: 404 }
     );
   }
@@ -38,76 +45,86 @@ export async function GET(req: Request) {
   return NextResponse.json(cardStatement, { status: 200 });
 }
 
-export async function PUT(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function PUT(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const userUUID = session?.user.id;
-
-  const jsonObj = await req.json();
-
-  if (!jsonObj) {
-    return NextResponse.json({ error: "No JSON provided" }, { status: 400 });
+  const data = await req.json();
+  if (!data) {
+    return NextResponse.json({ error: "No data provided" }, { status: 400 });
   }
-
   try {
-    await prisma.cardStatement.updateMany({
+    validateRequiredOrEmptyFields(data, [
+      "totalAmountDue",
+      "date",
+      "issuerName",
+    ]);
+    await prisma.cardStatement.update({
       where: {
-        id: jsonObj.id,
-        userId: userUUID,
+        id: data.id,
+        userId: user.id,
       },
       data: {
-        creditCardName: jsonObj.creditCardName,
-        creditCardHolder: jsonObj.creditCardHolder,
-        creditCardNumber: jsonObj.creditCardNumber,
-        issuerName: jsonObj.issuerName,
-        issuerAddress: jsonObj.issuerAddress,
-        recipientName: jsonObj.recipientName,
-        recipientAddress: jsonObj.recipientAddress,
-        date: new Date(jsonObj.date).toISOString(),
-        currency: jsonObj.currency,
-        totalAmountDue: parseFloat(jsonObj.totalAmountDue),
+        creditCardName: data.creditCardName,
+        creditCardHolder: data.creditCardHolder,
+        creditCardNumber: data.creditCardNumber,
+        issuerName: data.issuerName,
+        issuerAddress: data.issuerAddress,
+        recipientName: data.recipientName,
+        recipientAddress: data.recipientAddress,
+        date: new Date(data.date).toISOString(),
+        currency: data.currency,
+        totalAmountDue: data.totalAmountDue,
+        transactions: {
+          deleteMany: {
+            cardStatementId: data.id,
+            NOT: data.transactions?.map((transaction: any) => ({
+              id: transaction.id,
+            })),
+          },
+          upsert: data.transactions?.map((transaction: any) => {
+            validateRequiredOrEmptyFields(transaction, [
+              "description",
+              "category",
+              "amount",
+            ]);
+            return {
+              where: {
+                id: transaction.id,
+                cardStatementId: data.id,
+              },
+              create: {
+                description: transaction.description,
+                category:
+                  cardStatementsSchema.properties.transactions.items.properties.category.enum.includes(
+                    transaction.category
+                  )
+                    ? transaction.category
+                    : null,
+                amount: transaction.amount,
+              },
+              update: {
+                description: transaction.description,
+                category:
+                  cardStatementsSchema.properties.transactions.items.properties.category.enum.includes(
+                    transaction.category
+                  )
+                    ? transaction.category
+                    : null,
+                amount: transaction.amount,
+              },
+            };
+          }),
+        },
       },
     });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      { error: "cardStatement not created, bad data" },
-      { status: 400 }
-    );
-  }
-
-  try {
-    await prisma.cardTransaction.deleteMany({
-      where: {
-        cardStatementId: jsonObj.id,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      { error: "Could not delete cardStatement items" },
-      { status: 400 }
-    );
-  }
-
-  try {
-    await prisma.cardTransaction.createMany({
-      data: jsonObj.transactions?.map((transaction: any) => ({
-        cardStatementId: jsonObj.id,
-        description: transaction.description,
-        category: transaction.category,
-        amount: parseFloat(transaction.amount),
-      })),
-    });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      { error: "Could not create cardStatement items" },
-      { status: 400 }
+      { error: "Card Statement not updated" },
+      { status: 422 }
     );
   }
 

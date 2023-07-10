@@ -292,7 +292,16 @@ export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
             </SheetInvoice>
           )}
           {row.original.cardStatement && (
-            <SheetCardStatement uuid={row.original.cardStatement.id} />
+            <SheetCardStatement id={row.original.cardStatement.id}>
+              <Button
+                variant={"outline"}
+                size={"sm"}
+                className="text-slate-900"
+              >
+                <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
+                Show
+              </Button>
+            </SheetCardStatement>
           )}
           <AlertDialog>
             <AlertDialogTrigger asChild>

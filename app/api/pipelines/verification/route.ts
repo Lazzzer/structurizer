@@ -8,6 +8,7 @@ import {
   validateRequiredOrEmptyFields,
 } from "@/lib/validations/request";
 import {
+  cardStatementsSchema,
   categories,
   invoicesSchema,
   receiptsSchema,
@@ -156,7 +157,12 @@ export async function PUT(req: NextRequest) {
                 ]);
                 return {
                   description: transaction.description,
-                  category: transaction.category,
+                  category:
+                    cardStatementsSchema.properties.transactions.items.properties.category.enum.includes(
+                      transaction.category
+                    )
+                      ? transaction.category
+                      : null,
                   amount: parseFloat(transaction.amount),
                 };
               }),

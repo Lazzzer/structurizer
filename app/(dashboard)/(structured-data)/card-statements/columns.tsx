@@ -15,8 +15,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
-
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { deleteExtraction } from "@/lib/client-requests";
 
 import { cn, mapCurrency } from "@/lib/utils";
@@ -223,49 +221,40 @@ export const columns: ColumnDef<CardStatement>[] = [
       const router = useRouter();
       return (
         <div className="flex gap-1.5 justify-end">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant={"outline"}
-                size={"sm"}
-                className="text-slate-900"
-              >
-                <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
-                Show
+          <SheetCardStatement id={row.original.id}>
+            <Button variant={"outline"} size={"sm"} className="text-slate-900">
+              <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
+              Show
+            </Button>
+          </SheetCardStatement>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant={"outlineDestructive"} size={"iconSm"}>
+                <Icons.trash strokeWidth={2} className="h-4 w-4" />
               </Button>
-            </SheetTrigger>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant={"outlineDestructive"} size={"iconSm"}>
-                  <Icons.trash strokeWidth={2} className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Card Statement</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure? This will permanently delete the current card
-                    statement and remove its associated file and extraction.
-                    This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={async () => {
-                      await deleteExtraction(row.original.extractionId);
-                      router.refresh();
-                    }}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            <SheetContent className="w-[512px]">
-              <SheetCardStatement uuid={row.original.id} />
-            </SheetContent>
-          </Sheet>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Card Statement</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure? This will permanently delete the current card
+                  statement and remove its associated file and extraction. This
+                  action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    await deleteExtraction(row.original.extractionId);
+                    router.refresh();
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       );
     },
