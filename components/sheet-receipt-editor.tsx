@@ -24,7 +24,8 @@ import {
 import { updateStructuredData } from "@/lib/client-requests";
 import { Receipt } from "@prisma/client";
 import { useRouter } from "next/navigation";
-interface EditReceiptViewerProps {
+
+interface SheetReceiptEditorProps {
   receipt: ReceiptWithItems;
   setIsEditing: (isEditing: boolean) => void;
 }
@@ -40,10 +41,10 @@ type ReceiptWithItems = Receipt & {
   items: ReceiptItem[];
 };
 
-export function EditReceiptViewer({
+export function SheetReceiptEditor({
   receipt,
   setIsEditing,
-}: EditReceiptViewerProps): React.JSX.Element {
+}: SheetReceiptEditorProps): React.JSX.Element {
   const [editedReceipt, setEditedReceipt] = useState<ReceiptWithItems>({
     ...receipt,
   });

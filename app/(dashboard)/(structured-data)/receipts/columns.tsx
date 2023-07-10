@@ -16,8 +16,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
-
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { deleteExtraction } from "@/lib/client-requests";
 
 import { cn } from "@/lib/utils";
@@ -202,21 +200,12 @@ export const columns: ColumnDef<Receipt>[] = [
       const router = useRouter();
       return (
         <div className="flex gap-1.5 justify-end">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant={"outline"}
-                size={"sm"}
-                className="text-slate-900"
-              >
-                <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
-                Show
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="w-[512px]">
-              <SheetReceipt id={row.original.id} />
-            </SheetContent>
-          </Sheet>
+          <SheetReceipt id={row.original.id}>
+            <Button variant={"outline"} size={"sm"} className="text-slate-900">
+              <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
+              Show
+            </Button>
+          </SheetReceipt>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant={"outlineDestructive"} size={"iconSm"}>

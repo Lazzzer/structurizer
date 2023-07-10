@@ -15,7 +15,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SheetReceipt } from "@/components/sheet-receipt";
 
 import { deleteExtraction } from "@/lib/client-requests";
@@ -267,8 +266,8 @@ export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
       const router = useRouter();
       return (
         <div className="flex gap-1.5 justify-end">
-          <Sheet>
-            <SheetTrigger asChild>
+          {row.original.receipt && (
+            <SheetReceipt id={row.original.receipt.id}>
               <Button
                 variant={"outline"}
                 size={"sm"}
@@ -277,49 +276,43 @@ export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
                 <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
                 Show
               </Button>
-            </SheetTrigger>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant={"outlineDestructive"} size={"iconSm"}>
-                  <Icons.trash strokeWidth={2} className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Delete Processed Extraction
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure? This will permanently delete the current
-                    extraction, remove the associated file and its extracted
-                    data. This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={async () => {
-                      await deleteExtraction(row.original.id);
-                      router.refresh();
-                    }}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            <SheetContent className="w-[512px]">
-              {row.original.receipt && (
-                <SheetReceipt id={row.original.receipt.id} />
-              )}
-              {row.original.invoice && (
-                <SheetInvoice uuid={row.original.invoice.id} />
-              )}
-              {row.original.cardStatement && (
-                <SheetCardStatement uuid={row.original.cardStatement.id} />
-              )}
-            </SheetContent>
-          </Sheet>
+            </SheetReceipt>
+          )}
+
+          {row.original.invoice && (
+            <SheetInvoice uuid={row.original.invoice.id} />
+          )}
+          {row.original.cardStatement && (
+            <SheetCardStatement uuid={row.original.cardStatement.id} />
+          )}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant={"outlineDestructive"} size={"iconSm"}>
+                <Icons.trash strokeWidth={2} className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Processed Extraction</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure? This will permanently delete the current
+                  extraction, remove the associated file and its extracted data.
+                  This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    await deleteExtraction(row.original.id);
+                    router.refresh();
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       );
     },
