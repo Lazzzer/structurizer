@@ -7,6 +7,14 @@ export async function deleteExtraction(id: string) {
   }
 }
 
+export async function getObjectUrl(extractionId: string) {
+  const res = await fetch(`/api/signed-url?uuid=${extractionId}`, {
+    method: "GET",
+  });
+  const { url } = await res.json();
+  return url as string;
+}
+
 export async function updateStructuredData<T>(data: T, endpoint: string) {
   const res = await fetch(`/api/dashboard/${endpoint}`, {
     method: "PUT",

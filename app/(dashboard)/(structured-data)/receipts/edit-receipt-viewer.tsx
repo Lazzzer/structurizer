@@ -30,6 +30,7 @@ interface EditReceiptViewerProps {
 }
 
 type ReceiptItem = {
+  id: string;
   description: string;
   quantity: number;
   amount: number;
@@ -205,6 +206,7 @@ export function EditReceiptViewer({
                         items: [
                           ...editedReceipt.items,
                           {
+                            id: window.crypto.randomUUID(),
                             description: "",
                             quantity: 0,
                             amount: 0,
