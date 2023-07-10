@@ -1,5 +1,5 @@
 import { TopMainContent } from "@/components/top-main-content";
-import { getExtractionData, getS3ObjectUrl } from "@/lib/requests";
+import { getExtraction, getObjectUrl } from "@/lib/server-requests";
 import { Status } from "@prisma/client";
 import VerificationPipeline from "../components/verification-pipeline";
 import { Metadata } from "next";
@@ -16,11 +16,11 @@ export default async function VerificationPipelinePage({
     id: string;
   };
 }) {
-  const { category, text, json } = await getExtractionData(
+  const { category, text, json } = await getExtraction(
     params.id,
     Status.TO_VERIFY
   );
-  const { url } = await getS3ObjectUrl(params.id);
+  const { url } = await getObjectUrl(params.id);
   return (
     <div className="flex flex-col h-full">
       <TopMainContent title="Verification" step={4} />

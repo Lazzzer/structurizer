@@ -9,7 +9,7 @@ export async function deleteExtraction(id: string) {
 
 export async function getObjectUrl(extractionId: string) {
   //TODO: uuid replace by id
-  const res = await fetch(`/api/signed-url?uuid=${extractionId}`, {
+  const res = await fetch(`/api/signed-url?id=${extractionId}`, {
     method: "GET",
   });
 

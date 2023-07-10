@@ -1,6 +1,6 @@
 import DataExtractionPipeline from "../components/data-extraction-pipeline";
 import { TopMainContent } from "@/components/top-main-content";
-import { getExtractionData } from "@/lib/requests";
+import { getExtraction } from "@/lib/server-requests";
 import { Status } from "@prisma/client";
 import { Metadata } from "next";
 
@@ -17,7 +17,7 @@ export default async function DataExtractionPipelinePage({
     id: string;
   };
 }) {
-  const data = await getExtractionData(params.id, Status.TO_EXTRACT);
+  const data = await getExtraction(params.id, Status.TO_EXTRACT);
 
   return (
     <div className="flex flex-col h-full">

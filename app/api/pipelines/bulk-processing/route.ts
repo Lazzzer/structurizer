@@ -3,7 +3,7 @@ import { validateBody } from "@/lib/validations/request";
 import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
 import prisma from "@/lib/prisma";
-import { getS3ObjectUrl, getText } from "@/lib/requests";
+import { getObjectUrl, getText } from "@/lib/server-requests";
 import { Status } from "@prisma/client";
 import { categories } from "@/lib/data-categories";
 
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   });
 
   const textRecognitionPromises = body.ids.map(async (id) => {
-    const data = await getS3ObjectUrl(id);
+    const data = await getObjectUrl(id);
     const text = await getText(data.url);
 
     if (text === "") {

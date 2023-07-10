@@ -2,7 +2,7 @@ import { TopMainContent } from "@/components/top-main-content";
 import { DataTable } from "@/components/ui/data-table";
 import { Status } from "@prisma/client";
 import { Extraction, columns } from "./columns";
-import { getExtractions } from "@/lib/requests";
+import { getExtractions } from "@/lib/server-requests";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

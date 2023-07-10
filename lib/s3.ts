@@ -1,6 +1,7 @@
 import {
   DeleteObjectCommand,
   DeleteObjectsCommand,
+  GetObjectCommand,
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
@@ -44,6 +45,15 @@ export async function uploadFile(
   if (!res.ok) {
     throw new Error("Could not upload file");
   }
+}
+
+export async function generateSignedUrl(key: string) {
+  const command = new GetObjectCommand({
+    Bucket: process.env.S3_BUCKET as string,
+    Key: key,
+  });
+
+  return await getSignedUrl(s3, command, { expiresIn: 60 });
 }
 
 export async function deleteObject(key: string) {

@@ -1,5 +1,5 @@
 import { TopMainContent } from "@/components/top-main-content";
-import { getExtractionData, getS3ObjectUrl, getText } from "@/lib/requests";
+import { getExtraction, getObjectUrl, getText } from "@/lib/server-requests";
 import { Status } from "@prisma/client";
 import { Metadata } from "next";
 import TextRecognitionPipeline from "../components/text-recognition-pipeline";
@@ -16,8 +16,8 @@ export default async function TextRecognitionPipelinePage({
     id: string;
   };
 }) {
-  const { filename } = await getExtractionData(params.id, Status.TO_RECOGNIZE);
-  const { url } = await getS3ObjectUrl(params.id);
+  const { filename } = await getExtraction(params.id, Status.TO_RECOGNIZE);
+  const { url } = await getObjectUrl(params.id);
   const text = await getText(url);
   return (
     <div className="flex flex-col h-full">

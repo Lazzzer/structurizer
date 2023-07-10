@@ -1,7 +1,7 @@
 import { TopMainContent } from "@/components/top-main-content";
 import { DataTable } from "@/components/ui/data-table";
 import { Status } from "@prisma/client";
-import { getExtractions } from "@/lib/requests";
+import { getExtractions } from "@/lib/server-requests";
 import { Extraction, columns, categories } from "./columns";
 import { Metadata } from "next";
 

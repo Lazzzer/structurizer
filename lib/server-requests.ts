@@ -1,5 +1,3 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { Status } from "@prisma/client";
@@ -15,16 +13,13 @@ export async function getPreferences() {
   return preferences!;
 }
 
-export async function getS3ObjectUrl(uuid: string) {
-  const res = await fetch(
-    `${process.env.APP_URL}/api/signed-url?uuid=${uuid}`,
-    {
-      method: "GET",
-      headers: {
-        Cookie: headers().get("cookie") ?? "",
-      },
-    }
-  );
+export async function getObjectUrl(id: string) {
+  const res = await fetch(`${process.env.APP_URL}/api/signed-url?id=${id}`, {
+    method: "GET",
+    headers: {
+      Cookie: headers().get("cookie") ?? "",
+    },
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");
@@ -58,18 +53,16 @@ export async function getText(url: string) {
   return content;
 }
 
-export async function getExtractionData(uuid: string, status: Status) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
+export async function getExtraction(id: string, status: Status) {
+  const user = await getUser();
+  if (!user) {
     throw new Error("Cannot authenticate user");
   }
-  const userUUID = session?.user.id;
 
   const extractionData = await prisma.extraction.findFirst({
     where: {
-      id: uuid,
-      userId: userUUID,
+      id,
+      userId: user.id,
       status,
     },
   });
@@ -82,19 +75,18 @@ export async function getExtractionData(uuid: string, status: Status) {
 }
 
 export async function getExtractions(status: Status) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
+  const user = await getUser();
+  if (!user) {
     throw new Error("Cannot authenticate user");
   }
-  const userUUID = session?.user.id;
+
   const extractions = await prisma.extraction.findMany({
     orderBy: {
-      createdAt: "desc",
+      updatedAt: "desc",
     },
     where: {
       user: {
-        id: userUUID,
+        id: user.id,
       },
       status: status,
     },
