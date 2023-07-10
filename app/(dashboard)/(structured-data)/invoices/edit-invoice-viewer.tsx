@@ -1,3 +1,5 @@
+"use client";
+
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,8 +20,7 @@ import { invoicesSchema } from "@/lib/data-categories";
 import { cn } from "@/lib/utils";
 import { Invoice } from "@prisma/client";
 import { motion, AnimatePresence } from "framer-motion";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 type InvoiceItem = {
   description: string;

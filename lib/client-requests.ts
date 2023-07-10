@@ -7,11 +7,13 @@ export async function deleteExtraction(id: string) {
   }
 }
 
-export async function updateStructuredData(data: any, endpoint: string) {
+export async function updateStructuredData<T>(data: T, endpoint: string) {
   const res = await fetch(`/api/dashboard/${endpoint}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
+  const fetchedData = await res.json();
+
+  return fetchedData as T;
 }

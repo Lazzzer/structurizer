@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
   });
 
   const { success } = schema.safeParse({ id: receiptId });
+
   if (!success) {
     return NextResponse.json(
       { error: "Invalid Extraction id" },
