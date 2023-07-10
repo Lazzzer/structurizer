@@ -15,38 +15,37 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { Label } from "@/components/ui/label";
 import { AnimatePresence, motion } from "framer-motion";
-import { receiptsSchema } from "@/lib/data-categories";
+import { invoicesSchema } from "@/lib/data-categories";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { updateStructuredData } from "@/lib/client-requests";
-import { Receipt } from "@prisma/client";
+import { Invoice } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
-interface SheetReceiptEditorProps {
-  receipt: ReceiptWithItems;
+interface SheetInvoiceEditorProps {
+  invoice: InvoiceWithItems;
   setIsEditing: (isEditing: boolean) => void;
 }
 
-type ReceiptItem = {
+type InvoiceItem = {
   id: string;
   description: string;
-  quantity: number;
-  amount: number;
+  amount: number | null;
 };
 
-type ReceiptWithItems = Receipt & {
-  items: ReceiptItem[];
+type InvoiceWithItems = Invoice & {
+  items: InvoiceItem[];
 };
 
-export function SheetReceiptEditor({
-  receipt,
+export function SheetInvoiceEditor({
+  invoice,
   setIsEditing,
-}: SheetReceiptEditorProps): React.JSX.Element {
-  const [editedReceipt, setEditedReceipt] = useState<ReceiptWithItems>({
-    ...receipt,
+}: SheetInvoiceEditorProps): React.JSX.Element {
+  const [editedInvoice, setEditedInvoice] = useState<InvoiceWithItems>({
+    ...invoice,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [areItemsOpen, setAreItemsOpen] = useState(true);
@@ -58,34 +57,35 @@ export function SheetReceiptEditor({
     <div className="w-full h-full">
       <div className="w-full h-3/4 p-1 mt-2 border border-slate-200 border-dashed rounded-lg">
         <div className="w-full min-h-full h-20 p-2 overflow-scroll">
-          <div className=" grid grid-rows-4 gap-2.5">
-            {/* From */}
+          <div className=" grid grid-rows-3 gap-2.5">
+            {/* Invoice number */}
             <div className="grid grid-cols-2">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-slate-800">
                 <Label
                   className="font-semibold text-base self-center"
-                  htmlFor="from"
+                  htmlFor="invoiceNumber"
                 >
-                  From
+                  Invoice Number{" "}
+                  <span className="text-xs font-medium">(optional)</span>
                 </Label>
               </div>
               <Input
-                id="from"
+                id="invoiceNumber"
                 placeholder="null"
                 type="text"
                 className="w-full h-8"
                 onChange={(e) => {
-                  setEditedReceipt({
-                    ...editedReceipt,
-                    from: e.target.value,
+                  setEditedInvoice({
+                    ...editedInvoice,
+                    invoiceNumber: e.target.value,
                   });
                 }}
-                value={editedReceipt.from}
+                value={editedInvoice.invoiceNumber ?? ""}
               />
             </div>
             {/* Category */}
             <div className="grid grid-cols-2">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-slate-800">
                 <Label
                   className="font-semibold text-base self-center"
                   htmlFor="category"
@@ -94,18 +94,17 @@ export function SheetReceiptEditor({
                 </Label>
               </div>
               <Select
-                name="category"
                 onValueChange={(value) => {
-                  setEditedReceipt({ ...editedReceipt, category: value });
+                  setEditedInvoice({ ...editedInvoice, category: value });
                 }}
-                defaultValue={editedReceipt.category}
+                defaultValue={editedInvoice.category}
               >
                 <SelectTrigger className="w-full h-8">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {receiptsSchema.properties.category.enum.map(
-                    (category: string) => (
+                  {invoicesSchema.properties.category.enum.map(
+                    (category: any) => (
                       <SelectItem key={category} value={category}>
                         {category}
                       </SelectItem>
@@ -114,86 +113,139 @@ export function SheetReceiptEditor({
                 </SelectContent>
               </Select>
             </div>
-            {/* Number */}
+            {/* Date */}
             <div className="grid grid-cols-2">
-              <div className="flex items-center gap-1">
-                <Label
-                  className="font-semibold text-base self-center"
-                  htmlFor="number"
-                >
-                  Number <span className="text-xs font-medium">(optional)</span>
-                </Label>
-              </div>
-              <Input
-                id="number"
-                placeholder="null"
-                type="text"
-                className="w-full h-8"
-                onChange={(e) => {
-                  setEditedReceipt({
-                    ...editedReceipt,
-                    number: e.target.value,
-                  });
-                }}
-                value={editedReceipt.number ?? ""}
-              />
-            </div>
-            {/* Date & Time */}
-            <div className="grid grid-cols-2">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-slate-800">
                 <Label
                   className="font-semibold text-base self-center"
                   htmlFor="date"
                 >
                   Date
                 </Label>
-                <span className="font-semibold text-slate-800 self-center text-base">
-                  /
-                </span>
-                <Label
-                  className="font-semibold text-base self-center"
-                  htmlFor="time"
-                >
-                  Time <span className="text-xs font-medium">(optional)</span>
+              </div>
+              <Input
+                id="date"
+                placeholder="null"
+                type="date"
+                className="w-full h-8"
+                onChange={(e) => {
+                  setEditedInvoice({
+                    ...editedInvoice,
+                    date: e.target.valueAsDate ?? new Date(),
+                  });
+                }}
+                value={new Date(editedInvoice.date).toISOString().split("T")[0]}
+              />
+            </div>
+          </div>
+          {/* From */}
+          <div>
+            <h4 className="font-semibold flex items-center mt-3 mb-2.5 text-slate-800">
+              From
+              <Icons.braces
+                strokeWidth={3}
+                className="h-4 w-4 ml-1 inline-block"
+              />
+            </h4>
+            <div className="rounded-md border border-slate-200 px-4 py-3">
+              <div className="flex items-center gap-1 mb-1">
+                <Label className="-mt-0.5 text-slate-800" htmlFor="fromName">
+                  Name
                 </Label>
               </div>
-              <div className="flex gap-1.5">
-                <Input
-                  id="date"
-                  type="date"
-                  placeholder="null"
-                  className="w-3/5 h-8"
-                  onChange={(e) => {
-                    setEditedReceipt({
-                      ...editedReceipt,
-                      date: e.target.valueAsDate ?? new Date(),
-                    });
-                  }}
-                  value={
-                    new Date(editedReceipt.date).toISOString().split("T")[0]
-                  }
-                />
-                <Input
-                  id="time"
-                  type="string"
-                  placeholder="null"
-                  className="w-2/5 h-8"
-                  onChange={(e) => {
-                    setEditedReceipt({
-                      ...editedReceipt,
-                      time: e.target.value,
-                    });
-                  }}
-                  value={editedReceipt.time ?? ""}
-                />
+              <Input
+                type="text"
+                placeholder="null"
+                id="fromName"
+                className="w-full h-8 mb-2"
+                onChange={(e) => {
+                  setEditedInvoice({
+                    ...editedInvoice,
+                    fromName: e.target.value,
+                  });
+                }}
+                value={editedInvoice.fromName}
+              />
+              <div className="flex items-center gap-1 mb-1">
+                <Label className="text-slate-800" htmlFor="fromAddress">
+                  Address{" "}
+                  <span className="text-xs font-medium">(optional)</span>
+                </Label>
               </div>
+              <Input
+                type="text"
+                placeholder="null"
+                id="fromAddress"
+                className="w-full h-8"
+                onChange={(e) => {
+                  setEditedInvoice({
+                    ...editedInvoice,
+                    fromAddress: e.target.value,
+                  });
+                }}
+                value={editedInvoice.fromAddress ?? ""}
+              />
+            </div>
+          </div>
+          {/* To */}
+          <div>
+            <h4 className="font-semibold flex items-center mt-3 mb-2.5 text-slate-800">
+              To
+              <Icons.braces
+                strokeWidth={3}
+                className="h-4 w-4 ml-1 inline-block"
+              />
+            </h4>
+            <div className="rounded-md border border-slate-200 px-4 py-3">
+              <div className="flex items-center gap-1 mb-1">
+                <Label className="text-slate-800" htmlFor="toName">
+                  Name <span className="text-xs font-medium">(optional)</span>
+                </Label>
+              </div>
+              <Input
+                type="text"
+                placeholder="null"
+                id="toName"
+                className="w-full h-8 mb-2"
+                onChange={(e) => {
+                  setEditedInvoice({
+                    ...editedInvoice,
+                    toName: e.target.value,
+                  });
+                }}
+                value={editedInvoice.toName ?? ""}
+              />
+              <div className="flex items-center gap-1 mb-1">
+                <Label className="text-slate-800" htmlFor="toAddress">
+                  Address{" "}
+                  <span className="text-xs font-medium">(optional)</span>
+                </Label>
+              </div>
+
+              <Input
+                type="text"
+                placeholder="null"
+                id="toAddress"
+                className="w-full h-8"
+                onChange={(e) => {
+                  setEditedInvoice({
+                    ...editedInvoice,
+                    toAddress: e.target.value,
+                  });
+                }}
+                value={editedInvoice.toAddress ?? ""}
+              />
             </div>
           </div>
           {/* Items */}
           <div className="my-4">
             <Collapsible open={areItemsOpen} onOpenChange={setAreItemsOpen}>
               <div className="flex items-center justify-between">
-                <h4 className="font-semibold flex items-center text-slate-900">
+                <h4
+                  className={cn(
+                    "font-semibold flex items-center text-slate-800"
+                  )}
+                >
                   Items
                   <Icons.brackets
                     strokeWidth={3}
@@ -201,14 +253,13 @@ export function SheetReceiptEditor({
                   />
                   <Button
                     onClick={() => {
-                      setEditedReceipt({
-                        ...editedReceipt,
+                      setEditedInvoice({
+                        ...editedInvoice,
                         items: [
-                          ...editedReceipt.items,
+                          ...editedInvoice.items,
                           {
                             id: window.crypto.randomUUID(),
                             description: "",
-                            quantity: 0,
                             amount: 0,
                           },
                         ],
@@ -233,7 +284,7 @@ export function SheetReceiptEditor({
               <CollapsibleContent className="mt-1.5">
                 <motion.div layout className="w-full space-y-2">
                   <AnimatePresence>
-                    {editedReceipt.items.map((item: ReceiptItem) => (
+                    {editedInvoice.items.map((item: InvoiceItem) => (
                       <motion.div
                         layout="size"
                         key={item.id}
@@ -245,7 +296,7 @@ export function SheetReceiptEditor({
                           transition: { duration: 0.3 },
                         }}
                         layoutId={item.id}
-                        className=" rounded-md border border-slate-200 px-4 py-3"
+                        className="rounded-md border border-slate-200 px-4 py-3"
                       >
                         <Label htmlFor={`item-${item.id}-description`}>
                           Description
@@ -256,9 +307,9 @@ export function SheetReceiptEditor({
                           id={`item-${item.id}-description`}
                           className="w-full h-8"
                           onChange={(e) => {
-                            setEditedReceipt((prevReceipt) => ({
-                              ...prevReceipt,
-                              items: prevReceipt.items.map((i) =>
+                            setEditedInvoice((prevInvoice) => ({
+                              ...prevInvoice,
+                              items: prevInvoice.items.map((i) =>
                                 i.id === item.id
                                   ? { ...i, description: e.target.value }
                                   : i
@@ -269,34 +320,7 @@ export function SheetReceiptEditor({
                         />
                         <div className="flex w-full mt-2 justify-between">
                           <div className="w-1/2 flex gap-1.5">
-                            <div className="w-1/2">
-                              <Label htmlFor={`item-${item.id}-quantity`}>
-                                Quantity
-                              </Label>
-                              <Input
-                                id={`item-${item.id}-quantity`}
-                                placeholder="null"
-                                type="number"
-                                className="w-full h-8"
-                                onChange={(e) => {
-                                  setEditedReceipt((prevReceipt) => ({
-                                    ...prevReceipt,
-                                    items: prevReceipt.items.map((i) =>
-                                      i.id === item.id
-                                        ? {
-                                            ...i,
-                                            quantity: parseFloat(
-                                              e.target.value
-                                            ),
-                                          }
-                                        : i
-                                    ),
-                                  }));
-                                }}
-                                value={item.quantity}
-                              />
-                            </div>
-                            <div className="w-1/2">
+                            <div className="w-full">
                               <Label htmlFor={`item-${item.id}-amount`}>
                                 Amount
                               </Label>
@@ -306,9 +330,9 @@ export function SheetReceiptEditor({
                                 type="number"
                                 className="w-full h-8"
                                 onChange={(e) => {
-                                  setEditedReceipt((prevReceipt) => ({
-                                    ...prevReceipt,
-                                    items: prevReceipt.items.map((i) =>
+                                  setEditedInvoice((prevInvoice) => ({
+                                    ...prevInvoice,
+                                    items: prevInvoice.items.map((i) =>
                                       i.id === item.id
                                         ? {
                                             ...i,
@@ -318,18 +342,19 @@ export function SheetReceiptEditor({
                                     ),
                                   }));
                                 }}
-                                value={item.amount}
+                                value={item.amount ?? ""}
                               />
                             </div>
                           </div>
+
                           <Button
                             variant="ghost"
                             size="sm"
                             className="w-9 p-0 self-end"
                             onClick={() => {
-                              setEditedReceipt((prevReceipt) => ({
-                                ...prevReceipt,
-                                items: prevReceipt.items.filter(
+                              setEditedInvoice((prevInvoice) => ({
+                                ...prevInvoice,
+                                items: prevInvoice.items.filter(
                                   (i) => i.id !== item.id
                                 ),
                               }));
@@ -349,104 +374,56 @@ export function SheetReceiptEditor({
               </CollapsibleContent>
             </Collapsible>
           </div>
-          <div className=" grid grid-rows-4 gap-2.5">
-            {/* Subtotal */}
+          <div className=" grid grid-rows-2 gap-2.5">
+            {/* Currency */}
             <div className="grid grid-cols-2">
-              <div className="flex items-center gap-1">
+              <div className={cn("flex items-center gap-1 text-slate-800")}>
                 <Label
-                  className={cn("font-semibold text-base self-center")}
-                  htmlFor="subtotal"
+                  className="font-semibold text-base self-center"
+                  htmlFor="currency"
                 >
-                  Subtotal{" "}
+                  Currency{" "}
                   <span className="text-xs font-medium">(optional)</span>
                 </Label>
               </div>
+
               <Input
-                id="subtotal"
+                id="currency"
                 placeholder="null"
-                type="number"
+                type="text"
                 className="w-full h-8"
                 onChange={(e) => {
-                  setEditedReceipt({
-                    ...editedReceipt,
-                    subtotal: parseFloat(e.target.value),
+                  setEditedInvoice({
+                    ...editedInvoice,
+                    currency: e.target.value,
                   });
                 }}
-                value={editedReceipt.subtotal ?? ""}
+                value={editedInvoice.currency ?? ""}
               />
             </div>
-            {/* Tax */}
+            {/* Total Amount Due */}
             <div className="grid grid-cols-2">
-              <div className="flex items-center gap-1">
+              <div className={cn("flex items-center gap-1 text-slate-800")}>
                 <Label
-                  className={cn("font-semibold text-base self-center")}
-                  htmlFor="tax"
+                  className="font-semibold text-base self-center"
+                  htmlFor="totalAmountDue"
                 >
-                  Tax <span className="text-xs font-medium">(optional)</span>
+                  Total Amount Due
                 </Label>
               </div>
 
               <Input
-                id="tax"
+                id="totalAmountDue"
                 placeholder="null"
                 type="number"
                 className="w-full h-8"
                 onChange={(e) => {
-                  setEditedReceipt({
-                    ...editedReceipt,
-                    tax: parseFloat(e.target.value),
+                  setEditedInvoice({
+                    ...editedInvoice,
+                    totalAmountDue: parseFloat(e.target.value),
                   });
                 }}
-                value={editedReceipt.tax ?? ""}
-              />
-            </div>
-            {/* Tip */}
-            <div className="grid grid-cols-2">
-              <div className="flex items-center gap-1">
-                <Label
-                  className={cn("font-semibold text-base self-center")}
-                  htmlFor="tip"
-                >
-                  Tip <span className="text-xs font-medium">(optional)</span>
-                </Label>
-              </div>
-
-              <Input
-                id="tip"
-                placeholder="null"
-                type="number"
-                className="w-full h-8"
-                onChange={(e) => {
-                  setEditedReceipt({
-                    ...editedReceipt,
-                    tip: parseFloat(e.target.value),
-                  });
-                }}
-                value={editedReceipt.tip ?? ""}
-              />
-            </div>
-            {/* Total */}
-            <div className="grid grid-cols-2">
-              <div className="flex items-center gap-1">
-                <Label
-                  className={cn("font-semibold text-base self-center")}
-                  htmlFor="total"
-                >
-                  Total
-                </Label>
-              </div>
-              <Input
-                id="total"
-                placeholder="null"
-                type="number"
-                className="w-full h-8"
-                onChange={(e) => {
-                  setEditedReceipt({
-                    ...editedReceipt,
-                    total: parseFloat(e.target.value),
-                  });
-                }}
-                value={editedReceipt.total}
+                value={editedInvoice.totalAmountDue}
               />
             </div>
           </div>
@@ -473,9 +450,9 @@ export function SheetReceiptEditor({
             setIsLoading(true);
             try {
               await minDelay(
-                updateStructuredData<ReceiptWithItems>(
-                  editedReceipt,
-                  "receipts"
+                updateStructuredData<InvoiceWithItems>(
+                  editedInvoice,
+                  "invoices"
                 ),
                 500
               );

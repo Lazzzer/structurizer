@@ -1,27 +1,32 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getUser } from "@/lib/session";
+import * as z from "zod";
+import { invoicesSchema } from "@/lib/data-categories";
+import { validateRequiredOrEmptyFields } from "@/lib/validations/request";
 
-export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-
   const { searchParams } = new URL(req.url);
-  const invoiceUUID = searchParams.get("uuid");
-  const userUUID = session?.user.id;
+  const invoiceId = searchParams.get("id");
 
-  if (!invoiceUUID) {
-    return NextResponse.json({ error: "No UUID provided" }, { status: 400 });
+  const schema = z.object({
+    id: z.string().uuid(),
+  });
+
+  const { success } = schema.safeParse({ id: invoiceId });
+
+  if (!success) {
+    return NextResponse.json({ error: "Invalid Invoice id" }, { status: 400 });
   }
 
   const invoice = await prisma.invoice.findFirst({
     where: {
-      id: invoiceUUID,
-      userId: userUUID,
+      id: invoiceId!,
+      userId: user.id,
     },
     include: {
       items: true,
@@ -29,82 +34,78 @@ export async function GET(req: Request) {
   });
 
   if (!invoice) {
-    return NextResponse.json({ error: "invoice not found" }, { status: 404 });
+    return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
   }
-
   return NextResponse.json(invoice, { status: 200 });
 }
 
-export async function PUT(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function PUT(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const userUUID = session?.user.id;
-
-  const jsonObj = await req.json();
-
-  if (!jsonObj) {
-    return NextResponse.json({ error: "No JSON provided" }, { status: 400 });
+  const data = await req.json();
+  if (!data) {
+    return NextResponse.json({ error: "No data provided" }, { status: 400 });
   }
 
   try {
-    await prisma.invoice.updateMany({
+    validateRequiredOrEmptyFields(data, [
+      "category",
+      "date",
+      "totalAmountDue",
+      "fromName",
+    ]);
+    await prisma.invoice.update({
       where: {
-        id: jsonObj.id,
-        userId: userUUID,
+        id: data.id,
+        userId: user.id,
       },
       data: {
-        invoiceNumber: jsonObj.invoiceNumber,
-        date: new Date(jsonObj.date).toISOString(),
-        category: jsonObj.category,
-        fromName: jsonObj.fromName,
-        fromAddress: jsonObj.fromAddress,
-        toName: jsonObj.toName,
-        toAddress: jsonObj.toAddress,
-        currency: jsonObj.currency,
-        totalAmountDue: parseFloat(jsonObj.totalAmountDue),
+        invoiceNumber: data.invoiceNumber,
+        date: new Date(data.date).toISOString(),
+        category: invoicesSchema.properties.category.enum.includes(
+          data.category
+        )
+          ? data.category
+          : null,
+        fromName: data.fromName,
+        fromAddress: data.fromAddress,
+        toName: data.toName,
+        toAddress: data.toAddress,
+        currency: data.currency,
+        totalAmountDue: data.totalAmountDue,
+        items: {
+          deleteMany: {
+            invoiceId: data.id,
+            NOT: data.items?.map((item: any) => ({
+              id: item.id,
+            })),
+          },
+          upsert: data.items?.map((item: any) => ({
+            where: {
+              id: item.id,
+              invoiceId: data.id,
+            },
+            create: {
+              description:
+                item.description.length > 0 ? item.description : null,
+              amount: item.amount,
+            },
+            update: {
+              description:
+                item.description.length > 0 ? item.description : null,
+              amount: item.amount,
+            },
+          })),
+        },
       },
     });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      { error: "invoice not created, bad data" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invoice not updated" }, { status: 422 });
   }
 
-  try {
-    await prisma.invoiceItem.deleteMany({
-      where: {
-        invoiceId: jsonObj.id,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      { error: "Could not delete invoice items" },
-      { status: 400 }
-    );
-  }
-
-  try {
-    await prisma.invoiceItem.createMany({
-      data: jsonObj.items?.map((item: any) => ({
-        invoiceId: jsonObj.id,
-        description: item.description,
-        amount: parseFloat(item.amount),
-      })),
-    });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      { error: "Could not create invoice items" },
-      { status: 400 }
-    );
-  }
-
-  return NextResponse.json("invoice updated", { status: 200 });
+  return NextResponse.json("Invoice updated", { status: 200 });
 }

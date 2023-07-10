@@ -18,7 +18,7 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { deleteExtraction, getObjectUrl } from "@/lib/client-requests";
-import { SheetReceiptEditor } from "@/components/sheet-receipt-editor";
+import { SheetReceiptEditor } from "./sheet-receipt-editor";
 import { Skeleton } from "./ui/skeleton";
 import { SheetError } from "./sheet-error";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
@@ -225,7 +225,7 @@ export function SheetReceipt({ id, children }: SheetReceiptProps) {
                       <AlertDialogAction
                         onClick={async () => {
                           setUrl(null);
-                          await deleteExtraction(receipt!.extractionId);
+                          await deleteExtraction(receipt.extractionId);
                           window.location.reload();
                         }}
                       >

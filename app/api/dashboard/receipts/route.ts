@@ -20,10 +20,7 @@ export async function GET(req: NextRequest) {
   const { success } = schema.safeParse({ id: receiptId });
 
   if (!success) {
-    return NextResponse.json(
-      { error: "Invalid Extraction id" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid Receipt id" }, { status: 400 });
   }
   const receipt = await prisma.receipt.findFirst({
     where: {
@@ -60,7 +57,7 @@ export async function PUT(req: NextRequest) {
         userId: user.id,
       },
       data: {
-        number: data.number ?? null,
+        number: data.number,
         category: receiptsSchema.properties.category.enum.includes(
           data.category
         )
@@ -69,9 +66,9 @@ export async function PUT(req: NextRequest) {
         date: new Date(data.date).toISOString(),
         time: data.time,
         from: data.from,
-        subtotal: data.subtotal ?? null,
-        tax: data.tax ?? null,
-        tip: data.tip ?? null,
+        subtotal: data.subtotal,
+        tax: data.tax,
+        tip: data.tip,
         total: data.total,
         items: {
           deleteMany: {
@@ -86,12 +83,14 @@ export async function PUT(req: NextRequest) {
               receiptId: data.id,
             },
             create: {
-              description: item.description,
+              description:
+                item.description.length > 0 ? item.description : null,
               quantity: item.quantity,
               amount: item.amount,
             },
             update: {
-              description: item.description,
+              description:
+                item.description.length > 0 ? item.description : null,
               quantity: item.quantity,
               amount: item.amount,
             },

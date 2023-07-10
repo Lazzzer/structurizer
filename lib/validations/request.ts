@@ -8,13 +8,14 @@ export function validateBody(
   return success;
 }
 
-export function validateRequiredOrEmptyFields(jsonObj: any, fields: string[]) {
+export function validateRequiredOrEmptyFields(data: any, fields: string[]) {
   return fields.every((field) => {
     if (
-      !jsonObj[field] ||
-      (typeof jsonObj[field] === "string" && jsonObj[field].trim() === "")
+      data[field] === null ||
+      (typeof data[field] === "string" && data[field].trim() === "")
     ) {
       throw new Error(`Field ${field} is required`);
     }
+    return true;
   });
 }

@@ -280,7 +280,16 @@ export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
           )}
 
           {row.original.invoice && (
-            <SheetInvoice uuid={row.original.invoice.id} />
+            <SheetInvoice id={row.original.invoice.id}>
+              <Button
+                variant={"outline"}
+                size={"sm"}
+                className="text-slate-900"
+              >
+                <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
+                Show
+              </Button>
+            </SheetInvoice>
           )}
           {row.original.cardStatement && (
             <SheetCardStatement uuid={row.original.cardStatement.id} />
