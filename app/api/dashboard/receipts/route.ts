@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUser } from "@/lib/session";
 import * as z from "zod";
+import { receiptsSchema } from "@/lib/data-categories";
+import { validateRequiredOrEmptyFields } from "@/lib/validations/request";
 
 export async function GET(req: NextRequest) {
   const user = await getUser();
@@ -45,68 +47,62 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const jsonObj = await req.json();
-
-  if (!jsonObj) {
-    return NextResponse.json({ error: "No JSON provided" }, { status: 400 });
+  const data = await req.json();
+  if (!data) {
+    return NextResponse.json({ error: "No data provided" }, { status: 400 });
   }
 
   try {
-    await prisma.receipt.updateMany({
+    validateRequiredOrEmptyFields(data, ["from", "category", "date", "total"]);
+    await prisma.receipt.update({
       where: {
-        id: jsonObj.id,
+        id: data.id,
         userId: user.id,
       },
       data: {
-        number: jsonObj.number,
-        category: jsonObj.category,
-        date: new Date(jsonObj.date).toISOString(),
-        time: jsonObj.time,
-        from: jsonObj.from,
-        subtotal: parseFloat(jsonObj.subtotal),
-        tax: parseFloat(jsonObj.tax),
-        tip: parseFloat(jsonObj.tip),
-        total: parseFloat(jsonObj.total),
+        number: data.number ?? null,
+        category: receiptsSchema.properties.category.enum.includes(
+          data.category
+        )
+          ? data.category
+          : null,
+        date: new Date(data.date).toISOString(),
+        time: data.time,
+        from: data.from,
+        subtotal: data.subtotal ?? null,
+        tax: data.tax ?? null,
+        tip: data.tip ?? null,
+        total: data.total,
+        items: {
+          deleteMany: {
+            receiptId: data.id,
+            NOT: data.items?.map((item: any) => ({
+              id: item.id,
+            })),
+          },
+          upsert: data.items?.map((item: any) => ({
+            where: {
+              id: item.id,
+              receiptId: data.id,
+            },
+            create: {
+              description: item.description,
+              quantity: item.quantity,
+              amount: item.amount,
+            },
+            update: {
+              description: item.description,
+              quantity: item.quantity,
+              amount: item.amount,
+            },
+          })),
+        },
       },
     });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      { error: "Receipt not created, bad data" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Receipt not updated" }, { status: 422 });
   }
 
-  try {
-    await prisma.receiptItem.deleteMany({
-      where: {
-        receiptId: jsonObj.id,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      { error: "Could not delete receipt items" },
-      { status: 400 }
-    );
-  }
-
-  try {
-    await prisma.receiptItem.createMany({
-      data: jsonObj.items?.map((item: any) => ({
-        receiptId: jsonObj.id,
-        description: item.description,
-        quantity: parseFloat(item.quantity),
-        amount: parseFloat(item.amount),
-      })),
-    });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      { error: "Could not create receipt items" },
-      { status: 400 }
-    );
-  }
-
-  return NextResponse.json("receipt updated", { status: 200 });
+  return NextResponse.json("Receipt updated", { status: 200 });
 }

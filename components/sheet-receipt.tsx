@@ -146,7 +146,7 @@ export function SheetReceipt({ id }: { id: string }) {
                   {receipt.from}
                 </p>
               </div>
-              {receipt.number !== null && (
+              {receipt.number && (
                 <div>
                   <h3 className="font-semibold text-slate-900">Number</h3>
                   <p className="text-slate-700 text-sm leading-snug text-end">
@@ -159,9 +159,7 @@ export function SheetReceipt({ id }: { id: string }) {
               <div>
                 <h3 className="font-semibold text-slate-900">Date Time</h3>
                 <p className="text-slate-700 text-sm leading-snug">
-                  <span>
-                    {receipt.time !== null ? `${receipt.time} - ` : ""}
-                  </span>
+                  <span>{receipt.time ? `${receipt.time} - ` : ""}</span>
                   <span>
                     {new Date(receipt.date).toLocaleDateString("en-GB")}
                   </span>
@@ -204,30 +202,24 @@ export function SheetReceipt({ id }: { id: string }) {
               </div>
             </div>
             <div className="mt-6">
-              {receipt.subtotal !== null && (
-                <div className="flex justify-between items-center">
-                  <h3 className="font-semibold text-slate-900">Subtotal</h3>
-                  <p className="text-slate-700 text-sm text-end">
-                    {receipt.subtotal.toFixed(2)}
-                  </p>
-                </div>
-              )}
-              {receipt.tax !== null && (
-                <div className="flex justify-between items-center mt-2">
-                  <h3 className="font-semibold text-slate-900">Tax</h3>
-                  <p className="text-slate-700 text-sm text-end">
-                    {receipt.tax.toFixed(2)}
-                  </p>
-                </div>
-              )}
-              {receipt.tip !== null && (
-                <div className="flex justify-between items-center mt-2">
-                  <h3 className="font-semibold text-slate-900">Tip</h3>
-                  <p className="text-slate-700 text-sm text-end">
-                    {receipt.tip === 0 ? "No Tip" : receipt.tip.toFixed(2)}
-                  </p>
-                </div>
-              )}
+              <div className="flex justify-between items-center">
+                <h3 className="font-semibold text-slate-900">Subtotal</h3>
+                <p className="text-slate-700 text-sm text-end">
+                  {receipt.subtotal?.toFixed(2) ?? "N/A"}
+                </p>
+              </div>
+              <div className="flex justify-between items-center mt-2">
+                <h3 className="font-semibold text-slate-900">Tax</h3>
+                <p className="text-slate-700 text-sm text-end">
+                  {receipt.tax?.toFixed(2) ?? "N/A"}
+                </p>
+              </div>
+              <div className="flex justify-between items-center mt-2">
+                <h3 className="font-semibold text-slate-900">Tip</h3>
+                <p className="text-slate-700 text-sm text-end">
+                  {receipt.tip?.toFixed(2) ?? "N/A"}
+                </p>
+              </div>
             </div>
             <div className="mt-6 grid grid-row-1 justify-items-end">
               <div>
@@ -249,8 +241,11 @@ export function SheetReceipt({ id }: { id: string }) {
               id="display-pdf"
               onCheckedChange={async () => {
                 if (!url) {
-                  const url = await getObjectUrl(receipt.extractionId);
-                  setUrl(url);
+                  try {
+                    setUrl(await getObjectUrl(receipt.extractionId));
+                  } catch (_) {
+                    console.log("Cannot display PDF");
+                  }
                 } else {
                   setUrl(null);
                 }

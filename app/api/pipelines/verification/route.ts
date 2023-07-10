@@ -7,7 +7,7 @@ import {
   validateBody,
   validateRequiredOrEmptyFields,
 } from "@/lib/validations/request";
-import { categories } from "@/lib/data-categories";
+import { categories, receiptsSchema } from "@/lib/data-categories";
 
 export async function PUT(req: NextRequest) {
   const user = await getUser();
@@ -57,7 +57,11 @@ export async function PUT(req: NextRequest) {
             extractionId: extraction.id,
             objectPath: extraction.objectPath,
             number: body.json.number,
-            category: body.json.category,
+            category: receiptsSchema.properties.category.enum.includes(
+              body.json.category
+            )
+              ? body.json.category
+              : null,
             date: new Date(body.json.date).toISOString(),
             time: body.json.time,
             from: body.json.from,

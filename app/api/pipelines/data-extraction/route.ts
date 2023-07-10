@@ -76,7 +76,7 @@ export async function PUT(req: Request) {
 
   const schema = z.object({
     id: z.string().uuid(),
-    json: z.string(), //TODO: Use zod to validate each category with json schema
+    json: z.string(),
     category: z.string().refine((category) => categories.has(category)),
   });
 

@@ -213,38 +213,38 @@ export const columns: ColumnDef<Receipt>[] = [
                 Show
               </Button>
             </SheetTrigger>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant={"outlineDestructive"} size={"iconSm"}>
-                  <Icons.trash strokeWidth={2} className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure? This will permanently delete the current
-                    receipt and remove its associated file and extraction. This
-                    action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={async () => {
-                      await deleteExtraction(row.original.extractionId);
-                      router.refresh();
-                    }}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
             <SheetContent className="w-[512px]">
               <SheetReceipt id={row.original.id} />
             </SheetContent>
           </Sheet>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant={"outlineDestructive"} size={"iconSm"}>
+                <Icons.trash strokeWidth={2} className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure? This will permanently delete the current receipt
+                  and remove its associated file and extraction. This action
+                  cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    await deleteExtraction(row.original.extractionId);
+                    router.refresh();
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       );
     },

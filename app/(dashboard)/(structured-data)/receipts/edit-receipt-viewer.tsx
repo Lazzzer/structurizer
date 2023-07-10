@@ -49,6 +49,7 @@ export function EditReceiptViewer({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [areItemsOpen, setAreItemsOpen] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -61,7 +62,7 @@ export function EditReceiptViewer({
             <div className="grid grid-cols-2">
               <div className="flex items-center gap-1">
                 <Label
-                  className={cn("font-semibold text-base self-center")}
+                  className="font-semibold text-base self-center"
                   htmlFor="from"
                 >
                   From
@@ -85,7 +86,7 @@ export function EditReceiptViewer({
             <div className="grid grid-cols-2">
               <div className="flex items-center gap-1">
                 <Label
-                  className={cn("font-semibold text-base self-center")}
+                  className="font-semibold text-base self-center"
                   htmlFor="category"
                 >
                   Category
@@ -116,7 +117,7 @@ export function EditReceiptViewer({
             <div className="grid grid-cols-2">
               <div className="flex items-center gap-1">
                 <Label
-                  className={cn("font-semibold text-base self-center")}
+                  className="font-semibold text-base self-center"
                   htmlFor="number"
                 >
                   Number <span className="text-xs font-medium">(optional)</span>
@@ -140,7 +141,7 @@ export function EditReceiptViewer({
             <div className="grid grid-cols-2">
               <div className="flex items-center gap-1">
                 <Label
-                  className={cn("font-semibold text-base self-center")}
+                  className="font-semibold text-base self-center"
                   htmlFor="date"
                 >
                   Date
@@ -149,7 +150,7 @@ export function EditReceiptViewer({
                   /
                 </span>
                 <Label
-                  className={cn("font-semibold text-base self-center")}
+                  className="font-semibold text-base self-center"
                   htmlFor="time"
                 >
                   Time <span className="text-xs font-medium">(optional)</span>
@@ -164,10 +165,12 @@ export function EditReceiptViewer({
                   onChange={(e) => {
                     setEditedReceipt({
                       ...editedReceipt,
-                      date: e.target.value as unknown as Date,
+                      date: e.target.valueAsDate ?? new Date(),
                     });
                   }}
-                  value={editedReceipt.date as unknown as string}
+                  value={
+                    new Date(editedReceipt.date).toISOString().split("T")[0]
+                  }
                 />
                 <Input
                   id="time"
@@ -180,7 +183,7 @@ export function EditReceiptViewer({
                       time: e.target.value,
                     });
                   }}
-                  value={editedReceipt.time as unknown as string}
+                  value={editedReceipt.time ?? ""}
                 />
               </div>
             </div>
@@ -189,11 +192,7 @@ export function EditReceiptViewer({
           <div className="my-4">
             <Collapsible open={areItemsOpen} onOpenChange={setAreItemsOpen}>
               <div className="flex items-center justify-between">
-                <h4
-                  className={cn(
-                    "font-semibold flex items-center text-slate-900"
-                  )}
-                >
+                <h4 className="font-semibold flex items-center text-slate-900">
                   Items
                   <Icons.brackets
                     strokeWidth={3}
@@ -233,79 +232,90 @@ export function EditReceiptViewer({
               <CollapsibleContent className="mt-1.5">
                 <motion.div layout className="w-full space-y-2">
                   <AnimatePresence>
-                    {editedReceipt.items.map((item: any, index: number) => (
+                    {editedReceipt.items.map((item: ReceiptItem) => (
                       <motion.div
-                        key={index}
+                        layout="size"
+                        key={item.id}
                         initial={false}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{
                           opacity: 0,
                           y: -10,
-                          transition: { duration: 0.2 },
+                          transition: { duration: 0.3 },
                         }}
-                        layoutId={`item-${index}`}
+                        layoutId={item.id}
                         className=" rounded-md border border-slate-200 px-4 py-3"
                       >
-                        <Label htmlFor={`item-${index}-description`}>
+                        <Label htmlFor={`item-${item.id}-description`}>
                           Description
                         </Label>
                         <Input
                           type="text"
                           placeholder="null"
-                          id={`item-${index}-description`}
+                          id={`item-${item.id}}-description`}
                           className="w-full h-8"
                           onChange={(e) => {
-                            const newItems = [...editedReceipt.items];
-                            newItems[index].description = e.target.value;
-                            setEditedReceipt({
-                              ...editedReceipt,
-                              items: newItems,
-                            });
+                            setEditedReceipt((prevReceipt) => ({
+                              ...prevReceipt,
+                              items: prevReceipt.items.map((i) =>
+                                i.id === item.id
+                                  ? { ...i, description: e.target.value }
+                                  : i
+                              ),
+                            }));
                           }}
                           value={item.description}
                         />
                         <div className="flex w-full mt-2 justify-between">
                           <div className="w-1/2 flex gap-1.5">
                             <div className="w-1/2">
-                              <Label htmlFor={`item-${index}-quantity`}>
+                              <Label htmlFor={`item-${item.id}}-quantity`}>
                                 Quantity
                               </Label>
                               <Input
-                                id={`item-${index}-quantity`}
+                                id={`item-${item.id}}-quantity`}
                                 placeholder="null"
                                 type="number"
                                 className="w-full h-8"
                                 onChange={(e) => {
-                                  const newItems = [...editedReceipt.items];
-                                  newItems[index].quantity = parseFloat(
-                                    e.target.value
-                                  );
-                                  setEditedReceipt({
-                                    ...editedReceipt,
-                                    items: newItems,
-                                  });
+                                  setEditedReceipt((prevReceipt) => ({
+                                    ...prevReceipt,
+                                    items: prevReceipt.items.map((i) =>
+                                      i.id === item.id
+                                        ? {
+                                            ...i,
+                                            quantity: parseFloat(
+                                              e.target.value
+                                            ),
+                                          }
+                                        : i
+                                    ),
+                                  }));
                                 }}
                                 value={item.quantity}
                               />
                             </div>
                             <div className="w-1/2">
-                              <Label htmlFor={`item-${index}-amount`}>
+                              <Label htmlFor={`item-${item.id}}-amount`}>
                                 Amount
                               </Label>
                               <Input
-                                id={`item-${index}-amount`}
+                                id={`item-${item.id}}-amount`}
                                 placeholder="null"
                                 type="number"
                                 className="w-full h-8"
                                 onChange={(e) => {
-                                  const newItems = [...editedReceipt.items];
-                                  newItems[index].amount = parseFloat(
-                                    e.target.value
-                                  );
-                                  setEditedReceipt({
-                                    ...editedReceipt,
-                                    items: newItems,
-                                  });
+                                  setEditedReceipt((prevReceipt) => ({
+                                    ...prevReceipt,
+                                    items: prevReceipt.items.map((i) =>
+                                      i.id === item.id
+                                        ? {
+                                            ...i,
+                                            amount: parseFloat(e.target.value),
+                                          }
+                                        : i
+                                    ),
+                                  }));
                                 }}
                                 value={item.amount}
                               />
@@ -316,12 +326,12 @@ export function EditReceiptViewer({
                             size="sm"
                             className="w-9 p-0 self-end"
                             onClick={() => {
-                              const newItems = [...editedReceipt.items];
-                              newItems.splice(index, 1);
-                              setEditedReceipt({
-                                ...editedReceipt,
-                                items: newItems,
-                              });
+                              setEditedReceipt((prevReceipt) => ({
+                                ...prevReceipt,
+                                items: prevReceipt.items.filter(
+                                  (i) => i.id !== item.id
+                                ),
+                              }));
                             }}
                           >
                             <Icons.trash
@@ -441,6 +451,9 @@ export function EditReceiptViewer({
           </div>
         </div>
       </div>
+      {errorMessage && (
+        <p className="text-red-500 text-sm mt-1 text-end">{errorMessage}</p>
+      )}
       <div className="mt-2 flex gap-2 justify-end">
         <Button
           variant={"secondary"}
@@ -455,13 +468,21 @@ export function EditReceiptViewer({
           className="w-40"
           disabled={isLoading}
           onClick={async () => {
+            setErrorMessage(null);
             setIsLoading(true);
-            await minDelay(
-              updateStructuredData<ReceiptWithItems>(editedReceipt, "receipts"),
-              500
-            );
+            try {
+              await minDelay(
+                updateStructuredData<ReceiptWithItems>(
+                  editedReceipt,
+                  "receipts"
+                ),
+                500
+              );
+              setIsEditing(false);
+            } catch (e: any) {
+              setErrorMessage(e.message);
+            }
             setIsLoading(false);
-            setIsEditing(false);
             router.refresh();
           }}
         >

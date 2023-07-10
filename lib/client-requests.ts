@@ -8,9 +8,15 @@ export async function deleteExtraction(id: string) {
 }
 
 export async function getObjectUrl(extractionId: string) {
+  //TODO: uuid replace by id
   const res = await fetch(`/api/signed-url?uuid=${extractionId}`, {
     method: "GET",
   });
+
+  if (!res.ok) {
+    throw new Error("Something went wrong. Please try again later.");
+  }
+
   const { url } = await res.json();
   return url as string;
 }
@@ -20,8 +26,14 @@ export async function updateStructuredData<T>(data: T, endpoint: string) {
     method: "PUT",
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Network response was not ok");
+  if (!res.ok) {
+    if (res.status === 422) {
+      throw new Error(
+        "Please make sure all the field values are valid and try again."
+      );
+    }
+    throw new Error("Something went wrong. Please try again later.");
+  }
   const fetchedData = await res.json();
-
   return fetchedData as T;
 }
