@@ -2,13 +2,13 @@ import * as z from "zod";
 
 export const preferencesSchema = z
   .object({
-    classificationModel: z.string({
+    classificationModel: z.enum(["gpt-3.5-turbo", "gpt-3.5-turbo-16k"], {
       required_error: "Please select a model.",
     }),
-    extractionModel: z.string({
+    extractionModel: z.enum(["gpt-3.5-turbo", "gpt-3.5-turbo-16k"], {
       required_error: "Please select a model.",
     }),
-    analysisModel: z.string({
+    analysisModel: z.enum(["gpt-3.5-turbo-16k", "gpt-4"], {
       required_error: "Please select a model.",
     }),
     enableReceiptsOneShot: z.boolean(),

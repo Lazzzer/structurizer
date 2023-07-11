@@ -1,8 +1,14 @@
 import { TopMainContent } from "@/components/top-main-content";
 import { DataTable } from "@/components/ui/data-table";
 import { Status } from "@prisma/client";
-import { getExtractions } from "@/lib/requests";
+import { getExtractions } from "@/lib/server-requests";
 import { Extraction, columns, categories } from "./columns";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Verification",
+  description: "Pipeline where the user can verify the extracted data",
+};
 
 export default async function VerificationPage() {
   const extractions = await getExtractions(Status.TO_VERIFY);

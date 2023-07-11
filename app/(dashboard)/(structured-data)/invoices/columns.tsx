@@ -1,5 +1,6 @@
 "use client";
 
+import { Icons } from "@/components/icons";
 import { SheetInvoice } from "@/components/sheet-invoice";
 import {
   AlertDialog,
@@ -16,19 +17,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { deleteExtraction } from "@/lib/client-requests";
 
 import { cn, mapCurrency } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, PanelRightOpen, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export type Invoice = {
@@ -116,7 +108,7 @@ export const columns: ColumnDef<Invoice>[] = [
         (category) => category.value === row.original.category
       );
       return (
-        <div className="w-24">
+        <div className="w-16">
           <Badge
             className={cn("py-1", category?.textClass, category?.borderClass)}
             variant={"outline"}
@@ -139,7 +131,7 @@ export const columns: ColumnDef<Invoice>[] = [
     cell: ({ row }) => (
       <div
         title={row.getValue("fromName")}
-        className="w-40 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
+        className="w-28 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
         {row.original.fromName}
       </div>
@@ -159,12 +151,12 @@ export const columns: ColumnDef<Invoice>[] = [
   {
     accessorKey: "totalAmountDue",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Total Due" />
+      <DataTableColumnHeader column={column} title="Total" />
     ),
     cell: ({ row }) => (
       <div
         title={row.getValue("totalAmountDue")}
-        className="w-32 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
+        className="w-28 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
         <span>{mapCurrency(row.original.currency ?? "")} </span>
         {row.original.totalAmountDue.toFixed(2)}
@@ -181,7 +173,7 @@ export const columns: ColumnDef<Invoice>[] = [
     cell: ({ row }) => (
       <div
         title={row.getValue("filename")}
-        className="w-32 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
+        className="w-28 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
         {row.getValue("filename")}
       </div>
@@ -204,41 +196,22 @@ export const columns: ColumnDef<Invoice>[] = [
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const router = useRouter();
       return (
-        <Sheet>
+        <div className="flex gap-1.5 justify-end">
+          <SheetInvoice id={row.original.id}>
+            <Button variant={"outline"} size={"sm"} className="text-slate-900">
+              <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
+              Show
+            </Button>
+          </SheetInvoice>
           <AlertDialog>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="flex h-8 w-8 p-0 data-[state=open]:bg-slate-100"
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem className="cursor-pointer">
-                  <SheetTrigger asChild>
-                    <div className="flex items-center w-full">
-                      <PanelRightOpen className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                      Show
-                    </div>
-                  </SheetTrigger>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
-                  <AlertDialogTrigger asChild>
-                    <div className="flex items-center w-full">
-                      <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                      Delete
-                    </div>
-                  </AlertDialogTrigger>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <AlertDialogTrigger asChild>
+              <Button variant={"outlineDestructive"} size={"iconSm"}>
+                <Icons.trash strokeWidth={2} className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete Invoice</AlertDialogTitle>
+                <AlertDialogTitle>Delete Extraction</AlertDialogTitle>
                 <AlertDialogDescription>
                   Are you sure? This will permanently delete the current invoice
                   and remove its associated file and extraction. This action
@@ -258,10 +231,7 @@ export const columns: ColumnDef<Invoice>[] = [
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <SheetContent className="w-[512px]">
-            <SheetInvoice uuid={row.original.id} />
-          </SheetContent>
-        </Sheet>
+        </div>
       );
     },
   },

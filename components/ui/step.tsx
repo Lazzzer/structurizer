@@ -1,17 +1,14 @@
 "use client";
+
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import type { StepType } from "types";
 
-export type StepType = {
-  number: number;
-  title: string;
-};
-
-type StepProps = {
+interface StepProps {
   step: StepType;
   current: number;
   status: string;
-};
+}
 
 export function Step({ step, current, status }: StepProps) {
   if (current > step.number) {
@@ -19,7 +16,6 @@ export function Step({ step, current, status }: StepProps) {
   } else if (current < step.number) status = "inactive";
 
   let initialAnimation: boolean | string = false;
-
   if (step.number === current - 1 && step.number !== 1) {
     initialAnimation = false;
   }
@@ -73,10 +69,10 @@ export function Step({ step, current, status }: StepProps) {
   );
 }
 
-function CheckIcon() {
+function CheckIcon({ className }: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
-      className="h-6 w-6 text-slate-600"
+      className={cn("h-6 w-6 text-slate-600", className)}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"

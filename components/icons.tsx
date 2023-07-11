@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import {
   Braces,
@@ -19,6 +21,10 @@ import {
   Trash,
   PlusCircle,
   Inbox,
+  AlertCircle,
+  PieChart,
+  RefreshCw,
+  PanelRightOpen,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -43,6 +49,10 @@ export const Icons = {
   trash: Trash,
   plusCircle: PlusCircle,
   empty: Inbox,
+  alertCircle: AlertCircle,
+  pieChart: PieChart,
+  refresh: RefreshCw,
+  sheetOpen: PanelRightOpen,
   receipt: ({ ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +125,52 @@ export const Icons = {
   ),
 };
 
-export function SparklesIcon({ className }: { className?: string }) {
+export function CircleCheckIcon({ ...props }: LucideProps) {
+  return (
+    <svg
+      className={props.className}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <motion.path
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: 1,
+          transition: {
+            duration: 0.4,
+            delay: 0.7,
+            ease: "easeOut",
+            type: "tween",
+          },
+        }}
+        d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+      />
+      <motion.path
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{
+          pathLength: 1,
+          opacity: 1,
+          transition: {
+            duration: 0.4,
+            delay: 0.8,
+            ease: "easeOut",
+            type: "tween",
+          },
+        }}
+        d="m9 12 2 2 4-4"
+      />
+    </svg>
+  );
+}
+
+export function SparklesIcon({ className }: React.SVGProps<SVGSVGElement>) {
   return (
     <motion.svg
       viewBox="0 0 28 28"

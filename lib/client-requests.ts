@@ -1,37 +1,38 @@
-export async function deleteExtraction(uuid: string) {
-  const res = await fetch(`/api/delete/extraction?uuid=${uuid}`, {
+export async function deleteExtraction(id: string) {
+  const res = await fetch(`/api/dashboard/extraction?id=${id}`, {
     method: "DELETE",
   });
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
+  if (!res.ok) {
+    console.error(res.statusText, res.status);
+  }
 }
 
-export async function updateReceipt(receipt: any) {
-  const res = await fetch(`/api/receipts/update`, {
-    method: "PUT",
-    body: JSON.stringify(receipt),
+export async function getObjectUrl(extractionId: string) {
+  const res = await fetch(`/api/signed-url?id=${extractionId}`, {
+    method: "GET",
   });
-  console.log(res.statusText, res.status);
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
+
+  if (!res.ok) {
+    throw new Error("Something went wrong. Please try again later.");
+  }
+
+  const { url } = await res.json();
+  return url as string;
 }
 
-export async function updateInvoice(invoice: any) {
-  const res = await fetch(`/api/invoices/update`, {
+export async function updateStructuredData<T>(data: T, endpoint: string) {
+  const res = await fetch(`/api/dashboard/${endpoint}`, {
     method: "PUT",
-    body: JSON.stringify(invoice),
+    body: JSON.stringify(data),
   });
-  console.log(res.statusText, res.status);
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
-}
-
-export async function updateCardStatement(cardStatement: any) {
-  const res = await fetch(`/api/card-statements/update`, {
-    method: "PUT",
-    body: JSON.stringify(cardStatement),
-  });
-  console.log(res.statusText, res.status);
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
+  if (!res.ok) {
+    if (res.status === 422) {
+      throw new Error(
+        "Please make sure all the field values are valid and try again."
+      );
+    }
+    throw new Error("Something went wrong. Please try again later.");
+  }
+  const fetchedData = await res.json();
+  return fetchedData as T;
 }

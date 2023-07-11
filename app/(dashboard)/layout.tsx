@@ -1,9 +1,9 @@
-import { BottomSection } from "@/components/bottom-section";
-import { NavItem, NavSection, NavSectionItems } from "@/components/nav-section";
-import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { getUser } from "@/lib/session";
+import { BottomSection } from "./components/bottom-section";
+import { NavSection } from "./components/nav-section";
+import type { NavItem, NavSectionItems } from "types";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -69,16 +69,23 @@ const bottomItems: NavItem[] = [
 export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  const session = await getServerSession(authOptions);
+  const user = await getUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
   return (
     <div className="min-h-screen flex">
       {/* Sidenav */}
       <div className="fixed inset-y-0 z-50 flex w-72 flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r-2 border-slate-200 bg-white pl-8 pr-6 pb-4">
           {/* Logo */}
-          <Link href="/dashboard">
+          <Link
+            href="/dashboard"
+            prefetch={false}
+            className="mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 focus-visible:rounded-sm"
+          >
             <Image
-              className="flex mt-8 shrink-0"
+              className="flex shrink-0"
               priority
               src="/logo.svg"
               width={205}
@@ -94,7 +101,7 @@ export default async function DashboardLayout({
             <div className="flex flex-1 flex-col gap-y-7">
               <BottomSection
                 className="mt-auto"
-                username={session?.user?.username ?? "Default"}
+                username={user.name}
                 items={bottomItems}
               />
             </div>

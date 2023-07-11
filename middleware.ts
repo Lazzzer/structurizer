@@ -11,7 +11,7 @@ export default withAuth(
     });
     const isAuth = !!session;
 
-    if (path.startsWith("/login")) {
+    if (path.startsWith("/login") || path.startsWith("/register")) {
       if (isAuth) {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
@@ -44,5 +44,6 @@ export const config = {
     "/settings/:path*",
     "/help/:path*",
     "/login",
+    "/register",
   ],
 };

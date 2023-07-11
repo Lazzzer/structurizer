@@ -1,5 +1,6 @@
 "use client";
 
+import { Icons } from "@/components/icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,23 +13,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
+import { SheetReceipt } from "@/components/sheet-receipt";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { deleteExtraction } from "@/lib/client-requests";
 import { cn } from "@/lib/utils";
 import { Status } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Trash, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { SheetInvoice } from "@/components/sheet-invoice";
+import { SheetCardStatement } from "@/components/sheet-card-statement";
 
 export type Extraction = {
   id: string;
@@ -37,6 +33,15 @@ export type Extraction = {
   status: Status;
   createdAt: Date;
   updatedAt: Date;
+  receipt?: {
+    id: string;
+  };
+  invoice?: {
+    id: string;
+  };
+  cardStatement?: {
+    id: string;
+  };
 };
 
 export const categories = [
@@ -71,6 +76,7 @@ export const statuses = [
 
 export const columns: ColumnDef<Extraction>[] = [
   {
+    id: "id",
     accessorKey: "id",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ID" />
@@ -78,12 +84,11 @@ export const columns: ColumnDef<Extraction>[] = [
     cell: ({ row }) => (
       <div
         title={row.getValue("id")}
-        className="w-36 2xl:w-full truncate overflow-hidden text-slate-900"
+        className="w-32 2xl:w-full truncate overflow-hidden text-slate-900"
       >
         {row.getValue("id")}
       </div>
     ),
-    enableSorting: false,
   },
   {
     id: "category",
@@ -96,7 +101,7 @@ export const columns: ColumnDef<Extraction>[] = [
         (category) => category.value === row.original.category
       );
       return (
-        <div className="w-36">
+        <div className="w-32">
           {(category?.value && (
             <Badge
               className="py-1 border-slate-900 text-slate-900"
@@ -139,7 +144,7 @@ export const columns: ColumnDef<Extraction>[] = [
         (status) => status.value === row.original.status
       );
       return (
-        <div className="w-36">
+        <div className="w-32">
           <Badge
             className={cn("py-1", status?.textClass, status?.borderClass)}
             variant={"outline"}
@@ -159,7 +164,7 @@ export const columns: ColumnDef<Extraction>[] = [
       <DataTableColumnHeader column={column} title="Creation Date" />
     ),
     cell: ({ row }) => (
-      <div className="w-36 text-slate-900">
+      <div className="w-32 text-slate-900">
         {row.getValue<Date>("createdAt").toLocaleDateString("en-GB")}
       </div>
     ),
@@ -170,14 +175,14 @@ export const columns: ColumnDef<Extraction>[] = [
       <DataTableColumnHeader column={column} title="Last Updated" />
     ),
     cell: ({ row }) => (
-      <div className="w-36 text-slate-900">
+      <div className="w-32 text-slate-900">
         {row.getValue<Date>("updatedAt").toLocaleDateString("en-GB")}
       </div>
     ),
   },
   {
     id: "actions",
-    cell: ({ table, row }) => {
+    cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const router = useRouter();
       const status = statuses.find(
@@ -185,68 +190,74 @@ export const columns: ColumnDef<Extraction>[] = [
       );
 
       return (
-        <AlertDialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex h-8 w-8 p-0 data-[state=open]:bg-slate-100"
-              >
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
+        <div className="flex gap-1.5 justify-end">
+          <Link
+            className={cn(
+              buttonVariants({
+                variant: "outline",
+                size: "sm",
+              }),
+              "text-slate-900"
+            )}
+            href={`${status?.link}${row.original.id}`}
+          >
+            <Icons.refresh strokeWidth={2} className="h-4 w-4 mr-1.5" />
+            Process
+          </Link>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant={"outlineDestructive"} size={"iconSm"}>
+                <Icons.trash strokeWidth={2} className="h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuItem>
-                <Link
-                  href={`${status?.link}${row.original.id}`}
-                  className="flex items-center w-full"
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Delete Extraction in Pipeline
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure? This will permanently delete the current
+                  extraction and remove the associated file. This action cannot
+                  be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    await deleteExtraction(row.original.id);
+                    router.refresh();
+                  }}
                 >
-                  <RefreshCw className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                  Process
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <AlertDialogTrigger asChild>
-                  <div className="flex items-center w-full">
-                    <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                    Delete
-                  </div>
-                </AlertDialogTrigger>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Extraction in Pipeline</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure? This will permanently delete the current
-                extraction and remove the associated file. This action cannot be
-                undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={async () => {
-                  await deleteExtraction(row.original.id);
-                  router.refresh();
-                }}
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       );
     },
   },
 ];
 
 export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
+  {
+    accessorKey: "id",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="ID" />
+    ),
+    cell: ({ row }) => (
+      <div
+        title={row.getValue("id")}
+        className="w-full truncate overflow-hidden text-slate-900"
+      >
+        {row.getValue("id")}
+      </div>
+    ),
+  },
   ...columns.filter(
-    (column) => column.id !== "status" && column.id !== "actions"
+    (column) =>
+      column.id !== "status" && column.id !== "actions" && column.id !== "id"
   ),
   {
     id: "actions",
@@ -254,50 +265,73 @@ export const columnsWithoutStatus: ColumnDef<Extraction>[] = [
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const router = useRouter();
       return (
-        <AlertDialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+        <div className="flex gap-1.5 justify-end">
+          {row.original.receipt && (
+            <SheetReceipt id={row.original.receipt.id}>
               <Button
-                variant="ghost"
-                className="flex h-8 w-8 p-0 data-[state=open]:bg-slate-100"
+                variant={"outline"}
+                size={"sm"}
+                className="text-slate-900"
               >
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
+                <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
+                Show
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuItem className="cursor-pointer">
-                <AlertDialogTrigger asChild>
-                  <div className="flex items-center w-full">
-                    <Trash className="mr-2 h-3.5 w-3.5 text-slate-900/70" />
-                    Delete
-                  </div>
-                </AlertDialogTrigger>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Processed Extraction</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure? This will permanently delete the current
-                extraction and remove the associated file and extracted data.
-                This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={async () => {
-                  await deleteExtraction(row.original.id);
-                  router.refresh();
-                }}
+            </SheetReceipt>
+          )}
+
+          {row.original.invoice && (
+            <SheetInvoice id={row.original.invoice.id}>
+              <Button
+                variant={"outline"}
+                size={"sm"}
+                className="text-slate-900"
               >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
+                Show
+              </Button>
+            </SheetInvoice>
+          )}
+          {row.original.cardStatement && (
+            <SheetCardStatement id={row.original.cardStatement.id}>
+              <Button
+                variant={"outline"}
+                size={"sm"}
+                className="text-slate-900"
+              >
+                <Icons.sheetOpen strokeWidth={2} className="h-4 w-4 mr-1" />
+                Show
+              </Button>
+            </SheetCardStatement>
+          )}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant={"outlineDestructive"} size={"iconSm"}>
+                <Icons.trash strokeWidth={2} className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Processed Extraction</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure? This will permanently delete the current
+                  extraction, remove the associated file and its extracted data.
+                  This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    await deleteExtraction(row.original.id);
+                    router.refresh();
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       );
     },
   },

@@ -1,4 +1,3 @@
-// These styles apply to every route in the application
 import "@/styles/globals.css";
 import { Metadata } from "next";
 import localFont from "next/font/local";
@@ -19,11 +18,27 @@ const calSans = localFont({
 
 const title = "Structurizer";
 const description =
-  "Structurizer is a web application that helps you exctract structured data from unstructured text.";
+  "Structurizer is a web application that helps you extract structured data from PDF files.";
 
 export const metadata: Metadata = {
-  title,
-  description,
+  title: {
+    default: title,
+    template: `%s - ${title}`,
+  },
+  description: description,
+  keywords: ["LLM", "langchain", "Next.js", "React"],
+  authors: [
+    {
+      name: "lazzzer",
+      url: "https://github.com/Lazzzer",
+    },
+  ],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: `/site.webmanifest`,
 };
 
 export default function RootLayout({

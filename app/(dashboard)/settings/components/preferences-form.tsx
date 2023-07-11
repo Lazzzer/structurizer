@@ -38,16 +38,22 @@ interface PreferencesFormProps {
   extractions: Extraction[];
 }
 
+type FormData = z.infer<typeof preferencesSchema>;
+
 export function PreferencesForm({
   preferences,
   extractions,
 }: PreferencesFormProps) {
-  const form = useForm<z.infer<typeof preferencesSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
-      classificationModel: preferences.classificationModel,
-      extractionModel: preferences.extractionModel,
-      analysisModel: preferences.analysisModel,
+      classificationModel: preferences.classificationModel as
+        | "gpt-3.5-turbo"
+        | "gpt-3.5-turbo-16k",
+      extractionModel: preferences.extractionModel as
+        | "gpt-3.5-turbo"
+        | "gpt-3.5-turbo-16k",
+      analysisModel: preferences.analysisModel as "gpt-4" | "gpt-3.5-turbo-16k",
       enableReceiptsOneShot: !!preferences.receiptExampleExtractionId,
       enableInvoicesOneShot: !!preferences.invoiceExampleExtractionId,
       enableCardStatementsOneShot:
@@ -59,16 +65,16 @@ export function PreferencesForm({
     },
   });
 
-  const [isUpdating, setUpdating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  async function onSubmit(values: z.infer<typeof preferencesSchema>) {
-    setUpdating(true);
-    const request = fetch("/api/account", {
+  async function onSubmit(values: FormData) {
+    setIsLoading(true);
+    const request = fetch("/api/dashboard/settings", {
       method: "PUT",
       body: JSON.stringify(values),
     });
     const res = await minDelay(request, 500);
-    setUpdating(false);
+    setIsLoading(false);
 
     if (!res.ok) {
       toast({
@@ -92,8 +98,6 @@ export function PreferencesForm({
         ),
       });
     }
-
-    console.log(values);
   }
 
   return (
@@ -194,13 +198,13 @@ export function PreferencesForm({
               </FormItem>
             )}
           />
-          {/* Analysis */}
+          {/* Verification */}
           <FormField
             control={form.control}
             name="analysisModel"
             render={({ field }) => (
               <FormItem className="mt-4">
-                <FormLabel>Analysis</FormLabel>
+                <FormLabel>Verification</FormLabel>
                 <Select
                   onValueChange={field.onChange as (value: string) => void}
                   defaultValue={field.value}
@@ -222,7 +226,7 @@ export function PreferencesForm({
                 </Select>
                 <FormDescription className="text-slate-500 text-xs w-3/5">
                   <Balancer>
-                    The model analyzes the extracted data to find errors by
+                    The model verifies the extracted data to find errors by
                     comparing it to the schema and the original text. This task
                     should be handled by the most capable models to ensure the
                     best results and reduce inaccuracies.
@@ -358,8 +362,8 @@ export function PreferencesForm({
               />
             )}
           </div>
-          <Button disabled={isUpdating} className="w-44 mt-8" type="submit">
-            {isUpdating && (
+          <Button disabled={isLoading} className="w-44 mt-8" type="submit">
+            {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
             Save Preferences

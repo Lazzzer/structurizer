@@ -1,32 +1,32 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getUser } from "@/lib/session";
+import * as z from "zod";
+import { generateSignedUrl } from "@/lib/s3";
 
-export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const { searchParams } = new URL(req.url);
-  const extractionUUID = searchParams.get("uuid");
-  const userUUID = session?.user.id;
+  const extractionId = searchParams.get("id");
 
-  if (!extractionUUID) {
-    return NextResponse.json(
-      { error: "No extraction UUID provided" },
-      { status: 400 }
-    );
+  const schema = z.object({
+    id: z.string().uuid(),
+  });
+
+  const { success } = schema.safeParse({ id: extractionId });
+
+  if (!success) {
+    return NextResponse.json({ error: "Invalid Receipt id" }, { status: 400 });
   }
 
   const extraction = await prisma.extraction.findFirst({
     where: {
-      id: extractionUUID,
-      userId: userUUID,
+      id: extractionId!,
+      userId: user.id,
     },
   });
 
@@ -37,22 +37,7 @@ export async function GET(req: Request) {
     );
   }
 
-  const s3 = new S3Client({
-    region: process.env.S3_REGION,
-    endpoint: process.env.S3_ENDPOINT,
-    credentials: {
-      accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
-      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
-    },
-    forcePathStyle: true,
-  });
-
-  const command = new GetObjectCommand({
-    Bucket: process.env.S3_BUCKET as string,
-    Key: extraction.objectPath,
-  });
-
-  const url = await getSignedUrl(s3, command, { expiresIn: 60 });
+  const url = await generateSignedUrl(extraction.objectPath);
 
   return NextResponse.json(
     {
