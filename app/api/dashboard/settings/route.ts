@@ -82,7 +82,6 @@ export async function DELETE() {
     });
     return NextResponse.json("User deleted", { status: 200 });
   } catch (e) {
-    console.log(e);
     return NextResponse.json(
       { error: "User could not be deleted" },
       { status: 500 }

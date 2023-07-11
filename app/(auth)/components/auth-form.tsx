@@ -64,7 +64,7 @@ export function AuthForm({ className, type }: AuthFormProps) {
 
     const res = await minDelay(
       signIn("credentials", {
-        name: data.name.toLowerCase(),
+        name: data.name,
         password: data.password,
         redirect: false,
       }),

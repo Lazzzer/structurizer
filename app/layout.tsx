@@ -1,4 +1,3 @@
-// These styles apply to every route in the application
 import "@/styles/globals.css";
 import { Metadata } from "next";
 import localFont from "next/font/local";

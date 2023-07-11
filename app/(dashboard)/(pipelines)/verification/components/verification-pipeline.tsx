@@ -144,7 +144,7 @@ export default function VerificationPipeline({
               }}
               transition={{ duration: 0.3 }}
               style={{
-                height: "80%",
+                height: "90%",
               }}
               className="w-full flex justify-center items-start gap-x-10 -mt-12"
             >
@@ -153,7 +153,7 @@ export default function VerificationPipeline({
                   height: "calc(100% - 48px)",
                 }}
                 defaultValue="pdf"
-                className="w-[37%] 2xl:w-[30%]"
+                className="w-[38%] 2xl:w-[30%]"
               >
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="pdf">PDF View</TabsTrigger>
@@ -175,7 +175,7 @@ export default function VerificationPipeline({
                 >
                   <div
                     style={{
-                      maxHeight: "53vh", // preformatted elements really don't like height: 100%, so here we are...
+                      maxHeight: "60vh",
                     }}
                     className="w-full text-sm text-slate-700 whitespace-break-spaces overflow-auto"
                   >

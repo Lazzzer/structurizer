@@ -99,7 +99,6 @@ export async function PUT(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: "Receipt not updated" }, { status: 422 });
   }
 

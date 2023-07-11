@@ -95,10 +95,10 @@ export function SheetCardStatement({ id, children }: SheetCardStatementProps) {
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-slate-900">
+                    <h3 className="text-xl font-semibold text-slate-900 text-end">
                       Date
                     </h3>
-                    <p className="text-slate-700 leading-snug">
+                    <p className="text-slate-700 leading-snug text-end">
                       <span>
                         {new Date(cardStatement.date).toLocaleDateString(
                           "en-GB"

@@ -3,6 +3,7 @@
 import { Icons } from "@/components/icons";
 import { TopMainContent } from "@/components/top-main-content";
 import { Button } from "@/components/ui/button";
+
 export default function Error({ reset }: { reset: () => void }) {
   return (
     <div className="flex flex-col h-full">

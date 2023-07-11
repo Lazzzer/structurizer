@@ -121,7 +121,6 @@ export async function PUT(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       { error: "Card Statement not updated" },
       { status: 422 }

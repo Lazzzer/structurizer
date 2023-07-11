@@ -103,7 +103,6 @@ export async function PUT(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: "Invoice not updated" }, { status: 422 });
   }
 

@@ -98,8 +98,6 @@ export function PreferencesForm({
         ),
       });
     }
-
-    console.log(values);
   }
 
   return (

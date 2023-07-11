@@ -27,9 +27,12 @@ export const authOptions: NextAuthOptions = {
         if (!name || !password) {
           throw new Error("Missing username or password");
         }
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
           where: {
-            name,
+            name: {
+              equals: name.trim(),
+              mode: "insensitive",
+            },
           },
         });
         if (!user || !(await compare(password, user.password))) {
@@ -41,7 +44,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token }) {
-      const dbUser = await prisma.user.findFirst({
+      const dbUser = await prisma.user.findUnique({
         where: {
           id: token.sub,
         },

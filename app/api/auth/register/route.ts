@@ -13,9 +13,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
-  const exists = await prisma.user.findUnique({
+  const exists = await prisma.user.findFirst({
     where: {
-      name: body.name,
+      name: {
+        equals: body.name.trim(),
+        mode: "insensitive",
+      },
     },
   });
 
