@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import * as z from "zod";
 import { categories } from "@/lib/data-categories";
 import { validateBody } from "@/lib/validations/request";
+import { getStructuredData } from "@/lib/server-requests";
 
 export async function POST(req: NextRequest) {
   const user = await getUser();
@@ -29,35 +30,11 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  async function fetchData(refine = false) {
-    const response = await fetch(
-      `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/schema`,
-      {
-        method: "POST",
-        headers: {
-          "X-API-Key": process.env.X_API_KEY as string,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: {
-            apiKey: process.env.OPENAI_API_KEY as string,
-            name: preferences?.extractionModel ?? "gpt-3.5-turbo-16k",
-          },
-          jsonSchema: JSON.stringify(categories.get(body.category)!.schema),
-          text: body.text,
-          refine,
-        }),
-      }
-    );
-
-    return response;
-  }
-
-  let res = await fetchData();
+  let res = await getStructuredData(preferences!, body.text, body.category);
 
   // Using the refine method if the first result wasn't a parsable JSON
   if (res.status === 422) {
-    res = await fetchData(true);
+    res = await getStructuredData(preferences!, body.text, body.category, true);
   }
 
   if (!res.ok) {

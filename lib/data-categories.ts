@@ -84,17 +84,7 @@ export const receiptsSchema: JsonSchema = {
       minimum: 0,
     },
   },
-  required: [
-    "number",
-    "category",
-    "date",
-    "time",
-    "from",
-    "items",
-    "subtotal",
-    "tax",
-    "total",
-  ],
+  required: ["category", "date", "from", "items", "total"],
 };
 
 export const invoicesSchema: JsonSchema = {
@@ -150,7 +140,6 @@ export const invoicesSchema: JsonSchema = {
             "Full address of the recipient. If there is a newline, make the separation with a comma. It could be empty.",
         },
       },
-      required: ["name"],
     },
     items: {
       type: "array",
@@ -175,7 +164,7 @@ export const invoicesSchema: JsonSchema = {
     currency: {
       type: "string",
       description:
-        "Currency of the invoice. It must be a valid ISO 4217 currency code.",
+        "Currency of the invoice. If present, it must be a valid ISO 4217 currency code.",
     },
     total_amount_due: {
       type: "number",
@@ -183,16 +172,7 @@ export const invoicesSchema: JsonSchema = {
       minimum: 0,
     },
   },
-  required: [
-    "invoice_number",
-    "category",
-    "date",
-    "from",
-    "to",
-    "items",
-    "currency",
-    "total_amount_due",
-  ],
+  required: ["category", "date", "from", "to", "items", "total_amount_due"],
 };
 
 export const cardStatementsSchema: JsonSchema = {
@@ -216,7 +196,7 @@ export const cardStatementsSchema: JsonSchema = {
             "Full address of the credit card issuer. If there is a newline, make the separation with a comma.",
         },
       },
-      required: ["name", "address"],
+      required: ["name"],
     },
     recipient: {
       type: "object",
@@ -233,7 +213,6 @@ export const cardStatementsSchema: JsonSchema = {
             "Full address of the recipient. If there is a newline, make the separation with a comma.",
         },
       },
-      required: ["name", "address"],
     },
     date: {
       type: "string",
@@ -260,7 +239,6 @@ export const cardStatementsSchema: JsonSchema = {
             "Number of the credit card. Must be in the format XXXX XXXX XXXX XXXX.",
         },
       },
-      required: ["name", "holder", "number"],
     },
     transactions: {
       type: "array",
@@ -301,7 +279,7 @@ export const cardStatementsSchema: JsonSchema = {
     currency: {
       type: "string",
       description:
-        "Currency of the credit card statement. It must be a valid ISO 4217 currency code.",
+        "Currency of the credit card statement. If present, it must be a valid ISO 4217 currency code.",
     },
     total_amount_due: {
       type: "number",
@@ -315,7 +293,6 @@ export const cardStatementsSchema: JsonSchema = {
     "date",
     "credit_card",
     "transactions",
-    "currency",
     "total_amount_due",
   ],
 };

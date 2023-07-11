@@ -31,7 +31,7 @@ export async function uploadFile(
   };
 
   const signedUrl = await getSignedUrl(s3, new PutObjectCommand(s3Params), {
-    expiresIn: 60,
+    expiresIn: 60 * 15,
   });
 
   const res = await fetch(signedUrl, {

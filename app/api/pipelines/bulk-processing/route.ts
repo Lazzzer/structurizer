@@ -3,7 +3,11 @@ import { validateBody } from "@/lib/validations/request";
 import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
 import prisma from "@/lib/prisma";
-import { getObjectUrl, getText } from "@/lib/server-requests";
+import {
+  getObjectUrl,
+  getStructuredData,
+  getText,
+} from "@/lib/server-requests";
 import { Status } from "@prisma/client";
 import { categories } from "@/lib/data-categories";
 
@@ -103,25 +107,10 @@ export async function POST(req: NextRequest) {
       throw new Error("No classification found");
     }
 
-    const dataExtractionResponse = await fetch(
-      `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/schema`,
-      {
-        method: "POST",
-        headers: {
-          "X-API-Key": process.env.X_API_KEY as string,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: {
-            apiKey: process.env.OPENAI_API_KEY as string,
-            name: preferences?.extractionModel ?? "gpt-3.5-turbo-16k",
-          },
-          jsonSchema: JSON.stringify(
-            categories.get(classification.classification)!.schema
-          ),
-          text: extraction.text,
-        }),
-      }
+    const dataExtractionResponse = await getStructuredData(
+      preferences!,
+      extraction.text!,
+      classification.classification
     );
 
     if (!dataExtractionResponse.ok) {

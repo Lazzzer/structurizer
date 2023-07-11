@@ -3,6 +3,7 @@ import { getUser } from "@/lib/session";
 import { validateBody } from "@/lib/validations/request";
 import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
+import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   const user = await getUser();
@@ -20,6 +21,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
+  const preferences = await prisma.preferences.findFirst({
+    where: {
+      userId: user.id,
+    },
+  });
+
   const res = await fetch(
     `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/classification`,
     {
@@ -31,7 +38,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: {
           apiKey: process.env.OPENAI_API_KEY as string,
-          name: "gpt-3.5-turbo-16k",
+          name: preferences!.classificationModel ?? "gpt-3.5-turbo-16k",
         },
         categories: Array.from(categories.keys()),
         text: body.text,
