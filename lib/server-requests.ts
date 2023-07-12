@@ -96,6 +96,23 @@ export async function getExtractions(status: Status) {
   return extractions;
 }
 
+export async function fetchFromService(
+  method: "schema" | "example" | "generic-output",
+  data: object
+) {
+  return await fetch(
+    `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/${method}`,
+    {
+      method: "POST",
+      headers: {
+        "X-API-Key": process.env.X_API_KEY as string,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
+}
+
 export async function getStructuredData(
   preferences: Preferences,
   text: string,
@@ -116,7 +133,7 @@ export async function getStructuredData(
       exampleInput: exampleExtraction.text,
       exampleOutput: JSON.stringify(exampleExtraction.json),
     };
-    return await fetchStructuredData("example", data);
+    return await fetchFromService("example", data);
   } else {
     const data = {
       model: {
@@ -127,7 +144,7 @@ export async function getStructuredData(
       jsonSchema: JSON.stringify(categories.get(category)!.schema),
       refine,
     };
-    return await fetchStructuredData("schema", data);
+    return await fetchFromService("schema", data);
   }
 }
 
@@ -169,18 +186,4 @@ async function getExampleExtraction(
     exampleExtraction = null;
   }
   return exampleExtraction;
-}
-
-async function fetchStructuredData(method: "schema" | "example", data: object) {
-  return await fetch(
-    `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/${method}`,
-    {
-      method: "POST",
-      headers: {
-        "X-API-Key": process.env.X_API_KEY as string,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
 }
