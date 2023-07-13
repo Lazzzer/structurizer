@@ -86,6 +86,7 @@ export function ExtractionStep({
 
   return (
     <motion.div
+      key={"extraction-step"}
       layout="position"
       initial="hidden"
       animate="show"
@@ -96,9 +97,14 @@ export function ExtractionStep({
       viewport={{ once: true }}
       className="-mt-12"
     >
-      <div className="border rounded-lg border-slate-200 px-5 py-3 drop-shadow-custom bg-white">
+      <div
+        className={cn(
+          "relative bg-white border rounded-lg border-slate-200 px-5 py-3 shadow-sm glow transition-all ease-in-out before:rounded-lg after:rounded-lg",
+          status === "active" && "glow-active border-0"
+        )}
+      >
         {/* Step Text */}
-        <div className="text-slate-700 text-xl  font-medium">
+        <div className="text-slate-700 text-xl font-medium">
           <span className="font-bold">Step 2 : </span>
           <span>Structured Data Extraction</span>
           {status === "active" && (
@@ -119,7 +125,7 @@ export function ExtractionStep({
         </div>
         {/* Step Description */}
         {status === "active" && (
-          <p className="text-slate-400 text-xs mt-1 mb-2 w-80 leading-snug">
+          <p className="text-slate-500 text-xs mt-1 mb-2 w-80 leading-snug">
             <span>
               <Balancer>
                 The data is being structured as
@@ -137,7 +143,7 @@ export function ExtractionStep({
           </p>
         )}
         {status === "complete" && (
-          <div className="text-slate-400 text-xs mt-1 mb-2 w-80 leading-snug">
+          <div className="text-slate-500 text-xs mt-1 mb-2 w-80 leading-snug">
             <p>
               <Balancer>
                 The data has been correctly extracted and structured.
@@ -155,7 +161,7 @@ export function ExtractionStep({
           </div>
         )}
         {status === "failed" && (
-          <div className="text-slate-400 text-xs mt-1 mb-2 w-80 leading-snug">
+          <div className="text-slate-500 text-xs mt-1 mb-2 w-80 leading-snug">
             <p>
               <Balancer>The data could not be extracted.</Balancer>
             </p>
