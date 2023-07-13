@@ -25,6 +25,8 @@ import {
   PieChart,
   RefreshCw,
   PanelRightOpen,
+  User,
+  Send,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -53,6 +55,8 @@ export const Icons = {
   pieChart: PieChart,
   refresh: RefreshCw,
   sheetOpen: PanelRightOpen,
+  user: User,
+  send: Send,
   receipt: ({ ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

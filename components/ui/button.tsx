@@ -22,6 +22,8 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         link: "text-slate-900 underline-offset-4 hover:underline dark:text-slate-50",
+        glowing:
+          "relative gradient hover:glowButton focus-visible:glowButton bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-50 disabled:opacity-1 disabled:text-slate-400 focus-visible:ring-sky-300",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -29,6 +31,7 @@ const buttonVariants = cva(
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
         iconSm: "h-9 w-9",
+        glowing: "h-[38px] px-4 py-2",
       },
     },
     defaultVariants: {

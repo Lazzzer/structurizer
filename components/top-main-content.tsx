@@ -40,15 +40,15 @@ export function TopMainContent({
       {step !== undefined && <MultiSteps />}
 
       {displayUploadButton && (
-        <div className="flex gap-2 mb-6 mr-8 absolute right-0 bottom-0">
+        <div className="flex items-center gap-2 mb-6 mr-8 absolute right-0 bottom-0">
           <AskDialog />
-          <Link className={cn(buttonVariants(), "")} href={"/upload"}>
+          <Link className={cn(buttonVariants())} href={"/upload"}>
             <Icons.upload
               width={18}
               height={18}
               className="mr-2 stroke-slate-100"
             />
-            Upload Files
+            Upload
           </Link>
         </div>
       )}
