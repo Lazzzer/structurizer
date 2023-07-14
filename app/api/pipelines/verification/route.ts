@@ -8,6 +8,9 @@ import {
   validateRequiredOrEmptyFields,
 } from "@/lib/validations/request";
 import {
+  CARD_STATEMENTS,
+  INVOICES,
+  RECEIPTS,
   cardStatementsSchema,
   categories,
   invoicesSchema,
@@ -50,7 +53,7 @@ export async function PUT(req: NextRequest) {
 
   try {
     switch (extraction.category) {
-      case "receipts": {
+      case RECEIPTS: {
         validateRequiredOrEmptyFields(body.json, [
           "from",
           "category",
@@ -93,7 +96,7 @@ export async function PUT(req: NextRequest) {
         });
         break;
       }
-      case "invoices": {
+      case INVOICES: {
         validateRequiredOrEmptyFields(body.json, [
           "category",
           "date",
@@ -131,7 +134,7 @@ export async function PUT(req: NextRequest) {
         });
         break;
       }
-      case "credit card statements": {
+      case CARD_STATEMENTS: {
         validateRequiredOrEmptyFields(body.json, ["total_amount_due", "date"]);
         validateRequiredOrEmptyFields(body.json.issuer, ["name"]);
         await prisma.cardStatement.create({

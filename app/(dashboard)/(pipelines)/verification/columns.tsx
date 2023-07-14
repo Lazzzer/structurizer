@@ -17,6 +17,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 
 import { deleteExtraction } from "@/lib/client-requests";
+import { CARD_STATEMENTS, INVOICES, RECEIPTS } from "@/lib/data-categories";
 import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
@@ -24,16 +25,16 @@ import { useRouter } from "next/navigation";
 
 export type Extraction = {
   id: string;
-  category: "receipts" | "invoices" | "credit card statements";
+  category: typeof RECEIPTS | typeof INVOICES | typeof CARD_STATEMENTS;
   filename: string;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export const categories = [
-  { value: "receipts", label: "Receipts" },
-  { value: "invoices", label: "Invoices" },
-  { value: "credit card statements", label: "Card Statements" },
+  { value: RECEIPTS, label: "Receipts" },
+  { value: INVOICES, label: "Invoices" },
+  { value: CARD_STATEMENTS, label: "Card Statements" },
 ];
 
 export const columns: ColumnDef<Extraction>[] = [

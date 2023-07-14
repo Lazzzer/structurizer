@@ -320,6 +320,10 @@ export const cardStatementsSchema: JsonSchema = {
   ],
 };
 
+export const RECEIPTS = "receipts" as const;
+export const INVOICES = "invoices" as const;
+export const CARD_STATEMENTS = "credit card statements" as const;
+
 export interface Category {
   value: string;
   name: string;
@@ -328,25 +332,25 @@ export interface Category {
 
 export const categories = new Map<string, Category>([
   [
-    "receipts",
+    RECEIPTS,
     {
-      value: "receipts",
+      value: RECEIPTS,
       name: "Receipt",
       schema: receiptsSchema,
     },
   ],
   [
-    "invoices",
+    INVOICES,
     {
-      value: "invoices",
+      value: CARD_STATEMENTS,
       name: "Invoice",
       schema: invoicesSchema,
     },
   ],
   [
-    "credit card statements",
+    CARD_STATEMENTS,
     {
-      value: "credit card statements",
+      value: CARD_STATEMENTS,
       name: "Card Statement",
       schema: cardStatementsSchema,
     },

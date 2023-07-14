@@ -25,10 +25,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SheetInvoice } from "@/components/sheet-invoice";
 import { SheetCardStatement } from "@/components/sheet-card-statement";
+import { CARD_STATEMENTS, INVOICES, RECEIPTS } from "@/lib/data-categories";
 
 export type Extraction = {
   id: string;
-  category: "receipts" | "invoices" | "credit card statements" | null;
+  category: typeof RECEIPTS | typeof INVOICES | typeof CARD_STATEMENTS | null;
   filename: string;
   status: Status;
   createdAt: Date;
@@ -45,9 +46,9 @@ export type Extraction = {
 };
 
 export const categories = [
-  { value: "receipts", label: "Receipts" },
-  { value: "invoices", label: "Invoices" },
-  { value: "credit card statements", label: "Card Statements" },
+  { value: RECEIPTS, label: "Receipts" },
+  { value: INVOICES, label: "Invoices" },
+  { value: CARD_STATEMENTS, label: "Card Statements" },
 ];
 
 export const statuses = [

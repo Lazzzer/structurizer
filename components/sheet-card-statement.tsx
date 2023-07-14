@@ -68,6 +68,7 @@ export function SheetCardStatement({ id, children }: SheetCardStatementProps) {
       onOpenChange={(open) => {
         if (!open) {
           setUrl(null);
+          setIsEditing(false);
         }
       }}
     >

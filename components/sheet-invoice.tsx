@@ -68,6 +68,7 @@ export function SheetInvoice({ id, children }: SheetInvoiceProps) {
       onOpenChange={(open) => {
         if (!open) {
           setUrl(null);
+          setIsEditing(false);
         }
       }}
     >

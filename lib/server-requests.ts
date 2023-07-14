@@ -2,7 +2,12 @@ import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { Preferences, Status } from "@prisma/client";
 import { getUser } from "./session";
-import { categories } from "./data-categories";
+import {
+  CARD_STATEMENTS,
+  INVOICES,
+  RECEIPTS,
+  categories,
+} from "./data-categories";
 
 export async function getPreferences() {
   const user = await getUser();
@@ -160,7 +165,7 @@ async function getExampleExtraction(
   let exampleExtraction;
   try {
     switch (category) {
-      case "invoices":
+      case INVOICES:
         exampleExtraction = preferences.invoiceExampleExtractionId
           ? await getExtraction(
               preferences.invoiceExampleExtractionId,
@@ -168,7 +173,7 @@ async function getExampleExtraction(
             )
           : null;
         break;
-      case "receipts":
+      case RECEIPTS:
         exampleExtraction = preferences.receiptExampleExtractionId
           ? await getExtraction(
               preferences.receiptExampleExtractionId,
@@ -176,7 +181,7 @@ async function getExampleExtraction(
             )
           : null;
         break;
-      case "credit card statements":
+      case CARD_STATEMENTS:
         exampleExtraction = preferences.cardStatementExampleExtractionId
           ? await getExtraction(
               preferences.cardStatementExampleExtractionId,

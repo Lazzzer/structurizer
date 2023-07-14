@@ -32,6 +32,7 @@ import { ExtractionSelect } from "./extraction-select";
 import { Icons } from "@/components/icons";
 import { useState } from "react";
 import { minDelay } from "@/lib/utils";
+import { CARD_STATEMENTS, INVOICES, RECEIPTS } from "@/lib/data-categories";
 
 interface PreferencesFormProps {
   preferences: Preferences;
@@ -275,7 +276,7 @@ export function PreferencesForm({
                       aria-readonly
                       disabled={
                         extractions.filter(
-                          (extraction) => extraction.category === "receipts"
+                          (extraction) => extraction.category === RECEIPTS
                         ).length === 0
                       }
                     />
@@ -289,7 +290,7 @@ export function PreferencesForm({
                 form={form}
                 name="receiptExampleExtractionId"
                 extractions={extractions.filter(
-                  (extraction) => extraction.category === "receipts"
+                  (extraction) => extraction.category === RECEIPTS
                 )}
               />
             )}
@@ -307,7 +308,7 @@ export function PreferencesForm({
                       aria-readonly
                       disabled={
                         extractions.filter(
-                          (extraction) => extraction.category === "invoices"
+                          (extraction) => extraction.category === INVOICES
                         ).length === 0
                       }
                     />
@@ -323,7 +324,7 @@ export function PreferencesForm({
                 form={form}
                 name="invoiceExampleExtractionId"
                 extractions={extractions.filter(
-                  (extraction) => extraction.category === "invoices"
+                  (extraction) => extraction.category === INVOICES
                 )}
               />
             )}
@@ -342,7 +343,7 @@ export function PreferencesForm({
                       disabled={
                         extractions.filter(
                           (extraction) =>
-                            extraction.category === "credit card statements"
+                            extraction.category === CARD_STATEMENTS
                         ).length === 0
                       }
                     />
@@ -356,8 +357,7 @@ export function PreferencesForm({
                 form={form}
                 name="cardStatementExampleExtractionId"
                 extractions={extractions.filter(
-                  (extraction) =>
-                    extraction.category === "credit card statements"
+                  (extraction) => extraction.category === CARD_STATEMENTS
                 )}
               />
             )}

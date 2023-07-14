@@ -67,6 +67,7 @@ export function SheetReceipt({ id, children }: SheetReceiptProps) {
       onOpenChange={(open) => {
         if (!open) {
           setUrl(null);
+          setIsEditing(false);
         }
       }}
     >
