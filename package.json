@@ -47,14 +47,18 @@
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.45.1",
+    "react-markdown": "^8.0.7",
+    "react-textarea-autosize": "^8.5.2",
     "react-wrap-balancer": "^1.0.0",
     "recharts": "^2.7.2",
+    "remark-gfm": "^3.0.1",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6",
     "zod": "^3.21.4",
     "zustand": "^4.3.8"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
     "@types/bcrypt": "^5.0.0",
     "autoprefixer": "^10.4.4",
     "eslint": "^8.43.0",

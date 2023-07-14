@@ -57,3 +57,9 @@ export async function minDelay<T>(promise: Promise<T>, ms: number) {
 
   return p;
 }
+
+export function stringifyWithBigInt(value: string) {
+  return JSON.stringify(value, (_, value) =>
+    typeof value === "bigint" ? value.toString() : value
+  );
+}

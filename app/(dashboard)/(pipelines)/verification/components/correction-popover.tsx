@@ -43,7 +43,7 @@ export function CorrectionPopover({
       >
         <div className="mx-1 mt-1 mb-2">
           <h3 className="font-semibold ml-2 mb-0.5 text-slate-800">Issue</h3>
-          <p className="text-slate-600 px-2.5 py-1.5 text-sm bg-slate-50 rounded leading-snug text-justify">
+          <p className="text-slate-600 px-2.5 py-1.5 text-xs bg-slate-50 rounded leading-normal text-justify">
             {correction.issue}
           </p>
         </div>
@@ -51,7 +51,7 @@ export function CorrectionPopover({
           <h3 className="font-semibold ml-2 mb-0.5 text-slate-800">
             Description
           </h3>
-          <p className="text-slate-600 px-2.5 py-1.5 text-sm bg-slate-50 rounded leading-snug text-justify">
+          <p className="text-slate-600 px-2.5 py-1.5 text-xs bg-slate-50 rounded leading-normal text-justify">
             {correction.description}
           </p>
         </div>
@@ -59,7 +59,7 @@ export function CorrectionPopover({
           <h3 className="font-semibold ml-2 mb-0.5 text-slate-800">
             Suggestion
           </h3>
-          <p className="text-slate-600 px-2.5 py-1.5 text-sm bg-slate-50 rounded leading-snug text-justify">
+          <p className="text-slate-600 px-2.5 py-1.5 text-xs bg-slate-50 rounded leading-normal text-justify">
             {correction.suggestion}
           </p>
         </div>

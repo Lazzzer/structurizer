@@ -1,3 +1,79 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .glowButton:before,
+  .glowButton:after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, #fd95ff, #80bbf8, #00e1f0, #fd95ff);
+    background-size: 600% 600%;
+    width: calc(100% + 2px);
+    height: calc(100% + 2px);
+    z-index: -1;
+    animation: animate 3s ease alternate infinite;
+  }
+
+  .glowButton:after {
+    filter: blur(15px);
+  }
+
+  .gradient:before,
+  .gradient:after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, #fd95ff, #80bbf8, #00e1f0, #fd95ff);
+    background-size: 300% 300%;
+    width: calc(100% + 2px);
+    height: calc(100% + 2px);
+    z-index: -1;
+  }
+
+  .glow {
+    transition: border-color 0.5s ease-in-out;
+  }
+
+  .glow:before,
+  .glow:after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, #fd95ff, #80bbf8, #00e1f0, #fd95ff);
+    background-size: 600% 600%;
+    width: calc(100% + 2px);
+    height: calc(100% + 2px);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  .glow.glow-active:before,
+  .glow.glow-active:after {
+    opacity: 1;
+    animation: animate 3s ease alternate infinite;
+  }
+
+  .glow:after {
+    filter: blur(15px);
+  }
+  @keyframes animate {
+    0% {
+      background-position: 0 50%;
+      background-size: 600% 600%;
+      opacity: 1;
+    }
+    50% {
+      background-position: 100% 50%;
+      background-size: 500% 500%;
+      opacity: 0.8;
+    }
+    100% {
+      background-position: 0% 50%;
+      background-size: 600% 600%;
+      opacity: 1;
+    }
+  }
+}

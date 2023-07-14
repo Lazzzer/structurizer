@@ -93,8 +93,13 @@ export function ClassificationStep({
       viewport={{ once: true }}
     >
       <motion.div
+        key="classification-step-content"
         layout="position"
-        className="border rounded-lg border-slate-200 px-5 py-3 bg-white"
+        className={cn(
+          "relative bg-white border rounded-lg border-slate-200 px-5 py-3 transition-all ease-in-out before:rounded-lg after:rounded-lg glow",
+          status === "active" && "glow-active border-0",
+          status === "confirmed" && "-z-10"
+        )}
       >
         {/* Step Text */}
         <div
@@ -123,7 +128,7 @@ export function ClassificationStep({
         </div>
         {/* Step Description */}
         {status === "active" && (
-          <p className="text-slate-400 text-xs mt-1 mb-2 w-64 leading-snug">
+          <p className="text-slate-500 text-xs mt-1 mb-2 w-64 leading-snug">
             <span>
               <Balancer>
                 The text is being classified. This might take a few seconds.
@@ -132,7 +137,7 @@ export function ClassificationStep({
           </p>
         )}
         {status === "complete" && (
-          <div className="text-slate-400 text-xs mt-1 mb-2 w-64 leading-snug">
+          <div className="text-slate-500 text-xs mt-1 mb-2 w-64 leading-snug">
             <p>
               <Balancer>
                 Text classified as
@@ -167,7 +172,7 @@ export function ClassificationStep({
           </div>
         )}
         {status === "failed" && (
-          <div className="text-slate-400 text-xs mt-1 mb-2 w-64 leading-snug">
+          <div className="text-slate-500 text-xs mt-1 mb-2 w-64 leading-snug">
             <p></p>
             <Balancer>The text could not be classified.</Balancer>
             <p>Please specify the correct category.</p>

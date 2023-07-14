@@ -14,6 +14,8 @@ import {
 import { useStepStore } from "@/lib/store";
 import { ObjectViewer } from "./object-viewer";
 import { Correction } from "types";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface VerificationPipelineProps {
   id: string;
@@ -87,7 +89,7 @@ export default function VerificationPipeline({
 
   return (
     <div className="m-8 flex flex-col flex-grow">
-      <div className="flex flex-1 flex-col justify-center">
+      <div className="flex flex-1 flex-col justify-center -mt-2">
         <AnimatePresence mode="wait">
           {isCompleted && (
             <motion.div
@@ -207,7 +209,7 @@ export default function VerificationPipeline({
                               height={18}
                               className="mr-2"
                             />
-                            Show Verification Breakdown
+                            Show Verification Report
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
@@ -220,28 +222,27 @@ export default function VerificationPipeline({
                           <div className="flex items-center gap-2  mb-3">
                             <Icons.sparkles width={24} height={24} />
                             <h1 className="text-lg font-bold text-slate-800">
-                              Verification Breakdown
+                              Verification Report
                             </h1>
                           </div>
-
-                          <p className="w-full text-sm whitespace-pre-wrap text-justify text-slate-600 mb-2 leading-snug">
+                          <ReactMarkdown
+                            className="w-full overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600"
+                            remarkPlugins={[remarkGfm]}
+                          >
                             {verificationResult.textAnalysis}
-                          </p>
+                          </ReactMarkdown>
                         </PopoverContent>
                       </Popover>
                     </motion.div>
                   )}
                 </div>
 
-                <div className="w-full h-full rounded-lg p-[1px] overflow-hidden relative">
-                  <span
-                    className={cn(
-                      isVerifying
-                        ? "bg-white bg-[conic-gradient(from_90deg_at_50%_50%,#FD95FF_0%,#80BBF8_50%,#00E1F0_100%)]"
-                        : "bg-slate-200",
-                      "absolute inset-[-1000%] animate-[spin_2s_linear_infinite]"
-                    )}
-                  />
+                <div
+                  className={cn(
+                    "transition-all duration-500 ease-in-out w-full h-full rounded-lg relative border border-slate-200 before:rounded-lg after:rounded-lg glow",
+                    isVerifying && "border-transparent glow-active"
+                  )}
+                >
                   <ObjectViewer
                     category={category}
                     json={verifiedJson}
@@ -259,7 +260,7 @@ export default function VerificationPipeline({
                   />
                 </div>
 
-                <div className="flex w-screen justify-end gap-2 items-center absolute -bottom-12 right-0">
+                <div className="flex w-screen justify-end gap-2 items-center absolute -bottom-14 right-0">
                   {errorMessage !== "" && (
                     <div className="text-sm text-red-500">{errorMessage}</div>
                   )}
@@ -275,8 +276,9 @@ export default function VerificationPipeline({
                   {verificationResult === null && (
                     <Button
                       disabled={isVerifying}
-                      variant={"secondary"}
-                      className="relative inline-flex w-36 overflow-hidden bg-slate-100 p-[1.5px] group"
+                      variant={"glowing"}
+                      size={"glowing"}
+                      className="rounded after:rounded-md before:rounded-md hover:after:rounded-md hover:before:rounded-md"
                       onClick={async () => {
                         setIsVerifying(true);
                         setErrorMessage("");
@@ -291,23 +293,20 @@ export default function VerificationPipeline({
                         setIsVerifying(false);
                       }}
                     >
-                      <span className="absolute inset-[-1000%] group-hover:animate-[spin_2s_linear_infinite] bg-slate-100 group-hover:bg-[conic-gradient(from_90deg_at_50%_50%,#FD95FF_0%,#80BBF8_50%,#00E1F0_100%)]" />
-                      <span className="inline-flex h-full w-full items-center rounded justify-center bg-slate-100 px-3 py-1 backdrop-blur-3xl">
-                        {(isVerifying && (
-                          <Icons.spinner
-                            width={18}
-                            height={18}
-                            className="mr-2 animate-spin inline-block"
-                          />
-                        )) || (
-                          <Icons.sparkles
-                            width={18}
-                            height={18}
-                            className="inline-block mr-2"
-                          />
-                        )}
-                        Verify
-                      </span>
+                      {(isVerifying && (
+                        <Icons.spinner
+                          width={18}
+                          height={18}
+                          className="mr-2 animate-spin inline-block"
+                        />
+                      )) || (
+                        <Icons.sparkles
+                          width={18}
+                          height={18}
+                          className="inline-block mr-2"
+                        />
+                      )}
+                      Verify
                     </Button>
                   )}
                   <Button

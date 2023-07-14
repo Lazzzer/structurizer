@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Icons } from "./icons";
 import MultiSteps from "./multi-steps";
 import { useStepStore } from "@/lib/store";
+import { AskDialog } from "./ask-dialog";
 
 interface TopMainContentProps {
   title: string;
@@ -39,20 +40,17 @@ export function TopMainContent({
       {step !== undefined && <MultiSteps />}
 
       {displayUploadButton && (
-        <Link
-          className={cn(
-            buttonVariants(),
-            "mb-6 mr-8 absolute right-0 bottom-0"
-          )}
-          href={"/upload"}
-        >
-          <Icons.upload
-            width={18}
-            height={18}
-            className="mr-2 stroke-slate-100"
-          />
-          Upload Files
-        </Link>
+        <div className="flex items-center gap-2 mb-6 mr-8 absolute right-0 bottom-0">
+          <AskDialog />
+          <Link className={cn(buttonVariants())} href={"/upload"}>
+            <Icons.upload
+              width={18}
+              height={18}
+              className="mr-2 stroke-slate-100"
+            />
+            Upload
+          </Link>
+        </div>
       )}
     </div>
   );

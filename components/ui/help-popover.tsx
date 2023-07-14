@@ -12,12 +12,16 @@ interface HelpPopoverProps {
   children: React.ReactNode;
   iconClassName?: string;
   contentClassName?: string;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "end" | "center";
 }
 
 export function HelpPopover({
   children,
   iconClassName,
   contentClassName,
+  side = "right",
+  align = "center",
 }: HelpPopoverProps) {
   return (
     <Popover>
@@ -30,6 +34,8 @@ export function HelpPopover({
         />
       </PopoverTrigger>
       <PopoverContent
+        side={side}
+        align={align}
         className={cn(
           "w-80 text-slate-800 max-h-56 h-full overflow-scroll",
           contentClassName
