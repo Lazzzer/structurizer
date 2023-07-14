@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
   if (!res.ok) {
     return NextResponse.json(
-      { error: "Failed to create natural langage answer" },
+      { error: "Failed to create natural language answer" },
       { status: 422 }
     );
   }
