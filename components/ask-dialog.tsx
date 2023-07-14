@@ -1,75 +1,61 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Icons, SparklesIcon } from "./icons";
 import { Button } from "./ui/button";
 import { CommandShortcut } from "./ui/command";
 import { Dialog, DialogContentWithoutClose, DialogTrigger } from "./ui/dialog";
 import { Badge } from "./ui/badge";
-import { AnimatePresence, motion } from "framer-motion";
 import { Separator } from "./ui/separator";
 import { cn, minDelay } from "@/lib/utils";
-
-const variants = {
-  init: {
-    opacity: 0,
-    y: 0,
-    transition: {
-      duration: 0.2,
-    },
-  },
-  removed: {
-    opacity: 0,
-    y: -10,
-    transition: {
-      duration: 0.5,
-    },
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-  },
-};
+import remarkGfm from "remark-gfm";
+import { MemoizedReactMarkdown } from "./markdown";
+import { useTypewriterEffect } from "./hooks/typewriter";
+import { motion } from "framer-motion";
 
 export function AskDialog() {
   const [open, setOpen] = useState(false);
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState<string | null>();
+  const [answer, setAnswer] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSent, setIsSent] = useState(true);
+  const [isSent, setIsSent] = useState(false);
+
+  const markdown = `
+  Here is a table of your 3 latest receipts:
+
+  | Filename      | Issuer                   | Total  |
+  | ------------- | ------------------------ | ------ |
+  | receipt_6.pdf | SUPER DUPER              | $15.73 |
+  | receipt_5.pdf | Lleí^y's Restaunanl #6373| $30.37 |
+  | receipt_8.pdf | SUPER DUPER DOWNTOWN     | $14.92 |
+
+  I hope this helps! Let me know if you have any other questions.
+  `;
 
   async function sendQuestion(data: string) {
-    setIsSent(true);
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    const a = `
-    Your last overall expenses are as follows:
-
-    - $8100
-    - $2050
-    - $234.05
-    - $82.27
-    - $62.3
-    - $41.14`;
-    setIsLoading(false);
-    setAnswer(a);
-
     // setIsSent(true);
     // setIsLoading(true);
-    // const res = await minDelay(
-    //   fetch("/api/dashboard/ask", {
-    //     method: "POST",
-    //     body: JSON.stringify({ question: data }),
-    //   }),
-    //   500
-    // );
+    // await new Promise((resolve) => setTimeout(resolve, 4000));
     // setIsLoading(false);
-    // const { answer } = await res.json();
-    // setAnswer(answer);
+    // setAnswer(markdown);
+
+    // return;
+
+    setIsSent(true);
+    setIsLoading(true);
+    const res = await minDelay(
+      fetch("/api/dashboard/ask", {
+        method: "POST",
+        body: JSON.stringify({ question: data }),
+      }),
+      500
+    );
+    setIsLoading(false);
+    const { answer } = await res.json();
+    setAnswer(answer);
   }
 
   useEffect(() => {
-    console.log("useffect");
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
@@ -78,157 +64,270 @@ export function AskDialog() {
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
+  }, [open]);
+
+  const typedAnswer = useTypewriterEffect(answer, 25);
 
   return (
     <Dialog
       open={open}
       onOpenChange={() => {
-        if (!open) {
+        setOpen(!open);
+        if (open) {
           setIsSent(false);
           setIsLoading(false);
           setQuestion("");
-          setAnswer(null);
+          setAnswer("");
         }
-        setOpen(!open);
       }}
     >
       <DialogTrigger asChild>
-        <Button
-          variant={"glowing"}
-          size={"glowing"}
-          className="rounded after:rounded-md before:rounded-md hover:after:rounded-md hover:before:rounded-md"
-          onClick={() => setOpen(true)}
-        >
-          <Icons.sparkles
-            width={18}
-            height={18}
-            className="inline-block mr-2"
-          />
-          Ask
-          <CommandShortcut className="ml-1.5">⌘K</CommandShortcut>
-        </Button>
+        <AskButton setOpen={setOpen} />
       </DialogTrigger>
-      <DialogContentWithoutClose className="p-0 shadow-lg max-w-xl">
+      <DialogContentWithoutClose className="p-0 shadow-lg max-w-xl focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0 ">
         <div
           className={cn(
-            "rounded-md relative bg-white transition delay-300 glow after:rounded-lg before:rounded-lg",
+            "relative rounded-md  bg-white transition delay-300 glow after:rounded-lg before:rounded-lg",
             isLoading && "glow-active"
           )}
         >
-          <AnimatePresence mode="wait">
-            {isSent ? (
-              <motion.div
-                layoutId="question-display"
-                layout="size"
-                initial="init"
-                animate="visible"
-                exit="removed"
-                variants={variants}
-                className="py-5 px-6"
-              >
-                <div className="flex gap-3 items-start pb-3">
-                  <Icons.user
-                    width={32}
-                    height={32}
-                    className="p-1.5 shrink-0 bg-slate-800 text-white rounded-md"
-                  />
-                  <p className="max-h-[200px] overflow-auto prose break-words prose-pre:p-0 leading-normal text-slate-600 mt-0.5">
-                    {question}
-                  </p>
-                </div>
-                <Separator />
-                {isLoading ? (
-                  <div className="flex gap-3 items-center pt-3">
-                    <div className="p-1.5 w-8 h-8 shrink-0 bg-white border border-sky-300 rounded-md">
-                      <SparklesIcon width={32} height={32} className="" />
-                    </div>
-                    <p className="text-slate-400 text-xs text-medium">
-                      The AI is looking for an answer. Please wait, this may
-                      take a while...
-                    </p>
-                  </div>
-                ) : (
-                  <div className="flex gap-3 items-start pt-3">
-                    <Icons.sparkles
-                      width={32}
-                      height={32}
-                      className="p-1.5 shrink-0 bg-white fill-slate-900  border border-slate-300 rounded-md"
-                    />
-                    <p>{answer}</p>
-                  </div>
-                )}
-              </motion.div>
-            ) : (
-              <motion.div
-                layoutId="question-input"
-                layout="position"
-                initial={false}
-                animate={"visible"}
-                exit={"removed"}
-                variants={variants}
-              >
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    if (!question?.trim()) {
-                      return;
-                    }
-                    await sendQuestion(question);
-                  }}
-                  className="flex items-center border-b px-3"
-                >
-                  <Icons.sparkles className="mr-2 h-4 w-4 shrink-0 text-slate-700" />
-                  <input
-                    type="text"
-                    placeholder="Ask AI anything about your documents"
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-slate-400"
-                  />
-                  <Button
-                    type="submit"
-                    size="iconSm"
-                    className="w-[30px] h-[30px] ml-2 shrink-0"
-                  >
-                    <Icons.send className="h-4 w-auto" />
-                  </Button>
-                </form>
-                <div className="px-4 pt-2.5 pb-3">
-                  <h3 className="text-xs text-slate-500 font-semibold mb-1.5">
-                    Suggestions
-                  </h3>
-                  <div className="flex justify-between items-center">
-                    <Badge
-                      onClick={async () => {
-                        const question = "What is my most expensive receipt?";
-                        setQuestion(question);
-                        await sendQuestion(question);
-                      }}
-                      variant={"secondary"}
-                      className="text-slate-500 font-medium cursor-pointer"
-                    >
-                      What is my most expensive receipt?
-                    </Badge>
-                    <Badge
-                      onClick={async () => {
-                        const question =
-                          "How much do I spend on average in restaurants?";
-                        setQuestion(question);
-                        await sendQuestion(question);
-                      }}
-                      variant={"secondary"}
-                      className="text-slate-500 font-medium cursor-pointer"
-                    >
-                      How much do I spend on average in restaurants?
-                    </Badge>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {isSent ? (
+            <QuestionAnswerDisplay
+              isLoading={isLoading}
+              question={question}
+              answer={answer}
+              typedAnswer={typedAnswer}
+              reset={() => {
+                setIsSent(false);
+                setQuestion("");
+                setAnswer("");
+              }}
+            />
+          ) : (
+            <QuestionTextArea
+              sendQuestion={sendQuestion}
+              question={question}
+              setQuestion={setQuestion}
+            />
+          )}
         </div>
       </DialogContentWithoutClose>
     </Dialog>
+  );
+}
+
+const variants = {
+  init: {
+    opacity: 0,
+    y: 10,
+    transition: {
+      duration: 0.2,
+    },
+  },
+  removed: {
+    opacity: 0,
+    y: 0,
+    transition: {
+      duration: 0.5,
+    },
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+    },
+  },
+};
+
+interface AskButtonProps {
+  setOpen: (open: boolean) => void;
+}
+
+const AskButton = React.forwardRef<HTMLButtonElement, AskButtonProps>(
+  ({ setOpen }, ref) => {
+    return (
+      <Button
+        ref={ref}
+        variant={"glowing"}
+        size={"glowing"}
+        className="rounded after:rounded-md before:rounded-md hover:after:rounded-md hover:before:rounded-md"
+        onClick={() => setOpen(true)}
+      >
+        <Icons.sparkles width={18} height={18} className="inline-block mr-2" />
+        Ask
+        <CommandShortcut className="ml-1.5">⌘K</CommandShortcut>
+      </Button>
+    );
+  }
+);
+AskButton.displayName = "AskButton";
+
+interface QuestionAnswerDisplayProps {
+  isLoading: boolean;
+  question: string;
+  answer: string;
+  typedAnswer: string;
+  reset: () => void;
+}
+
+function QuestionAnswerDisplay({
+  isLoading,
+  question,
+  answer,
+  typedAnswer,
+  reset,
+}: QuestionAnswerDisplayProps) {
+  return (
+    <div className="py-5 px-6 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0">
+      <div className="flex gap-3 items-start pb-3">
+        <Icons.user
+          width={32}
+          height={32}
+          className="p-1.5 shrink-0 bg-slate-800 text-white rounded-md"
+        />
+        <p className="max-h-[200px] w-full overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600">
+          {question}
+        </p>
+      </div>
+      <Separator />
+      {isLoading ? (
+        <div className="flex gap-3 items-center pt-3">
+          <div className="p-1.5 w-8 h-8 shrink-0 bg-white border border-sky-300 rounded-md">
+            <SparklesIcon width={32} height={32} />
+          </div>
+          <p className="text-slate-400 text-xs text-medium">
+            The AI is looking for an answer. Please wait, this may take a
+            while...
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="flex gap-3 items-start pt-3">
+            <Icons.sparkles
+              width={32}
+              height={32}
+              className="p-1.5 shrink-0 bg-white fill-slate-900 border border-slate-300 rounded-md"
+            />
+            <MemoizedReactMarkdown
+              className="max-h-[500px] w-full overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600"
+              remarkPlugins={[remarkGfm]}
+            >
+              {typedAnswer}
+            </MemoizedReactMarkdown>
+          </div>
+          {answer.length === typedAnswer.length && (
+            <motion.div
+              variants={variants}
+              initial="init"
+              animate="visible"
+              exit="removed"
+              transition={{ delay: 0.3 }}
+              className="flex w-full justify-end"
+            >
+              <Button
+                className="mt-4"
+                size="sm"
+                onClick={() => {
+                  reset();
+                }}
+              >
+                New Question
+              </Button>
+            </motion.div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+interface QuestionTextAreaProps {
+  sendQuestion: (data: string) => Promise<void>;
+  question: string;
+  setQuestion: (data: string) => void;
+}
+
+export function QuestionTextArea({
+  sendQuestion,
+  question,
+  setQuestion,
+}: QuestionTextAreaProps) {
+  return (
+    <div>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          if (!question?.trim()) {
+            return;
+          }
+          await sendQuestion(question);
+        }}
+        className="flex items-center border-b px-3"
+      >
+        <Icons.sparkles className="mr-2 h-4 w-4 shrink-0 text-slate-700" />
+        <textarea
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              if (!question?.trim()) {
+                return;
+              }
+              sendQuestion(question);
+            }
+          }}
+          rows={1}
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Ask AI anything about your documents"
+          spellCheck={false}
+          className="flex h-11 w-full resize-none rounded-md bg-transparent py-3 my-1 text-sm outline-none placeholder:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-slate-400"
+        />
+        <Button
+          type="submit"
+          size="iconSm"
+          className="w-[30px] h-[30px] ml-2 shrink-0"
+        >
+          <Icons.send className="h-4 w-auto" />
+        </Button>
+      </form>
+      <Suggestions sendQuestion={sendQuestion} setQuestion={setQuestion} />
+    </div>
+  );
+}
+
+interface SuggestionsProps {
+  sendQuestion: (data: string) => Promise<void>;
+  setQuestion: (data: string) => void;
+}
+
+function Suggestions({ sendQuestion, setQuestion }: SuggestionsProps) {
+  const suggestions = [
+    "What is my most expensive receipt?",
+    "How much do I spend on average in restaurants?",
+  ];
+
+  return (
+    <div className="px-4 pt-2.5 pb-3">
+      <h3 className="text-xs text-slate-500 font-semibold mb-1.5">
+        Suggestions
+      </h3>
+      <div className="flex justify-between items-center">
+        {suggestions.map((suggestion) => (
+          <Badge
+            key={suggestion}
+            onClick={async () => {
+              setQuestion(suggestion);
+              await sendQuestion(suggestion);
+            }}
+            variant={"secondary"}
+            className="text-slate-500 font-medium cursor-pointer"
+          >
+            {suggestion}
+          </Badge>
+        ))}
+      </div>
+    </div>
   );
 }
