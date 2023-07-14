@@ -9,6 +9,7 @@ import {
   getSqlQuestionAnsweringPrompt,
 } from "@/lib/prompts";
 import prisma from "@/lib/prisma";
+import { stringifyWithBigInt } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   const user = await getUser();
@@ -44,32 +45,19 @@ export async function POST(req: NextRequest) {
   }
   const json = await res.json();
 
-  let sqlQuery;
-  let sqlResult;
+  let query;
+  let result;
   try {
-    const { sqlQuery: query } = JSON.parse(json.output);
-    sqlQuery = query;
-
-    console.log(">>>>>>>>>>> SQL QUERY >>>>>>>>>");
-    console.log(sqlQuery);
-
-    sqlResult = await prisma.$queryRawUnsafe(sqlQuery); // yup...
-
-    console.log(">>>>>>>>>>> SQL RESULT >>>>>>>>>");
-    console.log(sqlResult);
+    query = mitigateVulnerabilities(JSON.parse(json.output).sqlQuery, user.id);
+    result = stringifyWithBigInt(await prisma.$queryRawUnsafe(query));
   } catch (e) {
-    console.log("ERROR", e);
     return NextResponse.json(
       { error: "Failed to create SQL query from question" },
       { status: 422 }
     );
   }
 
-  prompt = getNaturalLanguageAnswerPrompt(body.question, sqlQuery, sqlResult);
-
-  console.log(">>>>>>>>>>> PROMPT >>>>>>>>>");
-  console.log(prompt);
-
+  prompt = getNaturalLanguageAnswerPrompt(body.question, query, result);
   data = {
     model: {
       apiKey: process.env.OPENAI_API_KEY as string,
@@ -88,10 +76,6 @@ export async function POST(req: NextRequest) {
   }
 
   const { output } = await res.json();
-
-  console.log(">>>>>>>>>>> OUTPUT >>>>>>>>>");
-  console.log(output);
-
   return NextResponse.json(
     {
       question: body.question,
@@ -99,4 +83,24 @@ export async function POST(req: NextRequest) {
     },
     { status: 200 }
   );
+}
+
+function mitigateVulnerabilities(query: string, id: string) {
+  if (query === "") {
+    return query;
+  }
+
+  const lowerCaseQuery = query.toLowerCase();
+  const unauthorizedStatements = ["insert", "update", "delete"];
+
+  for (let statement of unauthorizedStatements) {
+    if (lowerCaseQuery.includes(statement)) {
+      throw new Error(`Unauthorized SQL statement used in query: ${statement}`);
+    }
+  }
+
+  if (!lowerCaseQuery.includes(id)) {
+    throw new Error("The query should include the correct userId");
+  }
+  return query;
 }

@@ -48,6 +48,7 @@
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.45.1",
     "react-markdown": "^8.0.7",
+    "react-textarea-autosize": "^8.5.2",
     "react-wrap-balancer": "^1.0.0",
     "recharts": "^2.7.2",
     "remark-gfm": "^3.0.1",

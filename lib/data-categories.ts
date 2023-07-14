@@ -84,7 +84,17 @@ export const receiptsSchema: JsonSchema = {
       minimum: 0,
     },
   },
-  required: ["category", "date", "from", "items", "total"],
+  required: [
+    "number",
+    "category",
+    "date",
+    "time",
+    "from",
+    "items",
+    "subtotal",
+    "tax",
+    "total",
+  ],
 };
 
 export const invoicesSchema: JsonSchema = {
@@ -140,6 +150,7 @@ export const invoicesSchema: JsonSchema = {
             "Full address of the recipient. If there is a newline, make the separation with a comma. It could be empty.",
         },
       },
+      required: ["name"],
     },
     items: {
       type: "array",
@@ -172,7 +183,16 @@ export const invoicesSchema: JsonSchema = {
       minimum: 0,
     },
   },
-  required: ["category", "date", "from", "to", "items", "total_amount_due"],
+  required: [
+    "invoice_number",
+    "category",
+    "date",
+    "from",
+    "to",
+    "items",
+    "currency",
+    "total_amount_due",
+  ],
 };
 
 export const cardStatementsSchema: JsonSchema = {
@@ -196,7 +216,7 @@ export const cardStatementsSchema: JsonSchema = {
             "Full address of the credit card issuer. If there is a newline, make the separation with a comma.",
         },
       },
-      required: ["name"],
+      required: ["name", "address"],
     },
     recipient: {
       type: "object",
@@ -213,6 +233,7 @@ export const cardStatementsSchema: JsonSchema = {
             "Full address of the recipient. If there is a newline, make the separation with a comma.",
         },
       },
+      required: ["name", "address"],
     },
     date: {
       type: "string",
@@ -236,9 +257,10 @@ export const cardStatementsSchema: JsonSchema = {
         number: {
           type: "string",
           description:
-            "Number of the credit card. Must be in the format XXXX XXXX XXXX XXXX.",
+            "Number of the credit card. If present, must be in the format XXXX XXXX XXXX XXXX.",
         },
       },
+      required: ["name", "holder", "number"],
     },
     transactions: {
       type: "array",
@@ -293,6 +315,7 @@ export const cardStatementsSchema: JsonSchema = {
     "date",
     "credit_card",
     "transactions",
+    "currency",
     "total_amount_due",
   ],
 };

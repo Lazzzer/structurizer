@@ -14,6 +14,8 @@ import {
 import { useStepStore } from "@/lib/store";
 import { ObjectViewer } from "./object-viewer";
 import { Correction } from "types";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface VerificationPipelineProps {
   id: string;
@@ -207,7 +209,7 @@ export default function VerificationPipeline({
                               height={18}
                               className="mr-2"
                             />
-                            Show Verification Breakdown
+                            Show Verification Report
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
@@ -220,13 +222,15 @@ export default function VerificationPipeline({
                           <div className="flex items-center gap-2  mb-3">
                             <Icons.sparkles width={24} height={24} />
                             <h1 className="text-lg font-bold text-slate-800">
-                              Verification Breakdown
+                              Verification Report
                             </h1>
                           </div>
-
-                          <p className="w-full text-sm whitespace-pre-wrap text-justify text-slate-600 mb-2 leading-snug">
+                          <ReactMarkdown
+                            className="w-full overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600"
+                            remarkPlugins={[remarkGfm]}
+                          >
                             {verificationResult.textAnalysis}
-                          </p>
+                          </ReactMarkdown>
                         </PopoverContent>
                       </Popover>
                     </motion.div>

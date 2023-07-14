@@ -9,9 +9,10 @@ import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { cn, minDelay } from "@/lib/utils";
 import remarkGfm from "remark-gfm";
-import { MemoizedReactMarkdown } from "./markdown";
 import { useTypewriterEffect } from "./hooks/typewriter";
 import { motion } from "framer-motion";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import TextareaAutosize from "react-textarea-autosize";
 
 export function AskDialog() {
   const [open, setOpen] = useState(false);
@@ -20,27 +21,14 @@ export function AskDialog() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
 
-  const markdown = `
-  Here is a table of your 3 latest receipts:
-
-  | Filename      | Issuer                   | Total  |
-  | ------------- | ------------------------ | ------ |
-  | receipt_6.pdf | SUPER DUPER              | $15.73 |
-  | receipt_5.pdf | Lleí^y's Restaunanl #6373| $30.37 |
-  | receipt_8.pdf | SUPER DUPER DOWNTOWN     | $14.92 |
-
-  I hope this helps! Let me know if you have any other questions.
-  `;
+  function resetDialog() {
+    setIsSent(false);
+    setIsLoading(false);
+    setQuestion("");
+    setAnswer("");
+  }
 
   async function sendQuestion(data: string) {
-    // setIsSent(true);
-    // setIsLoading(true);
-    // await new Promise((resolve) => setTimeout(resolve, 4000));
-    // setIsLoading(false);
-    // setAnswer(markdown);
-
-    // return;
-
     setIsSent(true);
     setIsLoading(true);
     const res = await minDelay(
@@ -51,6 +39,12 @@ export function AskDialog() {
       500
     );
     setIsLoading(false);
+
+    if (!res.ok) {
+      setAnswer("Sorry, I cannot process your question.");
+      return;
+    }
+
     const { answer } = await res.json();
     setAnswer(answer);
   }
@@ -66,28 +60,23 @@ export function AskDialog() {
     return () => document.removeEventListener("keydown", down);
   }, [open]);
 
-  const typedAnswer = useTypewriterEffect(answer, 25);
+  const typedAnswer = useTypewriterEffect(answer, 20);
 
   return (
     <Dialog
       open={open}
-      onOpenChange={() => {
-        setOpen(!open);
-        if (open) {
-          setIsSent(false);
-          setIsLoading(false);
-          setQuestion("");
-          setAnswer("");
-        }
+      onOpenChange={(open) => {
+        setOpen(open);
+        if (!open) resetDialog();
       }}
     >
       <DialogTrigger asChild>
         <AskButton setOpen={setOpen} />
       </DialogTrigger>
-      <DialogContentWithoutClose className="p-0 shadow-lg max-w-xl focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0 ">
+      <DialogContentWithoutClose className="p-0 shadow-lg max-w-2xl focus:outline-0 focus-visible:outline-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0">
         <div
           className={cn(
-            "relative rounded-md  bg-white transition delay-300 glow after:rounded-lg before:rounded-lg",
+            "relative rounded-md bg-white transition delay-300 glow after:rounded-lg before:rounded-lg focus:outline-0 focus-visible:outline-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0",
             isLoading && "glow-active"
           )}
         >
@@ -97,10 +86,13 @@ export function AskDialog() {
               question={question}
               answer={answer}
               typedAnswer={typedAnswer}
-              reset={() => {
+              reset={(closing) => {
                 setIsSent(false);
                 setQuestion("");
                 setAnswer("");
+                if (closing) {
+                  setOpen(false);
+                }
               }}
             />
           ) : (
@@ -168,7 +160,7 @@ interface QuestionAnswerDisplayProps {
   question: string;
   answer: string;
   typedAnswer: string;
-  reset: () => void;
+  reset: (closed: boolean) => void;
 }
 
 function QuestionAnswerDisplay({
@@ -180,19 +172,19 @@ function QuestionAnswerDisplay({
 }: QuestionAnswerDisplayProps) {
   return (
     <div className="py-5 px-6 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0">
-      <div className="flex gap-3 items-start pb-3">
+      <div className="flex gap-3 items-start mb-5">
         <Icons.user
           width={32}
           height={32}
           className="p-1.5 shrink-0 bg-slate-800 text-white rounded-md"
         />
-        <p className="max-h-[200px] w-full overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600">
+        <p className="max-h-[100px] w-full max-w-xl overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600">
           {question}
         </p>
       </div>
       <Separator />
       {isLoading ? (
-        <div className="flex gap-3 items-center pt-3">
+        <div className="flex gap-3 items-center mt-5">
           <div className="p-1.5 w-8 h-8 shrink-0 bg-white border border-sky-300 rounded-md">
             <SparklesIcon width={32} height={32} />
           </div>
@@ -203,18 +195,18 @@ function QuestionAnswerDisplay({
         </div>
       ) : (
         <>
-          <div className="flex gap-3 items-start pt-3">
+          <div className="flex gap-3 items-start mt-5">
             <Icons.sparkles
               width={32}
               height={32}
               className="p-1.5 shrink-0 bg-white fill-slate-900 border border-slate-300 rounded-md"
             />
-            <MemoizedReactMarkdown
-              className="max-h-[500px] w-full overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600"
+            <ReactMarkdown
+              className="max-h-[500px] w-full max-w-xl overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600"
               remarkPlugins={[remarkGfm]}
             >
               {typedAnswer}
-            </MemoizedReactMarkdown>
+            </ReactMarkdown>
           </div>
           {answer.length === typedAnswer.length && (
             <motion.div
@@ -223,16 +215,28 @@ function QuestionAnswerDisplay({
               animate="visible"
               exit="removed"
               transition={{ delay: 0.3 }}
-              className="flex w-full justify-end"
+              className="flex w-full gap-2 justify-end"
             >
               <Button
-                className="mt-4"
+                className="mt-4 text-slate-800"
                 size="sm"
-                onClick={() => {
-                  reset();
-                }}
+                variant={"ghost"}
+                onClick={() => reset(true)}
               >
-                New Question
+                Close
+              </Button>
+              <Button
+                className="mt-4 text-slate-800"
+                size="sm"
+                variant={"outline"}
+                onClick={() => reset(false)}
+              >
+                <Icons.sparkles
+                  width={14}
+                  height={14}
+                  className="inline-block mr-2"
+                />
+                Ask
               </Button>
             </motion.div>
           )}
@@ -263,11 +267,18 @@ export function QuestionTextArea({
           }
           await sendQuestion(question);
         }}
-        className="flex items-center border-b px-3"
+        className="flex items-center border-b px-4 py-1 max-h-44 overflow-auto"
       >
-        <Icons.sparkles className="mr-2 h-4 w-4 shrink-0 text-slate-700" />
-        <textarea
+        <Icons.sparkles
+          width={20}
+          height={20}
+          className="mr-3 shrink-0 text-slate-700"
+        />
+        <TextareaAutosize
           tabIndex={0}
+          rows={1}
+          placeholder="Ask AI anything about your documents"
+          spellCheck={false}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -277,17 +288,14 @@ export function QuestionTextArea({
               sendQuestion(question);
             }
           }}
-          rows={1}
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Ask AI anything about your documents"
-          spellCheck={false}
-          className="flex h-11 w-full resize-none rounded-md bg-transparent py-3 my-1 text-sm outline-none placeholder:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-slate-400"
+          className="max-h-40 w-full grow resize-none rounded-md bg-transparent my-3 py-1 text-sm outline-none placeholder:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-slate-400"
         />
         <Button
           type="submit"
           size="iconSm"
-          className="w-[30px] h-[30px] ml-2 shrink-0"
+          className="w-[32px] h-[32px] ml-2 shrink-0"
         >
           <Icons.send className="h-4 w-auto" />
         </Button>
@@ -313,7 +321,7 @@ function Suggestions({ sendQuestion, setQuestion }: SuggestionsProps) {
       <h3 className="text-xs text-slate-500 font-semibold mb-1.5">
         Suggestions
       </h3>
-      <div className="flex justify-between items-center">
+      <div className="flex gap-2 items-center">
         {suggestions.map((suggestion) => (
           <Badge
             key={suggestion}

@@ -1,5 +1,3 @@
-import { stringifyWithBigInt } from "./utils";
-
 export function getSqlQuestionAnsweringPrompt(question: string, id: string) {
   return `
 You are a PostgreSQL expert.
@@ -157,7 +155,7 @@ Your SQL Query:
 export function getNaturalLanguageAnswerPrompt(
   question: string,
   sqlQuery: string,
-  output: any
+  output: string
 ) {
   return `
 You are a friendly and helpful question answering assistant for an application that helps users manage their receipts, invoices, and card statements.
@@ -177,7 +175,7 @@ SQL Query:
 ${sqlQuery}
 ---------------------
 Output of the SQL Query:
-${stringifyWithBigInt(output)}
+${output}
 ---------------------
 
 The SQL output may have a lot of information, use your best judgement to decide which information is relevant to the question and keep it concise.
