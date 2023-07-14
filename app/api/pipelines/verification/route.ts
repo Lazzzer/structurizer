@@ -13,6 +13,7 @@ import {
   invoicesSchema,
   receiptsSchema,
 } from "@/lib/data-categories";
+import { fetchFromService } from "@/lib/server-requests";
 
 export async function PUT(req: NextRequest) {
   const user = await getUser();
@@ -230,25 +231,16 @@ export async function POST(req: Request) {
     },
   });
 
-  const res = await fetch(
-    `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/analysis`,
-    {
-      method: "POST",
-      headers: {
-        "X-API-Key": process.env.X_API_KEY as string,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: {
-          apiKey: process.env.OPENAI_API_KEY as string,
-          name: preferences?.analysisModel ?? "gpt-4",
-        },
-        jsonSchema: JSON.stringify(categories.get(body.category)!.schema),
-        originalText: body.text,
-        jsonOutput: JSON.stringify(body.json),
-      }),
-    }
-  );
+  const data = {
+    model: {
+      apiKey: process.env.OPENAI_API_KEY as string,
+      name: preferences?.analysisModel ?? "gpt-4",
+    },
+    jsonSchema: JSON.stringify(categories.get(body.category)!.schema),
+    originalText: body.text,
+    jsonOutput: JSON.stringify(body.json),
+  };
+  const res = await fetchFromService("analysis", data);
 
   if (!res.ok) {
     return NextResponse.json({ error: res.statusText }, { status: res.status });

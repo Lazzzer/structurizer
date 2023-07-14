@@ -97,11 +97,16 @@ export async function getExtractions(status: Status) {
 }
 
 export async function fetchFromService(
-  method: "schema" | "example" | "generic-output",
+  endpoint:
+    | "analysis"
+    | "classification"
+    | "schema"
+    | "example"
+    | "generic-output",
   data: object
 ) {
   return await fetch(
-    `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/${method}`,
+    `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/${endpoint}`,
     {
       method: "POST",
       headers: {

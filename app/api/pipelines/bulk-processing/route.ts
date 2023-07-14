@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
 import prisma from "@/lib/prisma";
 import {
+  fetchFromService,
   getObjectUrl,
   getStructuredData,
   getText,
@@ -75,23 +76,18 @@ export async function POST(req: NextRequest) {
       throw new Error("Extraction not found");
     }
 
-    const classificationResponse = await fetch(
-      `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/classification`,
-      {
-        method: "POST",
-        headers: {
-          "X-API-Key": process.env.X_API_KEY as string,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: {
-            apiKey: process.env.OPENAI_API_KEY as string,
-            name: preferences?.classificationModel ?? "gpt-3.5-turbo-16k",
-          },
-          categories: Array.from(categories.keys()),
-          text: extraction.text,
-        }),
-      }
+    const data = {
+      model: {
+        apiKey: process.env.OPENAI_API_KEY as string,
+        name: preferences?.classificationModel ?? "gpt-3.5-turbo-16k",
+      },
+      categories: Array.from(categories.keys()),
+      text: extraction.text,
+    };
+
+    const classificationResponse = await fetchFromService(
+      "classification",
+      data
     );
 
     if (!classificationResponse.ok) {

@@ -4,6 +4,7 @@ import { validateBody } from "@/lib/validations/request";
 import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
 import prisma from "@/lib/prisma";
+import { fetchFromService } from "@/lib/server-requests";
 
 export async function POST(req: NextRequest) {
   const user = await getUser();
@@ -27,24 +28,15 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  const res = await fetch(
-    `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/classification`,
-    {
-      method: "POST",
-      headers: {
-        "X-API-Key": process.env.X_API_KEY as string,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: {
-          apiKey: process.env.OPENAI_API_KEY as string,
-          name: preferences!.classificationModel ?? "gpt-3.5-turbo-16k",
-        },
-        categories: Array.from(categories.keys()),
-        text: body.text,
-      }),
-    }
-  );
+  const data = {
+    model: {
+      apiKey: process.env.OPENAI_API_KEY as string,
+      name: preferences!.classificationModel ?? "gpt-3.5-turbo-16k",
+    },
+    categories: Array.from(categories.keys()),
+    text: body.text,
+  };
+  const res = await fetchFromService("classification", data);
 
   if (!res.ok) {
     return NextResponse.json({ error: res.statusText }, { status: res.status });
