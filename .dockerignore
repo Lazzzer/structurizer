@@ -1,0 +1,11 @@
+.dockerignore
+.git
+.github
+.vscode
+.next
+next-env.d.ts
+node_modules
+Dockerfile
+docker-compose.yml
+docker-compose.example.yml
+npm-debug.log
