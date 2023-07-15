@@ -1,7 +1,7 @@
 "use client";
 
 import { CardStatement, CardTransaction } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
@@ -50,10 +50,12 @@ export function SheetCardStatement({ id, children }: SheetCardStatementProps) {
   const [url, setUrl] = useState<string | null>(null);
   const [hasGetFailed, setHasGetFailed] = useState(false);
 
+  const idRef = useRef(id);
+
   useEffect(() => {
     async function get() {
       try {
-        setCardStatement(await getCardStatement(id));
+        setCardStatement(await getCardStatement(idRef.current));
       } catch (e) {
         setHasGetFailed(true);
       }
@@ -61,7 +63,7 @@ export function SheetCardStatement({ id, children }: SheetCardStatementProps) {
     if (!isEditing) {
       get();
     }
-  }, [isEditing, id]);
+  }, [isEditing]);
 
   return (
     <Sheet

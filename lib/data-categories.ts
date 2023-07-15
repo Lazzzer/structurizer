@@ -342,7 +342,7 @@ export const categories = new Map<string, Category>([
   [
     INVOICES,
     {
-      value: CARD_STATEMENTS,
+      value: INVOICES,
       name: "Invoice",
       schema: invoicesSchema,
     },

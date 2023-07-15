@@ -2,7 +2,7 @@
 
 import { categories } from "@/app/(dashboard)/(structured-data)/receipts/columns";
 import { Receipt, ReceiptItem } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
@@ -49,10 +49,12 @@ export function SheetReceipt({ id, children }: SheetReceiptProps) {
   const [url, setUrl] = useState<string | null>(null);
   const [hasGetFailed, setHasGetFailed] = useState(false);
 
+  const idRef = useRef(id);
+
   useEffect(() => {
     async function get() {
       try {
-        setReceipt(await getReceipt(id));
+        setReceipt(await getReceipt(idRef.current));
       } catch (e) {
         setHasGetFailed(true);
       }
@@ -60,7 +62,7 @@ export function SheetReceipt({ id, children }: SheetReceiptProps) {
     if (!isEditing) {
       get();
     }
-  }, [isEditing, id]);
+  }, [isEditing]);
 
   return (
     <Sheet
