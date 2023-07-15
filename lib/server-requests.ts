@@ -2,7 +2,13 @@ import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { Preferences, Status } from "@prisma/client";
 import { getUser } from "./session";
-import { categories } from "./data-categories";
+import {
+  CARD_STATEMENTS,
+  INVOICES,
+  RECEIPTS,
+  categories,
+} from "./data-categories";
+import { log } from "./utils";
 
 export async function getPreferences() {
   const user = await getUser();
@@ -97,11 +103,17 @@ export async function getExtractions(status: Status) {
 }
 
 export async function fetchFromService(
-  method: "schema" | "example" | "generic-output",
+  endpoint:
+    | "analysis"
+    | "classification"
+    | "schema"
+    | "example"
+    | "generic-output",
   data: object
 ) {
+  log.info("LLM Service", "POST", `Request to /${endpoint} endpoint`);
   return await fetch(
-    `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/${method}`,
+    `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/${endpoint}`,
     {
       method: "POST",
       headers: {
@@ -155,7 +167,7 @@ async function getExampleExtraction(
   let exampleExtraction;
   try {
     switch (category) {
-      case "invoices":
+      case INVOICES:
         exampleExtraction = preferences.invoiceExampleExtractionId
           ? await getExtraction(
               preferences.invoiceExampleExtractionId,
@@ -163,7 +175,7 @@ async function getExampleExtraction(
             )
           : null;
         break;
-      case "receipts":
+      case RECEIPTS:
         exampleExtraction = preferences.receiptExampleExtractionId
           ? await getExtraction(
               preferences.receiptExampleExtractionId,
@@ -171,7 +183,7 @@ async function getExampleExtraction(
             )
           : null;
         break;
-      case "credit card statements":
+      case CARD_STATEMENTS:
         exampleExtraction = preferences.cardStatementExampleExtractionId
           ? await getExtraction(
               preferences.cardStatementExampleExtractionId,

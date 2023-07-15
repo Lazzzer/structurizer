@@ -2,6 +2,7 @@ import NextAuth, { DefaultSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import { compare } from "bcrypt";
+import { log } from "@/lib/utils";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -36,8 +37,10 @@ export const authOptions: NextAuthOptions = {
           },
         });
         if (!user || !(await compare(password, user.password))) {
+          log.warn("Auth", "Failed login attempt");
           throw new Error("Invalid username or password");
         }
+        log.debug("Auth", "Successful login");
         return user;
       },
     }),
@@ -50,6 +53,7 @@ export const authOptions: NextAuthOptions = {
         },
       });
       if (!dbUser) {
+        log.warn("Auth", "Invalid token provided");
         throw new Error("Invalid token");
       }
       return token;

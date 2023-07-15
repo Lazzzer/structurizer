@@ -3,10 +3,12 @@ import prisma from "@/lib/prisma";
 import { getUser } from "@/lib/session";
 import * as z from "zod";
 import { generateSignedUrl } from "@/lib/s3";
+import { log } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   const user = await getUser();
   if (!user) {
+    log.warn("Signed Url", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
@@ -20,6 +22,7 @@ export async function GET(req: NextRequest) {
   const { success } = schema.safeParse({ id: extractionId });
 
   if (!success) {
+    log.warn("Signed Url", req.method, "Failed request, invalid id");
     return NextResponse.json({ error: "Invalid Receipt id" }, { status: 400 });
   }
 
@@ -31,6 +34,7 @@ export async function GET(req: NextRequest) {
   });
 
   if (!extraction) {
+    log.warn("Signed Url", req.method, "Extraction not found", extractionId);
     return NextResponse.json(
       { error: "Extraction not found" },
       { status: 404 }
@@ -39,6 +43,7 @@ export async function GET(req: NextRequest) {
 
   const url = await generateSignedUrl(extraction.objectPath);
 
+  log.debug("Signed Url", req.method, "Fetched", extractionId);
   return NextResponse.json(
     {
       uuid: extraction.id,

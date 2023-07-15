@@ -2,7 +2,7 @@
 
 import { categories } from "@/app/(dashboard)/(structured-data)/invoices/columns";
 import { Invoice, InvoiceItem } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
@@ -50,10 +50,12 @@ export function SheetInvoice({ id, children }: SheetInvoiceProps) {
   const [url, setUrl] = useState<string | null>(null);
   const [hasGetFailed, setHasGetFailed] = useState(false);
 
+  const idRef = useRef(id);
+
   useEffect(() => {
     async function get() {
       try {
-        setInvoice(await getInvoice(id));
+        setInvoice(await getInvoice(idRef.current));
       } catch (e) {
         setHasGetFailed(true);
       }
@@ -61,13 +63,14 @@ export function SheetInvoice({ id, children }: SheetInvoiceProps) {
     if (!isEditing) {
       get();
     }
-  }, [isEditing, id]);
+  }, [isEditing]);
 
   return (
     <Sheet
       onOpenChange={(open) => {
         if (!open) {
           setUrl(null);
+          setIsEditing(false);
         }
       }}
     >

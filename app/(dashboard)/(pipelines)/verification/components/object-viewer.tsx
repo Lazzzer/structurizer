@@ -5,6 +5,7 @@ import { InvoicesViewer } from "./invoices-viewer";
 import { CardStatementsViewer } from "./card-statements-viewer";
 import { Correction } from "types";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { CARD_STATEMENTS, INVOICES, RECEIPTS } from "@/lib/data-categories";
 
 interface ObjectViewerProps extends React.HTMLAttributes<HTMLDivElement> {
   category: string;
@@ -21,21 +22,21 @@ export function ObjectViewer({
 }: ObjectViewerProps) {
   return (
     <ScrollArea className="w-full h-full bg-white rounded-lg p-2">
-      {category === "receipts" && (
+      {category === RECEIPTS && (
         <ReceiptsViewer
           verifiedReceipt={json}
           setVerifiedReceipt={setVerifiedJson}
           corrections={corrections}
         />
       )}
-      {category === "invoices" && (
+      {category === INVOICES && (
         <InvoicesViewer
           verifiedInvoice={json}
           setVerifiedInvoice={setVerifiedJson}
           corrections={corrections}
         />
       )}
-      {category === "credit card statements" && (
+      {category === CARD_STATEMENTS && (
         <CardStatementsViewer
           verifiedCardStatement={json}
           setVerifiedCardStatement={setVerifiedJson}
