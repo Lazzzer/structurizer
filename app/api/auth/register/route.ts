@@ -5,11 +5,13 @@ import prisma from "@/lib/prisma";
 
 import * as z from "zod";
 import { validateBody } from "@/lib/validations/request";
+import { log } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as z.infer<typeof authSchema>;
 
   if (!validateBody(body, authSchema)) {
+    log.warn("Auth", "Failed registration attempt, invalid body");
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
@@ -23,6 +25,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (exists) {
+    log.warn("Auth", "Failed registration attempt, name already taken");
     return NextResponse.json(
       { error: "Name is already taken" },
       { status: 400 }
@@ -43,6 +46,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  log.debug("Auth", `New user registered`);
   return NextResponse.json(
     {
       message: "User created",

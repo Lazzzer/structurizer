@@ -4,10 +4,12 @@ import { getUser } from "@/lib/session";
 import * as z from "zod";
 import { receiptsSchema } from "@/lib/data-categories";
 import { validateRequiredOrEmptyFields } from "@/lib/validations/request";
+import { log } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   const user = await getUser();
   if (!user) {
+    log.warn("Receipts", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
   const { searchParams } = new URL(req.url);
@@ -20,6 +22,7 @@ export async function GET(req: NextRequest) {
   const { success } = schema.safeParse({ id: receiptId });
 
   if (!success) {
+    log.warn("Receipts", req.method, "Failed request, invalid id");
     return NextResponse.json({ error: "Invalid Receipt id" }, { status: 400 });
   }
   const receipt = await prisma.receipt.findFirst({
@@ -33,19 +36,24 @@ export async function GET(req: NextRequest) {
   });
 
   if (!receipt) {
+    log.warn("Receipts", req.method, "Receipt not found");
     return NextResponse.json({ error: "Receipt not found" }, { status: 404 });
   }
+
+  log.debug("Receipts", req.method, "Fetched", receiptId);
   return NextResponse.json(receipt, { status: 200 });
 }
 
 export async function PUT(req: NextRequest) {
   const user = await getUser();
   if (!user) {
+    log.warn("Receipts", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const data = await req.json();
   if (!data) {
+    log.warn("Receipts", req.method, "Failed request, no data provided");
     return NextResponse.json({ error: "No data provided" }, { status: 400 });
   }
 
@@ -99,8 +107,17 @@ export async function PUT(req: NextRequest) {
       },
     });
   } catch (error) {
+    log.warn("Receipts", req.method, "Failed to update receipt", data.id);
+    log.debug(
+      "Receipts",
+      req.method,
+      "Failed to update receipt",
+      data.id,
+      error
+    );
     return NextResponse.json({ error: "Receipt not updated" }, { status: 422 });
   }
 
+  log.debug("Receipts", req.method, "Updated", data.id);
   return NextResponse.json("Receipt updated", { status: 200 });
 }

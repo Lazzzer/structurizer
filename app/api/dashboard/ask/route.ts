@@ -9,11 +9,12 @@ import {
   getSqlQuestionAnsweringPrompt,
 } from "@/lib/prompts";
 import prisma from "@/lib/prisma";
-import { stringifyWithBigInt } from "@/lib/utils";
+import { log, stringifyWithBigInt } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) {
+    log.warn("Ask", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
@@ -23,8 +24,10 @@ export async function POST(req: NextRequest) {
 
   const body = (await req.json()) as z.infer<typeof schema>;
   if (!validateBody(body, schema)) {
+    log.warn("Ask", req.method, "Failed request, invalid body");
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
+  log.debug("Ask", req.method, "Question: ", body.question);
 
   let prompt = getSqlQuestionAnsweringPrompt(body.question, user.id);
   let data = {
@@ -38,6 +41,7 @@ export async function POST(req: NextRequest) {
   let res = await fetchFromService("generic-output", data);
 
   if (!res.ok) {
+    log.warn("Ask", req.method, "Failed to create SQL query from question");
     return NextResponse.json(
       { error: "Failed to create SQL query from question" },
       { status: 422 }
@@ -50,9 +54,13 @@ export async function POST(req: NextRequest) {
   try {
     query = mitigateVulnerabilities(JSON.parse(json.output).sqlQuery, user.id);
     result = stringifyWithBigInt(await prisma.$queryRawUnsafe(query));
+    log.debug("Ask", req.method, "SQL Query: ", query);
+    log.debug("Ask", req.method, "SQL Result: ", result);
   } catch (e) {
+    log.warn("Ask", req.method, "Failed to execute SQL query");
+    log.debug("Ask", req.method, "Failed to execute SQL query", e);
     return NextResponse.json(
-      { error: "Failed to create SQL query from question" },
+      { error: "Failed to execute SQL query" },
       { status: 422 }
     );
   }
@@ -69,6 +77,7 @@ export async function POST(req: NextRequest) {
   res = await fetchFromService("generic-output", data);
 
   if (!res.ok) {
+    log.warn("Ask", "Failed to create natural language answer");
     return NextResponse.json(
       { error: "Failed to create natural language answer" },
       { status: 422 }
@@ -76,6 +85,8 @@ export async function POST(req: NextRequest) {
   }
 
   const { output } = await res.json();
+  log.debug("Ask", req.method, "Successfully answered question");
+  log.debug("Ask", req.method, "Answer: ", output);
   return NextResponse.json(
     {
       question: body.question,
@@ -95,11 +106,17 @@ function mitigateVulnerabilities(query: string, id: string) {
 
   for (let statement of unauthorizedStatements) {
     if (lowerCaseQuery.includes(statement)) {
+      log.warn(
+        "Ask",
+        "POST",
+        `Unauthorized SQL statement used in query: ${statement}`
+      );
       throw new Error(`Unauthorized SQL statement used in query: ${statement}`);
     }
   }
 
   if (!lowerCaseQuery.includes(id)) {
+    log.warn("Ask", "POST", "The query does not include the correct userId");
     throw new Error("The query should include the correct userId");
   }
   return query;

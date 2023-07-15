@@ -4,10 +4,12 @@ import { getUser } from "@/lib/session";
 import * as z from "zod";
 import { invoicesSchema } from "@/lib/data-categories";
 import { validateRequiredOrEmptyFields } from "@/lib/validations/request";
+import { log } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   const user = await getUser();
   if (!user) {
+    log.warn("Invoices", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
   const { searchParams } = new URL(req.url);
@@ -20,6 +22,7 @@ export async function GET(req: NextRequest) {
   const { success } = schema.safeParse({ id: invoiceId });
 
   if (!success) {
+    log.warn("Invoices", req.method, "Failed request, invalid id");
     return NextResponse.json({ error: "Invalid Invoice id" }, { status: 400 });
   }
 
@@ -34,19 +37,24 @@ export async function GET(req: NextRequest) {
   });
 
   if (!invoice) {
+    log.warn("Invoices", req.method, "Invoice not found");
     return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
   }
+
+  log.debug("Invoices", req.method, "Fetched", invoiceId);
   return NextResponse.json(invoice, { status: 200 });
 }
 
 export async function PUT(req: NextRequest) {
   const user = await getUser();
   if (!user) {
+    log.warn("Invoices", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const data = await req.json();
   if (!data) {
+    log.warn("Invoices", req.method, "Failed request, no data provided");
     return NextResponse.json({ error: "No data provided" }, { status: 400 });
   }
 
@@ -103,8 +111,17 @@ export async function PUT(req: NextRequest) {
       },
     });
   } catch (error) {
+    log.warn("Invoices", req.method, "Failed to update invoice", data.id);
+    log.debug(
+      "Invoices",
+      req.method,
+      "Failed to update invoice",
+      data.id,
+      error
+    );
     return NextResponse.json({ error: "Invoice not updated" }, { status: 422 });
   }
 
+  log.debug("Invoices", req.method, "Updated", data.id);
   return NextResponse.json("Invoice updated", { status: 200 });
 }

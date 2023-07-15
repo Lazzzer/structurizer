@@ -17,10 +17,12 @@ import {
   receiptsSchema,
 } from "@/lib/data-categories";
 import { fetchFromService } from "@/lib/server-requests";
+import { log } from "@/lib/utils";
 
 export async function PUT(req: NextRequest) {
   const user = await getUser();
   if (!user) {
+    log.warn("Verification", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
@@ -33,6 +35,7 @@ export async function PUT(req: NextRequest) {
   const body = (await req.json()) as z.infer<typeof schema>;
 
   if (!validateBody(body, schema)) {
+    log.warn("Verification", req.method, "Invalid body");
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
@@ -45,6 +48,7 @@ export async function PUT(req: NextRequest) {
   });
 
   if (!extraction) {
+    log.warn("Verification", req.method, "Extraction not found", body.id);
     return NextResponse.json(
       { error: "Extraction not found" },
       { status: 404 }
@@ -182,6 +186,7 @@ export async function PUT(req: NextRequest) {
         );
     }
   } catch (e) {
+    log.warn("Verification", req.method, "Error while saving data", body.id);
     return NextResponse.json(
       { error: "Data provided cannot be saved." },
       { status: 422 }
@@ -201,18 +206,27 @@ export async function PUT(req: NextRequest) {
       },
     });
   } catch (error) {
+    log.error(
+      "Verification",
+      req.method,
+      "Error while updating extraction",
+      body.id,
+      error
+    );
     return NextResponse.json(
       { error: "Extraction not updated" },
       { status: 500 }
     );
   }
 
+  log.debug("Verification", req.method, "Data saved", body.id);
   return NextResponse.json({ message: "Data saved" }, { status: 200 });
 }
 
 export async function POST(req: Request) {
   const user = await getUser();
   if (!user) {
+    log.warn("Verification", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
@@ -225,6 +239,7 @@ export async function POST(req: Request) {
   const body = (await req.json()) as z.infer<typeof schema>;
 
   if (!validateBody(body, schema)) {
+    log.warn("Verification", req.method, "Invalid body");
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
@@ -246,10 +261,12 @@ export async function POST(req: Request) {
   const res = await fetchFromService("analysis", data);
 
   if (!res.ok) {
+    log.warn("Verification", req.method, "Error while analyzing data");
     return NextResponse.json({ error: res.statusText }, { status: res.status });
   }
 
   const { analysis } = await res.json();
 
+  log.debug("Verification", req.method, "Analysis done", analysis);
   return NextResponse.json(analysis, { status: 200 });
 }

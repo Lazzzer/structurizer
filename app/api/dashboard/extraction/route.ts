@@ -3,10 +3,12 @@ import prisma from "@/lib/prisma";
 import { getUser } from "@/lib/session";
 import * as z from "zod";
 import { deleteObject } from "@/lib/s3";
+import { log } from "@/lib/utils";
 
 export async function DELETE(req: NextRequest) {
   const user = await getUser();
   if (!user) {
+    log.warn("Extraction", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
@@ -19,6 +21,7 @@ export async function DELETE(req: NextRequest) {
 
   const { success } = schema.safeParse({ id: extractionId });
   if (!success) {
+    log.warn("Extraction", req.method, "Failed request, invalid id");
     return NextResponse.json(
       { error: "Invalid Extraction id" },
       { status: 400 }
@@ -33,6 +36,7 @@ export async function DELETE(req: NextRequest) {
   });
 
   if (!extraction) {
+    log.warn("Extraction", req.method, "Extraction not found");
     return NextResponse.json(
       { error: "Extraction not found" },
       { status: 404 }
@@ -47,11 +51,13 @@ export async function DELETE(req: NextRequest) {
       },
     });
   } catch (e) {
+    log.error("Extraction", req.method, "Error deleting", extractionId, e);
     return NextResponse.json(
       { error: "Error deleting corresponding file" },
       { status: 500 }
     );
   }
 
+  log.debug("Extraction", req.method, "Deleted", extractionId);
   return NextResponse.json({ message: "extraction deleted" }, { status: 200 });
 }

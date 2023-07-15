@@ -11,10 +11,12 @@ import {
 } from "@/lib/server-requests";
 import { Status } from "@prisma/client";
 import { categories } from "@/lib/data-categories";
+import { log } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) {
+    log.warn("Bulk Processing", req.method, "Access denied");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
@@ -24,6 +26,7 @@ export async function POST(req: NextRequest) {
 
   const body = (await req.json()) as z.infer<typeof schema>;
   if (!validateBody(body, schema)) {
+    log.warn("Bulk Processing", req.method, "Invalid body");
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
@@ -33,11 +36,13 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  const textRecognitionPromises = body.ids.map(async (id) => {
+  let ids = body.ids;
+  const textRecognitionPromises = ids.map(async (id) => {
     const data = await getObjectUrl(id);
     const text = await getText(data.url);
 
     if (text === "") {
+      log.warn("Bulk Processing", req.method, "Empty text", id);
       throw new Error("Empty text");
     }
     return await prisma.extraction.update({
@@ -57,13 +62,15 @@ export async function POST(req: NextRequest) {
     textRecognitionPromises
   );
 
-  textRecognitionResults.forEach((result, index) => {
-    if (result.status === "rejected") {
-      console.error(`Error processing id ${body.ids[index]}: ${result.reason}`);
+  ids = ids.filter((id, index) => {
+    if (textRecognitionResults[index].status === "rejected") {
+      log.warn("Bulk Processing", req.method, "Failed Text Recognition", id);
+      return false;
     }
+    return true;
   });
 
-  const dataExtractionPromises = body.ids.map(async (id) => {
+  const dataExtractionPromises = ids.map(async (id) => {
     const extraction = await prisma.extraction.findFirst({
       where: {
         id: id,
@@ -73,6 +80,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!extraction) {
+      log.warn("Bulk Processing", req.method, "Extraction not found", id);
       throw new Error("Extraction not found");
     }
 
@@ -91,6 +99,12 @@ export async function POST(req: NextRequest) {
     );
 
     if (!classificationResponse.ok) {
+      log.warn(
+        "Bulk Processing",
+        req.method,
+        "Failed classification request",
+        id
+      );
       throw new Error("Cannot classify text");
     }
 
@@ -100,6 +114,12 @@ export async function POST(req: NextRequest) {
       !classification.classification ||
       !categories.has(classification.classification)
     ) {
+      log.warn(
+        "Bulk Processing",
+        req.method,
+        "No valid classification found",
+        id
+      );
       throw new Error("No classification found");
     }
 
@@ -110,6 +130,12 @@ export async function POST(req: NextRequest) {
     );
 
     if (!dataExtractionResponse.ok) {
+      log.warn(
+        "Bulk Processing",
+        req.method,
+        "Failed data extraction request",
+        id
+      );
       throw new Error("Cannot extract data");
     }
     const { output } = await dataExtractionResponse.json();
@@ -131,15 +157,22 @@ export async function POST(req: NextRequest) {
     dataExtractionPromises
   );
 
-  dataExtractionResults.forEach((result, index) => {
-    if (result.status === "rejected") {
-      console.error(`Error processing id ${body.ids[index]}: ${result.reason}`);
+  ids = ids.filter((id, index) => {
+    if (dataExtractionResults[index].status === "rejected") {
+      log.warn("Bulk Processing", req.method, "Failed Data Extraction", id);
+      return false;
     }
+    return true;
   });
 
+  log.info(
+    "Bulk Processing",
+    req.method,
+    `Processed ${body.ids.length} file(s), ${ids.length} awaiting verification`
+  );
   return NextResponse.json(
     {
-      message: "Bulk processing in progress",
+      message: "Bulk processing done",
     },
     { status: 200 }
   );

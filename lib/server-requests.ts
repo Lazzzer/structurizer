@@ -8,6 +8,7 @@ import {
   RECEIPTS,
   categories,
 } from "./data-categories";
+import { log } from "./utils";
 
 export async function getPreferences() {
   const user = await getUser();
@@ -110,6 +111,7 @@ export async function fetchFromService(
     | "generic-output",
   data: object
 ) {
+  log.info("LLM Service", "POST", `Request to /${endpoint} endpoint`);
   return await fetch(
     `${process.env.LLM_STRUCTURIZER_URL}/v1/structured-data/json/${endpoint}`,
     {
