@@ -38,8 +38,8 @@ export async function POST(req: NextRequest) {
 
   let ids = body.ids;
   const textRecognitionPromises = ids.map(async (id) => {
-    const data = await getObjectUrl(id);
-    const text = await getText(data.url);
+    const { url } = await getObjectUrl(id);
+    const text = await getText(url);
 
     if (text === "") {
       log.warn("Bulk Processing", req.method, "Empty text", id);

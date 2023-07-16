@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
   if (!success) {
     log.warn("Signed Url", req.method, "Failed request, invalid id");
-    return NextResponse.json({ error: "Invalid Receipt id" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }
 
   const extraction = await prisma.extraction.findFirst({
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
   log.debug("Signed Url", req.method, "Fetched", extractionId);
   return NextResponse.json(
     {
-      uuid: extraction.id,
+      id: extraction.id,
       filename: extraction.filename,
       url,
     },

@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { Preferences, Status } from "@prisma/client";
 import { getUser } from "./session";
@@ -9,6 +8,7 @@ import {
   categories,
 } from "./data-categories";
 import { log } from "./utils";
+import { generateSignedUrl } from "./s3";
 
 export async function getPreferences() {
   const user = await getUser();
@@ -21,18 +21,27 @@ export async function getPreferences() {
 }
 
 export async function getObjectUrl(id: string) {
-  const res = await fetch(`${process.env.APP_URL}/api/signed-url?id=${id}`, {
-    method: "GET",
-    headers: {
-      Cookie: headers().get("cookie") ?? "",
+  const user = await getUser();
+  if (!user) {
+    throw new Error("Cannot authenticate user");
+  }
+  const extraction = await prisma.extraction.findFirst({
+    where: {
+      id,
+      userId: user.id,
     },
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
+  if (!extraction) {
+    throw new Error("Extraction not found");
   }
+  const url = await generateSignedUrl(extraction.objectPath);
 
-  return res.json();
+  return {
+    id: extraction.id,
+    filename: extraction.filename,
+    url,
+  };
 }
 
 export async function getText(url: string) {
