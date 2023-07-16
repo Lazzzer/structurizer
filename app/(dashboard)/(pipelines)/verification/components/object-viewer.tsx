@@ -21,7 +21,7 @@ export function ObjectViewer({
   setVerifiedJson,
 }: ObjectViewerProps) {
   return (
-    <ScrollArea className="w-full h-full bg-white rounded-lg p-2">
+    <ScrollArea className="w-full h-full overflow-hidden bg-white rounded-lg p-2">
       {category === RECEIPTS && (
         <ReceiptsViewer
           verifiedReceipt={json}
