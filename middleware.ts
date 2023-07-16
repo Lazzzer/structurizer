@@ -42,7 +42,6 @@ export const config = {
     "/invoices/:path*",
     "/card-statements/:path*",
     "/settings/:path*",
-    "/help/:path*",
     "/login",
     "/register",
   ],

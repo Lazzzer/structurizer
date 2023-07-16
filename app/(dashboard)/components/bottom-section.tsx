@@ -21,13 +21,13 @@ export function BottomSection({
   return (
     <div className={className}>
       <div className="flex">
-        <div className="ml-2.5 h-24 w-0.5 bg-slate-300 rounded-full" />
+        <div className="ml-2.5 h-12 w-0.5 bg-slate-300 rounded-full" />
         <ul role="list" className="mt-1">
           {items.map((item, index) => {
             const Icon = Icons[item.icon];
             return (
               <Link
-                className="flex items-center ml-4 my-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 focus-visible:rounded-sm"
+                className="flex items-center ml-4 my-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 focus-visible:rounded-sm"
                 key={index}
                 href={item.href}
                 prefetch={false}
