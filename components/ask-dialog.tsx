@@ -73,7 +73,10 @@ export function AskDialog() {
       <DialogTrigger asChild>
         <AskButton setOpen={setOpen} />
       </DialogTrigger>
-      <DialogContentWithoutClose className="p-0 shadow-lg max-w-2xl focus:outline-0 focus-visible:outline-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0">
+      <DialogContentWithoutClose
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        className="p-0 shadow-lg max-w-2xl focus:outline-0 focus-visible:outline-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0"
+      >
         <div
           className={cn(
             "relative rounded-md bg-white transition delay-300 glow after:rounded-lg before:rounded-lg focus:outline-0 focus-visible:outline-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0",
