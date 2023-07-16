@@ -23,6 +23,7 @@ import { SheetError } from "./sheet-error";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { mapCurrency } from "@/lib/utils";
 import { SheetSkeleton } from "./sheet-skeleton";
+import { useRouter } from "next/navigation";
 
 interface SheetInvoiceProps {
   id: string;
@@ -50,6 +51,7 @@ export function SheetInvoice({ id, children }: SheetInvoiceProps) {
   const [url, setUrl] = useState<string | null>(null);
   const [hasGetFailed, setHasGetFailed] = useState(false);
 
+  const router = useRouter();
   const idRef = useRef(id);
 
   useEffect(() => {
@@ -71,6 +73,7 @@ export function SheetInvoice({ id, children }: SheetInvoiceProps) {
         if (!open) {
           setUrl(null);
           setIsEditing(false);
+          router.refresh();
         }
       }}
     >

@@ -22,6 +22,7 @@ import { SheetReceiptEditor } from "./sheet-receipt-editor";
 import { SheetError } from "./sheet-error";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { SheetSkeleton } from "./sheet-skeleton";
+import { useRouter } from "next/navigation";
 
 interface SheetReceiptProps {
   id: string;
@@ -49,6 +50,7 @@ export function SheetReceipt({ id, children }: SheetReceiptProps) {
   const [url, setUrl] = useState<string | null>(null);
   const [hasGetFailed, setHasGetFailed] = useState(false);
 
+  const router = useRouter();
   const idRef = useRef(id);
 
   useEffect(() => {
@@ -70,6 +72,7 @@ export function SheetReceipt({ id, children }: SheetReceiptProps) {
         if (!open) {
           setUrl(null);
           setIsEditing(false);
+          router.refresh();
         }
       }}
     >

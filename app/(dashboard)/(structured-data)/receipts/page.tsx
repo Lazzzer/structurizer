@@ -24,7 +24,7 @@ async function getData() {
 
   const receipts = await prisma.receipt.findMany({
     orderBy: {
-      updatedAt: "desc",
+      createdAt: "desc",
     },
     where: {
       user: {

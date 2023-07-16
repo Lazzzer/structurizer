@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/collapsible";
 import { updateStructuredData } from "@/lib/client-requests";
 import { Invoice } from "@prisma/client";
-import { useRouter } from "next/navigation";
 
 interface SheetInvoiceEditorProps {
   invoice: InvoiceWithItems;
@@ -50,8 +49,6 @@ export function SheetInvoiceEditor({
   const [isLoading, setIsLoading] = useState(false);
   const [areItemsOpen, setAreItemsOpen] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const router = useRouter();
 
   return (
     <div className="w-full h-full">
@@ -461,7 +458,6 @@ export function SheetInvoiceEditor({
               setErrorMessage(e.message);
             }
             setIsLoading(false);
-            router.refresh();
           }}
         >
           {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}

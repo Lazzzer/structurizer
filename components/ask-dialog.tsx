@@ -73,7 +73,10 @@ export function AskDialog() {
       <DialogTrigger asChild>
         <AskButton setOpen={setOpen} />
       </DialogTrigger>
-      <DialogContentWithoutClose className="p-0 shadow-lg max-w-2xl focus:outline-0 focus-visible:outline-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0">
+      <DialogContentWithoutClose
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        className="p-0 shadow-lg max-w-2xl focus:outline-0 focus-visible:outline-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0"
+      >
         <div
           className={cn(
             "relative rounded-md bg-white transition delay-300 glow after:rounded-lg before:rounded-lg focus:outline-0 focus-visible:outline-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0",
@@ -183,65 +186,76 @@ function QuestionAnswerDisplay({
         </p>
       </div>
       <Separator />
-      {isLoading ? (
-        <div className="flex gap-3 items-center mt-5">
-          <div className="p-1.5 w-8 h-8 shrink-0 bg-white border border-sky-300 rounded-md">
-            <SparklesIcon width={32} height={32} />
-          </div>
-          <p className="text-slate-400 text-xs text-medium">
-            The AI is looking for an answer. Please wait, this may take a
-            while...
-          </p>
-        </div>
-      ) : (
-        <>
-          <div className="flex gap-3 items-start mt-5">
-            <Icons.sparkles
-              width={32}
-              height={32}
-              className="p-1.5 shrink-0 bg-white fill-slate-900 border border-slate-300 rounded-md"
-            />
-            <ReactMarkdown
-              className="max-h-[500px] w-full max-w-xl overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600"
-              remarkPlugins={[remarkGfm]}
-            >
-              {typedAnswer}
-            </ReactMarkdown>
-          </div>
-          {answer.length === typedAnswer.length && (
-            <motion.div
-              variants={variants}
-              initial="init"
-              animate="visible"
-              exit="removed"
-              transition={{ delay: 0.3 }}
-              className="flex w-full gap-2 justify-end"
-            >
-              <Button
-                className="mt-4 text-slate-800"
-                size="sm"
-                variant={"ghost"}
-                onClick={() => reset(true)}
-              >
-                Close
-              </Button>
-              <Button
-                className="mt-4 text-slate-800"
-                size="sm"
-                variant={"outline"}
-                onClick={() => reset(false)}
-              >
-                <Icons.sparkles
-                  width={14}
-                  height={14}
-                  className="inline-block mr-2"
-                />
-                Ask
-              </Button>
-            </motion.div>
+      <div className="flex gap-3 mt-5">
+        <div
+          className={cn(
+            "p-1.5 w-8 h-8 shrink-0 border rounded-md",
+            isLoading
+              ? "border-sky-300 bg-white"
+              : "border-slate-300 fill-slate-900"
           )}
-        </>
-      )}
+        >
+          {isLoading ? (
+            <SparklesIcon width={32} height={32} />
+          ) : (
+            <Icons.sparkles className="w-full h-full" />
+          )}
+        </div>
+        <div
+          className={cn(
+            "min-h-[32px] w-full flex flex-col",
+            isLoading ? "justify-center" : "justify-start"
+          )}
+        >
+          {isLoading ? (
+            <p className="text-slate-500 text-xs text-medium animate-pulse">
+              The AI is looking for an answer. Please wait, this may take a
+              while...
+            </p>
+          ) : (
+            <>
+              <ReactMarkdown
+                className="max-h-[500px] w-full max-w-xl overflow-auto px-1 prose prose-slate prose-sm break-words text-slate-600"
+                remarkPlugins={[remarkGfm]}
+              >
+                {typedAnswer}
+              </ReactMarkdown>
+              {answer.length === typedAnswer.length && (
+                <motion.div
+                  variants={variants}
+                  initial="init"
+                  animate="visible"
+                  exit="removed"
+                  transition={{ delay: 0.3 }}
+                  className="flex w-full gap-2 justify-end"
+                >
+                  <Button
+                    className="mt-4 text-slate-800"
+                    size="sm"
+                    variant={"ghost"}
+                    onClick={() => reset(true)}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    className="mt-4 text-slate-800"
+                    size="sm"
+                    variant={"outline"}
+                    onClick={() => reset(false)}
+                  >
+                    <Icons.sparkles
+                      width={14}
+                      height={14}
+                      className="inline-block mr-2"
+                    />
+                    Ask
+                  </Button>
+                </motion.div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

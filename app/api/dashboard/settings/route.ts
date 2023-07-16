@@ -22,6 +22,43 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
+    if (
+      !(await doesExtractionExist(
+        body.enableReceiptsOneShot,
+        body.receiptExampleExtractionId
+      ))
+    ) {
+      log.warn("Settings", req.method, "Invalid receipt extraction id");
+      return NextResponse.json(
+        { error: "Invalid receipt extraction id" },
+        { status: 400 }
+      );
+    }
+    if (
+      !(await doesExtractionExist(
+        body.enableInvoicesOneShot,
+        body.invoiceExampleExtractionId
+      ))
+    ) {
+      log.warn("Settings", req.method, "Invalid invoice extraction id");
+      return NextResponse.json(
+        { error: "Invalid invoice extraction id" },
+        { status: 400 }
+      );
+    }
+
+    if (
+      !(await doesExtractionExist(
+        body.enableCardStatementsOneShot,
+        body.cardStatementExampleExtractionId
+      ))
+    ) {
+      log.warn("Settings", req.method, "Invalid card statement extraction id");
+      return NextResponse.json(
+        { error: "Invalid card statement extraction id" },
+        { status: 400 }
+      );
+    }
     const updatedPreferences = await prisma.preferences.update({
       where: {
         userId: user.id,
@@ -101,4 +138,17 @@ export async function DELETE() {
       { status: 500 }
     );
   }
+}
+
+async function doesExtractionExist(
+  isEnabled: boolean,
+  id: string | null | undefined
+): Promise<boolean> {
+  return isEnabled && id
+    ? !!(await prisma.extraction.findUnique({
+        where: {
+          id,
+        },
+      }))
+    : true;
 }

@@ -21,7 +21,6 @@ services:
     restart: always
     environment:
       NODE_ENV: production
-      APP_URL: http://localhost:3001
       LLM_STRUCTURIZER_URL: http://llm-structurizer-app:3000
       DATABASE_URL: postgresql://postgres:root@structurizer-db:5432/structurizer?schema=public&connect_timeout=300
       NEXTAUTH_SECRET: #### YOUR SECRET HERE ####

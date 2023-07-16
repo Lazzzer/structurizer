@@ -23,7 +23,7 @@ async function getData() {
   const user = await getUser();
   const cardStatements = await prisma.cardStatement.findMany({
     orderBy: {
-      updatedAt: "desc",
+      createdAt: "desc",
     },
     where: {
       user: {

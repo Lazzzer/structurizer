@@ -55,11 +55,6 @@ const structuredData: NavSectionItems = {
 
 const bottomItems: NavItem[] = [
   {
-    label: "Help",
-    href: "/help",
-    icon: "help",
-  },
-  {
     label: "Settings",
     href: "/settings",
     icon: "settings",
