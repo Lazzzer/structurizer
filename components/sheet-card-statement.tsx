@@ -22,6 +22,7 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { SheetError } from "./sheet-error";
 import { SheetCardStatementEditor } from "./sheet-card-statement-editor";
 import { SheetSkeleton } from "./sheet-skeleton";
+import { useRouter } from "next/navigation";
 
 interface SheetCardStatementProps {
   id: string;
@@ -50,6 +51,7 @@ export function SheetCardStatement({ id, children }: SheetCardStatementProps) {
   const [url, setUrl] = useState<string | null>(null);
   const [hasGetFailed, setHasGetFailed] = useState(false);
 
+  const router = useRouter();
   const idRef = useRef(id);
 
   useEffect(() => {
@@ -71,6 +73,7 @@ export function SheetCardStatement({ id, children }: SheetCardStatementProps) {
         if (!open) {
           setUrl(null);
           setIsEditing(false);
+          router.refresh();
         }
       }}
     >

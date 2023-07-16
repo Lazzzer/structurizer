@@ -23,7 +23,7 @@ export async function getData() {
   const user = await getUser();
   const invoices = await prisma.invoice.findMany({
     orderBy: {
-      updatedAt: "desc",
+      createdAt: "desc",
     },
     where: {
       user: {

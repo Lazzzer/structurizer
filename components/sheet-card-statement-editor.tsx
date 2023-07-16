@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/collapsible";
 import { updateStructuredData } from "@/lib/client-requests";
 import { CardStatement } from "@prisma/client";
-import { useRouter } from "next/navigation";
 
 interface SheetCardStatementEditorProps {
   cardStatement: CardStatementWithTransactions;
@@ -52,8 +51,6 @@ export function SheetCardStatementEditor({
   const [isLoading, setIsLoading] = useState(false);
   const [areItemsOpen, setAreItemsOpen] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const router = useRouter();
 
   return (
     <div className="w-full h-full">
@@ -542,7 +539,6 @@ export function SheetCardStatementEditor({
               setErrorMessage(e.message);
             }
             setIsLoading(false);
-            router.refresh();
           }}
         >
           {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
