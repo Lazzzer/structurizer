@@ -203,22 +203,23 @@ export function Dropzone({ className, updateUploadInfos }: DropzoneProps) {
           checked={state.isBulkProcessing}
         />
         <Label htmlFor="bulk-processing">Bulk Processing</Label>
-        <HelpPopover contentClassName="w-[500px] overflow-scroll">
-          <div className="flex items-center gap-2 mb-2">
-            <Icons.help width={20} height={20} />
-            <h3 className="font-semibold">Bulk Processing</h3>
-          </div>
-
-          <p className="mb-2 text-slate-700 text-sm">
-            Bulk processing allows to upload multiple files at once. The current
-            limit is to 10 files at once.
-          </p>
-          <p className="text-slate-700 text-sm">
-            Bulk processing automatically triggers the structuring of all
-            uploaded PDF files. Each structuring process will stop at its
-            current pipeline if it encounters an error. Structured files still
-            need to be validated in the Verification pipeline.
-          </p>
+        <HelpPopover contentClassName="max-h-[500px]">
+          <article className="prose prose-sm leading-normal">
+            <h3 className="text-lg font-semibold">Bulk Processing</h3>
+            <p>
+              Bulk processing allows to upload multiple files. The current limit
+              is to 10 PDF files at once.
+            </p>
+            <p>
+              Upon upload, the bulk processing feature will automatically
+              initiate the structuring process for all files. If a structuring
+              process encounters an error, it will stop at its current pipeline.
+            </p>
+            <p>
+              Please be aware that all structured files are still required to
+              pass through the Verification pipeline.
+            </p>
+          </article>
         </HelpPopover>
       </div>
       <div

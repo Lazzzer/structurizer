@@ -10,12 +10,14 @@ import { useStepStore } from "@/lib/store";
 import { AskDialog } from "./ask-dialog";
 
 interface TopMainContentProps {
+  children?: React.ReactNode;
   title: string;
   displayUploadButton?: boolean;
   step?: number;
 }
 
 export function TopMainContent({
+  children,
   title,
   displayUploadButton = false,
   step = undefined,
@@ -31,11 +33,12 @@ export function TopMainContent({
     <div className="border-slate-200 border-b-2 flex-none flex items-end justify-center relative h-32">
       <h1
         className={cn(
-          step !== undefined ? "lg:text-3xl " : "lg:text-4xl",
-          "hidden lg:block mb-6 ml-8 absolute font-cal left-0 bottom-0"
+          step !== undefined ? "lg:text-3xl" : "lg:text-4xl",
+          "hidden lg:block mb-6 ml-8 absolute font-cal left-0 bottom-0 text-slate-900"
         )}
       >
         {title}
+        {children}
       </h1>
       {step !== undefined && <MultiSteps />}
 

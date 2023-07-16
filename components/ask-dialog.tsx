@@ -208,7 +208,7 @@ function QuestionAnswerDisplay({
           )}
         >
           {isLoading ? (
-            <p className="text-slate-400 text-xs text-medium">
+            <p className="text-slate-500 text-xs text-medium animate-pulse">
               The AI is looking for an answer. Please wait, this may take a
               while...
             </p>

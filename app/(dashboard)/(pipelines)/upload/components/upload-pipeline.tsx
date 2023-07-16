@@ -19,8 +19,8 @@ export default function UploadPipeline() {
   const { status } = useStepStore();
 
   return (
-    <div className="m-8 flex flex-col flex-grow 2xl:-mt-48 -mt-10">
-      <div className="flex flex-col flex-1 items-center justify-center">
+    <div className="m-8 flex flex-col flex-grow">
+      <div className="flex flex-col flex-1 items-center justify-center 2xl:-mt-48 -mt-10">
         <AnimatePresence>
           {status === "active" && (
             <Dropzone updateUploadInfos={setUploadInfos} />
