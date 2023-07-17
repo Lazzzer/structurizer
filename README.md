@@ -1,47 +1,171 @@
-<p align="center">
-  <a href="https://nextjs-postgres-auth.vercel.app/">
-    <img src="/public/logo.png" height="96">
-    <h3 align="center">Next.js Prisma PostgreSQL Auth Starter</h3>
-  </a>
-</p>
+# Structurizer
 
-<p align="center">
-This is a <a href="https://nextjs.org/">Next.js</a> starter kit that uses <a href="https://next-auth.js.org/">Next-Auth</a> for simple email + password login<br/>
-<a href="https://www.prisma.io/">Prisma</a> as the ORM, and a <a href="https://vercel.com/postgres">Vercel Postgres</a> database to persist the data.</p>
+Ce projet fait partie d'un Travail de Bachelor réalisé à l'[HEIG-VD](https://heig-vd.ch/), dans la filière Informatique et systèmes de communication (ISC) par Lazar Pavicevic et supervisé par le Professeur Marcel Graf.
 
-<br/>
+Le Travail de Bachelor est également composé d'une API accessible sur ce repository :
 
-## Deploy Your Own
+#### [`📄 LLM-Structurizer`](https://github.com/Lazzzer/llm-structurizer)
 
-You can clone & deploy it to Vercel with one click:
+Structurizer est une application web de structuration de données issues du langage naturel. 
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?demo-title=Next.js%20Prisma%20PostgreSQL%20Auth%20Starter&demo-description=Simple%20Next.js%2013%20starter%20kit%20that%20uses%20Next-Auth%20for%20auth%20and%20Prisma%20PostgreSQL%20as%20a%20database.&demo-url=https%3A%2F%2Fnextjs-postgres-auth.vercel.app%2F&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F7rsVQ1ZBSiWe9JGO6FUeZZ%2F210cba91036ca912b2770e0bd5d6cc5d%2Fthumbnail.png&project-name=Next.js%%20Prisma%20PostgreSQL%20Auth%20Starter&repository-name=nextjs-postgres-auth-starter&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnextjs-postgres-auth-starter&from=templates&skippable-integrations=1&env=NEXTAUTH_SECRET&envDescription=Generate%20a%20random%20secret%3A&envLink=https://generate-secret.vercel.app/&stores=%5B%7B"type"%3A"postgres"%7D%5D)
+L'application web est au stade de _Proof of Concept_, elle propose la structuration de documents pdf uniquement. Elle permet la catégorisation et l'extraction de données structurées de __factures__, de __tickets de reçu__ et de __relevés de carte de crédit__.
 
-## Developing Locally
+## Stack
 
-You can clone & create this repo with the following command
+- [Typescript](https://www.typescriptlang.org)
+- [Next.js](https://nextjs.org/docs)
+- [TailwindCSS](https://tailwindcss.com/docs/installation)
+- [Shadcn/ui](https://ui.shadcn.com/docs)
+- [PostgreSQL](https://www.postgresql.org/docs/15/index.html)
+- [Prisma](https://www.prisma.io/docs/getting-started)
+
+## Object Storage
+
+L'application stocke ses documents pdf en utilisant le package `@aws-sdk/client-s3`. N'import quel Object Storage compatible s3 devrait fonctionner.
+
+Les Object Storages suivants ont été testés et sont fonctionnels avec l'application:
+- [x] [Amazon S3](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started-nodejs.html)
+- [x] [Cloudflare R2](https://developers.cloudflare.com/r2/get-started/)
+
+
+## Prérequis
+
+- [NodeJS](https://nodejs.org/en/download/) >= version 16
+- [NPM](https://docs.npmjs.com/getting-started) >= version 8
+- [PostgreSQL](https://www.postgresql.org/docs/15/index.html) version 15
+- [Docker](https://docs.docker.com/get-started/)
+- [Clé d'API OpenAI](https://platform.openai.com/account/api-keys)
+- [Clé d'API de LLM-Structurizer](https://github.com/Lazzzer/llm-structurizer)
+- Credentials d'un Object Storage compatible S3
+
+## Environnement de développement
+
+### Clonage du repository
 
 ```bash
-npx create-next-app nextjs-typescript-starter --example "https://github.com/vercel/nextjs-postgres-auth-starter"
+git@github.com:Lazzzer/structurizer.git
 ```
 
-## Getting Started
+### Installation des dépendances
 
-First, run the development server:
+```bash
+cd structurizer
+npm install
+```
+
+### Ajout des variables d'environnement
+
+Créer un fichier `.env` à partir du fichier [.env.example](https://github.com/Lazzzer/structurizer/blob/main/.env.example) et mettez-y vos valeurs.
+
+Exemple:
+
+```bash
+# Format: postgresql://[POSTGRES_USER]:[POSTGRES_PASSWORD]@[DB_HOST]:[DB_PORT]/[DB_NAME]?schema=[DB_SCHEMA]&connect_timeout=300
+DATABASE_URL=postgresql://postgres:root@localhost:5432/structurizer?schema=public&connect_timeout=300
+
+# Vous pouvez générer un secret ici: https://generate-secret.vercel.app/32
+NEXTAUTH_SECRET=
+NEXTAUTH_URL=http://localhost:3001
+
+# S3 Credentials et le nom du bucket
+S3_ACCESS_KEY_ID=...
+S3_SECRET_ACCESS_KEY=...
+S3_BUCKET=...
+S3_REGION=...
+S3_ENDPOINT=...
+
+# L'URL de votre instance LLM-Structurizer
+LLM_STRUCTURIZER_URL=http://localhost:3000
+
+# Les clés d'API
+X_API_KEY=...
+OPENAI_API_KEY=sk-...
+```
+
+### Initialisation de la base de données
+
+```bash
+npx prisma db push
+```
+
+### Lancement du serveur de développement
+
+> **Note**  
+> La base de données doit être initialisée et accessible par le serveur.
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+L'application est accessible sur ce [lien](http://localhost:3001).
 
-## Learn More
+## Environnement de production en local
 
-To learn more about Next.js, take a look at the following resources:
+> **Note**  
+> Docker est nécessaire pour cette étape.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+L'environnement de production se lance à l'aide de docker compose, dont un template est disponible dans le fichier [docker-compose.example.yml](https://github.com/Lazzzer/structurizer/blob/main/docker-compose.example.yml). Il ne dépend pas de l'installation précédente.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Comme pour le fichier `.env`, il faut créer un fichier `docker-compose.yml`  à partir du template et y mettre les bonnes variables.
+
+Le docker-compose fourni part du principe que vous lancez l'instance de `LLM-Structurizer` avec son propre docker-compose et connecte `structurizer-app` au network `llm-structurizer_network` pour faire les appels à l'API. `LLM_STRUCTURIZER_URL` peut être ajusté pour répondre aux besoins de votre configuration.
+
+### Création des images
+
+```bash
+cd structurizer
+docker compose build
+```
+
+L'image de l'application se trouve dans le fichier [Dockerfile](https://github.com/Lazzzer/structurizer/blob/main/Dockerfile), basée sur Debian 10.
+
+### Lancement des images
+
+```bash
+docker compose up
+```
+
+Il est préférable que la base de données soit initialisée avant de lancer l'image du serveur. Dans ce cas, vous pouvez lancer les commandes suivantes:
+
+```bash
+# Lancement de la base de données [en background s'il le faut]
+docker compose up db [-d]
+
+# Lancement de l'application
+docker compose up app [-d]
+```
+
+### Lancement des migrations
+
+Le serveur de l'application web est initialisé, si ce dernier ne tourne pas en fond, ouvrez une nouvelle instance de votre terminal et lancez la commande suivante:
+
+```bash
+docker exec -it structurizer-app npx prisma migrate deploy
+```
+La base de données reste accessible localement avec les valeurs présentes dans `DATABASE_URL` sauf celle du port qui forwardée sur `5433` pour éviter tout conflit avec la base de données de `LLM-Structurizer.`.
+
+L'application est maitenant disponible sur le même [lien](http://localhost:3001) que précédemment.
+
+### Arrêt des images
+
+```bash
+docker compose down
+```
+
+## Considérations pour la mise en production
+
+Le [Dockerfile](https://github.com/Lazzzer/llm-structurizer/blob/main/Dockerfile) avec ses variables d'environnement suffit pour avoir une API fonctionnelle.
+L'image n'est actuellement pas dans un container registry.
+
+Lors du premier déploiement, il faut s'assurer que la base de données associée ait bien reçu les migrations avec `npx prisma migrate deploy`. La commande peut se lancer depuis un container actif du serveur de l'application. Il est également possible de lancer la commande localement depuis la racine du projet, après avoir modifié la variable d'environnement `DATABASE_URL` avec la _connection string_ de la base de données de production.
+
+Le déploiement du projet a été testé sur [App Platform](https://www.digitalocean.com/products/app-platform) de Digital Ocean.
+
+## Inspirations & citations
+
+Ce projet s'inspire fortement de l'ingéniosité des travaux suivants :
+* [nextjs-postgres-auth-starter](https://github.com/vercel/nextjs-postgres-auth-starter) : Ce repository a permis une mise en place rapide de Next.js 13 avec un template pour [NextAuth.js](https://next-auth.js.org/getting-started/introduction) et [Prisma](https://www.prisma.io/docs/getting-started).
+* [shadcn/taxonomy](https://github.com/shadcn/taxonomy) : Cet excellent projet met en avant les nouvelles fonctionnalités de Next.js 13 version *App Router* et de sa librairie de composants [shadcn/ui](https://ui.shadcn.com/docs).
+* [Build UI recipes](https://buildui.com/recipes) : Il s'agit d'une collection de code snippets par Sam Selikoff pour des interfaces utilisateurs modernes et intuitives. Structurizer utilise notamment du code inspiré du [Multistep Wizard](https://buildui.com/recipes/multistep-wizard) et de l'[Artificial Delay](https://buildui.com/recipes/artificial-delay).
+* [Animated Gradient Border CSS](https://codepen.io/shantanu-jana/pen/XWVBJRv) : Un code snippet par Shantanu Jana modifié pour le glowing effect présent un peu partout dans l'application.
+
