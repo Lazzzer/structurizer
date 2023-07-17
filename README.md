@@ -7,8 +7,17 @@ Le Travail de Bachelor est également composé d'une API accessible sur ce repos
 #### [`📄 LLM-Structurizer`](https://github.com/Lazzzer/llm-structurizer)
 
 Structurizer est une application web de structuration de données issues du langage naturel. 
+L'application se repose sur l'API `LLM-Structurizer` qui, à son tour, utilise des LLMs pour structurer les données.
 
-L'application web est au stade de _Proof of Concept_, elle propose la structuration de documents pdf uniquement. Elle permet la catégorisation et l'extraction de données structurées de __factures__, de __tickets de reçu__ et de __relevés de carte de crédit__.
+Structurizer propose les fonctionnalités suivantes:
+* Upload de documents pour extraction et structuration des données.
+* Structuration des données guidée sous forme de pipelines ou automatique.
+* Vérification humaine des données structurées avec assistance possible d'un LLM.
+* Consultation des données structurées et affichage de statistiques et agrégations sous forme de graphiques.
+* *Question Answering* en langage naturel sur les données structurées.
+
+
+L'application web est au stade de _Proof of Concept_, elle propose la structuration de documents pdf uniquement. Elle se limite également à la catégorisation et l'extraction de données structurées de *factures*, de *tickets de reçu* et de *relevés de carte de crédit*.
 
 ## Stack
 
