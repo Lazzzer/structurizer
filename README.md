@@ -13,6 +13,7 @@ L'application web est au stade de _Proof of Concept_, elle propose la structurat
 ## Stack
 
 - [Typescript](https://www.typescriptlang.org)
+- [React](https://react.dev/learn)
 - [Next.js](https://nextjs.org/docs)
 - [TailwindCSS](https://tailwindcss.com/docs/installation)
 - [Shadcn/ui](https://ui.shadcn.com/docs)
@@ -144,7 +145,7 @@ docker exec -it structurizer-app npx prisma migrate deploy
 ```
 La base de données reste accessible localement avec les valeurs présentes dans `DATABASE_URL` sauf celle du port qui forwardée sur `5433` pour éviter tout conflit avec la base de données de `LLM-Structurizer.`.
 
-L'application est maitenant disponible sur le même [lien](http://localhost:3001) que précédemment.
+L'application est maintenant disponible sur le même [lien](http://localhost:3001) que précédemment.
 
 ### Arrêt des images
 
