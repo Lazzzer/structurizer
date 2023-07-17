@@ -1,4 +1,10 @@
-# Structurizer
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Lazzzer/structurizer/assets/43219964/19bd80a6-2236-4817-b53f-c18e49eb2104">
+    <source media="(prefers-color-scheme: light)" srcset="https://github.com/Lazzzer/structurizer/assets/43219964/cce4673a-9dd5-429d-8968-4eda17d721e7">
+    <img src="https://github.com/Lazzzer/structurizer/assets/43219964/cce4673a-9dd5-429d-8968-4eda17d721e7" alt="Structurizer Logo" width="75%">
+  </picture>
+</h1>
 
 Ce projet fait partie d'un Travail de Bachelor réalisé à l'[HEIG-VD](https://heig-vd.ch/), dans la filière Informatique et systèmes de communication (ISC) par Lazar Pavicevic et supervisé par le Professeur Marcel Graf.
 
