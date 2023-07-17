@@ -128,7 +128,7 @@ export const columns: ColumnDef<Extraction>[] = [
     cell: ({ row }) => (
       <div
         title={row.getValue("filename")}
-        className="w-36 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
+        className="w-32 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
         {row.getValue("filename")}
       </div>

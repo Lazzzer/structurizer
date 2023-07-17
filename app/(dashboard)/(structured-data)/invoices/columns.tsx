@@ -143,7 +143,7 @@ export const columns: ColumnDef<Invoice>[] = [
       <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => (
-      <div className="w-28 text-slate-900">
+      <div className="w-24 text-slate-900">
         {row.getValue<Date>("date").toLocaleDateString("en-GB")}
       </div>
     ),
@@ -156,7 +156,7 @@ export const columns: ColumnDef<Invoice>[] = [
     cell: ({ row }) => (
       <div
         title={row.getValue("totalAmountDue")}
-        className="w-28 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
+        className="w-24 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
         <span>{mapCurrency(row.original.currency ?? "")} </span>
         {row.original.totalAmountDue.toFixed(2)}

@@ -155,7 +155,7 @@ export default function VerificationPipeline({
                   height: "calc(100% - 48px)",
                 }}
                 defaultValue="pdf"
-                className="w-[38%] 2xl:w-[30%]"
+                className="w-[40%] 2xl:w-[30%]"
               >
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="pdf">PDF View</TabsTrigger>

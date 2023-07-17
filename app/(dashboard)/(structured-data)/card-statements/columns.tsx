@@ -167,7 +167,7 @@ export const columns: ColumnDef<CardStatement>[] = [
       <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => (
-      <div className="w-24 text-slate-900">
+      <div className="w-22 text-slate-900">
         {row.getValue<Date>("date").toLocaleDateString("en-GB")}
       </div>
     ),
