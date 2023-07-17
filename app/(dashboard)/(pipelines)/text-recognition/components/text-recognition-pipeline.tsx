@@ -91,12 +91,12 @@ export default function TextRecognitionPipeline({
           <object
             data={`${url}#toolbar=1&navpanes=0&statusbar=0&scrollbar=1&view=fitH`}
             type="application/pdf"
-            className="bg-slate-900 rounded-lg p-2 w-[38%] h-[85%] 2xl:w-[30%] 2xl:h-4/5"
+            className="bg-slate-900 rounded-lg p-2 w-[40%] h-[85%] 2xl:w-[30%] 2xl:h-4/5"
           />
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="w-[38%] h-[85%] 2xl:w-[30%] 2xl:h-4/5 flex flex-col justify-between"
+              className="w-[40%] h-[85%] 2xl:w-[30%] 2xl:h-4/5 flex flex-col justify-between"
             >
               <div className="w-full h-[72%] 2xl:h-4/5">
                 <FormField

@@ -135,7 +135,7 @@ export const columns: ColumnDef<Receipt>[] = [
     cell: ({ row }) => (
       <div
         title={row.getValue("from")}
-        className="w-36 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
+        className="w-32 2xl:w-full 2xl:max-w-3xl truncate overflow-hidden text-slate-900"
       >
         {row.getValue("from")}
       </div>
@@ -147,7 +147,7 @@ export const columns: ColumnDef<Receipt>[] = [
       <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => (
-      <div className="w-24 text-slate-900">
+      <div className="w-22 text-slate-900">
         {row.getValue<Date>("date").toLocaleDateString("en-GB")}
       </div>
     ),
