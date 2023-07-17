@@ -118,6 +118,19 @@ npm run dev
 
 L'application est accessible sur ce [lien](http://localhost:3001).
 
+## CI
+
+La branche `main` est protégée et les pull requests doivent passer l'action `ci` pour être mergées.
+
+<img width="1134" alt="Screenshot CI pipelines" src="https://github.com/Lazzzer/structurizer/assets/43219964/b51dce82-5b11-4fac-89ee-1b2b10259e24">
+
+La CI est gérée avec une Github Action qui sépare le processus en trois étapes.
+
+D'abord, elle effectue une installation des dépendances et une mise en cache pour les prochains runs.
+Ensuite, elle lance le linting, puis finalement elle vérifie, le build. Les erreurs de négligence détectées lors du linting empêcheront le lancement du build, ce dernier étant relativement long.
+
+Ce workflow s'inspire fortement de l'excellent article de Maxime Heckel sur le [sujet](https://blog.maximeheckel.com/posts/building-perfect-github-action-frontend-teams/).
+
 ## Environnement de production en local
 
 > **Note**  
