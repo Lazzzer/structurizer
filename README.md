@@ -22,8 +22,11 @@ Structurizer propose les fonctionnalités suivantes:
 * Consultation des données structurées et affichage de statistiques et agrégations sous forme de graphiques.
 * *Question Answering* en langage naturel sur les données structurées.
 
-
 L'application web est au stade de _Proof of Concept_, elle propose la structuration de documents pdf uniquement. Elle se limite également à la catégorisation et l'extraction de données structurées de *factures*, de *tickets de reçu* et de *relevés de carte de crédit*.
+
+## Démo de l'application
+
+https://github.com/Lazzzer/structurizer/assets/43219964/8d39bb63-cbf6-4ad5-be11-b7ad74eb6136
 
 ## Stack
 
