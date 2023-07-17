@@ -44,7 +44,7 @@ Les Object Storages suivants ont été testés et sont fonctionnels avec l'appli
 ### Clonage du repository
 
 ```bash
-git@github.com:Lazzzer/structurizer.git
+git clone git@github.com:Lazzzer/structurizer.git
 ```
 
 ### Installation des dépendances
@@ -109,7 +109,7 @@ L'environnement de production se lance à l'aide de docker compose, dont un temp
 
 Comme pour le fichier `.env`, il faut créer un fichier `docker-compose.yml`  à partir du template et y mettre les bonnes variables.
 
-Le docker-compose fourni part du principe que vous lancez l'instance de `LLM-Structurizer` avec son propre docker-compose et connecte `structurizer-app` au network `llm-structurizer_network` pour faire les appels à l'API. `LLM_STRUCTURIZER_URL` peut être ajusté pour répondre aux besoins de votre configuration.
+Le docker-compose fourni part du principe que vous lancez l'instance de `LLM-Structurizer` avec son propre docker-compose et connecte `structurizer-app` au network `llm-structurizer_network` pour faire les appels à l'API. La variable `LLM_STRUCTURIZER_URL` peut être ajustée pour répondre aux besoins de votre configuration.
 
 ### Création des images
 
@@ -143,7 +143,7 @@ Le serveur de l'application web est initialisé, si ce dernier ne tourne pas en 
 ```bash
 docker exec -it structurizer-app npx prisma migrate deploy
 ```
-La base de données reste accessible localement avec les valeurs présentes dans `DATABASE_URL` sauf celle du port qui forwardée sur `5433` pour éviter tout conflit avec la base de données de `LLM-Structurizer.`.
+La base de données reste accessible localement avec les valeurs présentes dans `DATABASE_URL` sauf celle du port qui forwardée sur `5433` pour éviter tout conflit avec la base de données de `LLM-Structurizer`.
 
 L'application est maintenant disponible sur le même [lien](http://localhost:3001) que précédemment.
 
@@ -155,7 +155,7 @@ docker compose down
 
 ## Considérations pour la mise en production
 
-Le [Dockerfile](https://github.com/Lazzzer/llm-structurizer/blob/main/Dockerfile) avec ses variables d'environnement suffit pour avoir une API fonctionnelle.
+Le [Dockerfile](https://github.com/Lazzzer/structurizer/blob/main/Dockerfile) avec ses variables d'environnement suffit pour avoir une API fonctionnelle.
 L'image n'est actuellement pas dans un container registry.
 
 Lors du premier déploiement, il faut s'assurer que la base de données associée ait bien reçu les migrations avec `npx prisma migrate deploy`. La commande peut se lancer depuis un container actif du serveur de l'application. Il est également possible de lancer la commande localement depuis la racine du projet, après avoir modifié la variable d'environnement `DATABASE_URL` avec la _connection string_ de la base de données de production.
@@ -166,7 +166,7 @@ Le déploiement du projet a été testé sur [App Platform](https://www.digitalo
 
 Ce projet s'inspire fortement de l'ingéniosité des travaux suivants :
 * [nextjs-postgres-auth-starter](https://github.com/vercel/nextjs-postgres-auth-starter) : Ce repository a permis une mise en place rapide de Next.js 13 avec un template pour [NextAuth.js](https://next-auth.js.org/getting-started/introduction) et [Prisma](https://www.prisma.io/docs/getting-started).
-* [shadcn/taxonomy](https://github.com/shadcn/taxonomy) : Cet excellent projet met en avant les nouvelles fonctionnalités de Next.js 13 version *App Router* et de sa librairie de composants [shadcn/ui](https://ui.shadcn.com/docs).
-* [Build UI recipes](https://buildui.com/recipes) : Il s'agit d'une collection de code snippets par Sam Selikoff pour des interfaces utilisateurs modernes et intuitives. Structurizer utilise notamment du code inspiré du [Multistep Wizard](https://buildui.com/recipes/multistep-wizard) et de l'[Artificial Delay](https://buildui.com/recipes/artificial-delay).
+* [shadcn/taxonomy](https://github.com/shadcn/taxonomy) : Cet excellent projet met en avant les nouvelles fonctionnalités de Next.js 13 version *App Router* et de la librairie de composants React [shadcn/ui](https://ui.shadcn.com/docs).
+* [Build UI recipes](https://buildui.com/recipes) : Il s'agit d'une collection de code snippets par [Sam Selikoff](https://github.com/samselikoff) pour des interfaces utilisateurs modernes et intuitives. Structurizer contient notamment du code inspiré du [Multistep Wizard](https://buildui.com/recipes/multistep-wizard) et de l'[Artificial Delay](https://buildui.com/recipes/artificial-delay).
 * [Animated Gradient Border CSS](https://codepen.io/shantanu-jana/pen/XWVBJRv) : Un code snippet par Shantanu Jana modifié pour le glowing effect présent un peu partout dans l'application.
 
