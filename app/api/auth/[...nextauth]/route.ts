@@ -46,19 +46,18 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token }) {
+    async session({ session, token }) {
       const dbUser = await prisma.user.findUnique({
         where: {
           id: token.sub,
         },
       });
+      
       if (!dbUser) {
-        log.warn("Auth", "Invalid token provided");
-        throw new Error("Invalid token");
+        log.warn("Auth", "User not found in database");
+        throw new Error("User not found");
       }
-      return token;
-    },
-    async session({ session, token }) {
+
       if (session.user && token.sub) {
         session.user.id = token.sub;
       }
