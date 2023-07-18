@@ -4,6 +4,7 @@ import { getUser } from "@/lib/session";
 import { BottomSection } from "./components/bottom-section";
 import { NavSection } from "./components/nav-section";
 import type { NavItem, NavSectionItems } from "types";
+import { Redirect } from "@/components/redirect";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -66,7 +67,7 @@ export default async function DashboardLayout({
 }: DashboardLayoutProps) {
   const user = await getUser();
   if (!user) {
-    throw new Error("User not found");
+    return <Redirect />;
   }
   return (
     <div className="min-h-screen flex">
