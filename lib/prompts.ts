@@ -179,7 +179,7 @@ ${output}
 ---------------------
 
 The SQL output may have a lot of information, use your best judgement to decide which information is relevant to the question and keep it concise.
-For example, if the question requires a listing of documents or items, do not provided all the columns of the table, only the ones that are relevant to the question.
+For example, if the question requires a listing of documents or items, do not provide all the columns of the table, only the ones that are relevant to the question.
 
 Keep the answer in the question's language.
 If the question does not seem related to the provided SQL query, just say "Sorry, I can't answer that question." in the question's language.
