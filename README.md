@@ -1,8 +1,8 @@
 <h1 align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Lazzzer/structurizer/assets/43219964/19bd80a6-2236-4817-b53f-c18e49eb2104">
-    <source media="(prefers-color-scheme: light)" srcset="https://github.com/Lazzzer/structurizer/assets/43219964/cce4673a-9dd5-429d-8968-4eda17d721e7">
-    <img src="https://github.com/Lazzzer/structurizer/assets/43219964/cce4673a-9dd5-429d-8968-4eda17d721e7" alt="Structurizer Logo" width="75%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Lazzzer/structurizer/assets/43219964/1a642ced-2f67-4e0f-805e-7666afbf8bb8">
+    <source media="(prefers-color-scheme: light)" srcset="https://github.com/Lazzzer/structurizer/assets/43219964/6b947300-1adc-4c0b-a6c2-f398a205e533">
+    <img src="https://github.com/Lazzzer/structurizer/assets/43219964/6b947300-1adc-4c0b-a6c2-f398a205e533" alt="Structurizer Logo" width="75%">
   </picture>
 </h1>
 
@@ -26,7 +26,7 @@ L'application web est au stade de _Proof of Concept_, elle propose la structurat
 
 ## Démo de l'application
 
-https://github.com/Lazzzer/structurizer/assets/43219964/8d39bb63-cbf6-4ad5-be11-b7ad74eb6136
+https://github.com/Lazzzer/structurizer/assets/43219964/41d7a85d-0f56-48ca-ae98-5d996849a9ad
 
 ## Stack
 
