@@ -122,7 +122,7 @@ L'application est accessible sur ce [lien](http://localhost:3001).
 
 La branche `main` est protégée et les pull requests doivent passer l'action `ci` pour être mergées.
 
-<img width="1134" alt="Screenshot CI pipelines" src="https://github.com/Lazzzer/structurizer/assets/43219964/b51dce82-5b11-4fac-89ee-1b2b10259e24">
+<img width="1134" alt="Screenshot CI pipelines" src="https://github.com/Lazzzer/structurizer/assets/43219964/1cef8d46-7644-4fe6-94de-d0e4a308527e">
 
 La CI est gérée avec une Github Action qui sépare le processus en trois étapes.
 
