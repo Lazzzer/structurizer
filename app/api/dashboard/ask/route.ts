@@ -54,7 +54,6 @@ export async function POST(req: NextRequest) {
   try {
     query = mitigateVulnerabilities(JSON.parse(json.output).sqlQuery, user.id);
     result = stringifyWithBigInt(await prisma.$queryRawUnsafe(query));
-    log.debug("Ask", req.method, "SQL Query: ", query);
     log.debug("Ask", req.method, "SQL Result: ", result);
   } catch (e) {
     log.warn("Ask", req.method, "Failed to execute SQL query");
@@ -100,9 +99,10 @@ function mitigateVulnerabilities(query: string, id: string) {
   if (query === "") {
     return query;
   }
+  log.debug("Ask", "POST", "SQL Query: ", query);
 
   const lowerCaseQuery = query.toLowerCase();
-  const unauthorizedStatements = ["insert", "update", "delete"];
+  const unauthorizedStatements = ["insert ", "update ", "delete "];
 
   for (let statement of unauthorizedStatements) {
     if (lowerCaseQuery.includes(statement)) {

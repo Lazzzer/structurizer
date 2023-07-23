@@ -40,7 +40,7 @@ https://github.com/Lazzzer/structurizer/assets/43219964/41d7a85d-0f56-48ca-ae98-
 
 ## Object Storage
 
-L'application stocke ses documents pdf en utilisant le package `@aws-sdk/client-s3`. N'import quel Object Storage compatible s3 devrait fonctionner.
+L'application stocke ses documents pdf en utilisant le package `@aws-sdk/client-s3`. N'import quel Object Storage compatible S3 devrait fonctionner.
 
 Les Object Storages suivants ont été testés et sont fonctionnels avec l'application:
 - [x] [Amazon S3](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started-nodejs.html)
@@ -178,7 +178,7 @@ La base de données reste accessible localement avec les valeurs présentes dans
 
 L'application est maintenant disponible sur le même [lien](http://localhost:3001) que précédemment.
 
-### Arrêt des images
+### Arrêt des containers
 
 ```bash
 docker compose down
