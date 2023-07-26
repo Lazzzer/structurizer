@@ -151,13 +151,13 @@ docker compose build
 
 L'image de l'application se trouve dans le fichier [Dockerfile](https://github.com/Lazzzer/structurizer/blob/main/Dockerfile), basée sur Debian 10.
 
-### Lancement des images
+### Lancement des containers
 
 ```bash
 docker compose up
 ```
 
-Il est préférable que la base de données soit initialisée avant de lancer l'image du serveur. Dans ce cas, vous pouvez lancer les commandes suivantes:
+Il est préférable que la base de données soit initialisée avant de lancer le container du serveur. Dans ce cas, vous pouvez lancer les commandes suivantes:
 
 ```bash
 # Lancement de la base de données [en background s'il le faut]
